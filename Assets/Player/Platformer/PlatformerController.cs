@@ -213,6 +213,7 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float jumpHeight;
     [SerializeField] private float coyoteTime;
     [SerializeField] private float jumpBufferTime;
+    [SerializeField] private float landRecoil;
 
     [Header("Sliding Parameters")]
     [SerializeField] private float slideForce;

@@ -74,14 +74,14 @@ Shader "Hidden/Dither" {
 
             fixed4 fp(v2f i) : SV_Target {
 
-                float4 col = _MainTex.Sample(point_clamp_sampler, i.uv);
+                float4 sampled = _MainTex.Sample(point_clamp_sampler, i.uv);
                 float4 color = float4(0, 0, 0, 1);
                 float dist = 1000;
 
                 for (int i = 0; i < _NumLevels; ++i)
                 {
                     float4 paletteColor = _ColorPalette[i];
-                    float testDist = distance(col.rgb, paletteColor.rgb);
+                    float testDist      = distance(sampled.rgb, paletteColor.rgb);
 
                     if (testDist < dist)
                     {

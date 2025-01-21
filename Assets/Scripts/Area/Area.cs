@@ -5,6 +5,7 @@ public class Area : MonoBehaviour
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private AreaEnd   endPosition;
 
+    public EnemyController EnemyController { get; private set; }
     public Transform SpawnPosition => spawnPosition;
     public AreaEnd EndPosition => endPosition;
 
@@ -15,8 +16,10 @@ public class Area : MonoBehaviour
         endPosition.SetParent(this);
     }
 
-    public void Trigger()
+    public void Trigger(EnemyController controller)
     {
+        EnemyController = controller;
+
         hasTriggered = false;
         PlayerManager.Instance.Transitions.ToPlayer(this);
     }

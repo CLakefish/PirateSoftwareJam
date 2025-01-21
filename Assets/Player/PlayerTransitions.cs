@@ -15,6 +15,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private float transportPause;
     [SerializeField] private float snapPause;
     [SerializeField] private float snapFOVPulse;
+    [SerializeField] private Vector3 snapRecoil;
 
     private Coroutine anim;
 
@@ -99,7 +100,10 @@ public class PlayerTransitions : PlayerManager.PlayerController
     {
         PlatformerController.Animator.HandAnim("Snap");
         PlatformerController.Camera.FOVPulse(snapFOVPulse);
+        PlatformerController.Camera.Recoil(new Vector3(snapRecoil.x, snapRecoil.y, snapRecoil.z * Mathf.Sign(Random.Range(-1, 1))));
         PlatformerController.enabled = false;
+
+        area.EnemyController.OnExit();
 
         yield return new WaitForSecondsRealtime(snapPause);
 
@@ -125,8 +129,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
         platformerView.localScale = Vector3.one;
         platformerView.SetAsLastSibling();
 
-        HomunculusController.Rigidbody.transform.position = HomunculusController.LatchObject.transform.position;
-        HomunculusController.Camera.CamComponent.Render();
+        //HomunculusController.Rigidbody.transform.position = HomunculusController.LatchObject.transform.position;
+        //HomunculusController.Camera.CamComponent.Render();
 
         float startDist = Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position);
 

@@ -1131,8 +1131,9 @@ MonoBehaviour:
   transitionSpeed: 0.5
   returnSpeed: 0.35
   transportPause: 0.1
-  snapPause: 0.25
+  snapPause: 0.5
   snapFOVPulse: 15
+  snapRecoil: {x: 0, y: 0.5, z: -0.5}
 --- !u!1 &5291391595384435151
 GameObject:
   m_ObjectHideFlags: 0
@@ -1456,7 +1457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 8898b77c7f3c52846a31942745b13b29, type: 2}
-  m_Color: {r: 0, g: 0.85490197, b: 1, a: 0.45490196}
+  m_Color: {r: 0, g: 0.85490197, b: 1, a: 0.65882355}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
