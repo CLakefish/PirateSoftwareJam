@@ -9,9 +9,12 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private RectTransform homunculusView;
     [SerializeField] private RectTransform platformerView;
     [SerializeField] private AnimationCurve transitionCurve;
+    [SerializeField] private AnimationCurve pullOutCurve;
     [SerializeField] private float transitionSpeed;
+    [SerializeField] private float returnSpeed;
     [SerializeField] private float transportPause;
     [SerializeField] private float snapPause;
+    [SerializeField] private float snapFOVPulse;
 
     private Coroutine anim;
 
@@ -36,12 +39,11 @@ public class PlayerTransitions : PlayerManager.PlayerController
         anim = StartCoroutine(ToPlayerTransition());
     }
 
-    public void ToHomunculus()
+    public void ToHomunculus(Area area)
     {
         if (anim != null) StopCoroutine(anim);
-        anim = StartCoroutine(ToHomunculusTransition());
-
-        LevelManager.Instance.CheckWin();
+        anim = StartCoroutine(ToHomunculusTransition(area));
+        StartCoroutine(PullOut(area));
     }
 
     private IEnumerator ToPlayerTransition()
@@ -61,6 +63,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         PlatformerController.gameObject.SetActive(true);
         PlatformerController.Animator.HandAnim("Grab");
+        PlatformerController.enabled = true;
 
         yield return new WaitForSecondsRealtime(transportPause);
 
@@ -92,24 +95,59 @@ public class PlayerTransitions : PlayerManager.PlayerController
         platformerView.localScale    = Vector3.one;
     }
 
-    private IEnumerator ToHomunculusTransition()
+    private IEnumerator ToHomunculusTransition(Area area)
     {
-        homunculusView.localScale = Vector3.zero;
-        homunculusView.SetAsLastSibling();
-
         PlatformerController.Animator.HandAnim("Snap");
+        PlatformerController.Camera.FOVPulse(snapFOVPulse);
+        PlatformerController.enabled = false;
 
         yield return new WaitForSecondsRealtime(snapPause);
 
-        Vector3 scaleVel = Vector3.zero;
+        Transform pos = PlatformerController.Rigidbody.transform;
+        Vector3 posVel = Vector3.zero;
 
-        while (Vector3.Distance(homunculusView.localScale, Vector3.one) > 0.01f)
+        while (Vector3.Distance(pos.position, area.SpawnPosition.position) > 0.1f)
         {
-            homunculusView.localScale = Vector3.SmoothDamp(homunculusView.localScale, Vector3.one, ref scaleVel, transitionSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
+            pos.position = Vector3.SmoothDamp(pos.position, area.SpawnPosition.position, ref posVel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
             yield return null;
         }
 
-        homunculusView.localScale = Vector3.one;
+        if (LevelManager.Instance.CheckWin())
+        {
+            PlayerComplete.Activate();
+        }
+    }
+
+    private IEnumerator PullOut(Area area)
+    {
+        yield return new WaitForSecondsRealtime(snapPause);
+
+        platformerView.localScale = Vector3.one;
+        platformerView.SetAsLastSibling();
+
+        HomunculusController.Rigidbody.transform.position = HomunculusController.LatchObject.transform.position;
+        HomunculusController.Camera.CamComponent.Render();
+
+        float startDist = Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position);
+
+        while (Vector3.Distance(platformerView.localScale, Vector3.zero) > 0.01f && Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position) > 0.1f)
+        {
+            float t = 1.0f - (Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position) / startDist);
+            float e = transitionCurve.Evaluate(t);
+
+            Vector3 vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchObject.transform.position);
+            Vector2 targetCanvasPos = new(
+                (vpPos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
+                (vpPos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
+            );
+
+            platformerView.localScale    = Vector3.Lerp(platformerView.localScale, Vector3.zero, e);
+            platformerView.localPosition = Vector3.Lerp(Vector3.zero, targetCanvasPos, e);
+
+            yield return null;
+        }
+
+        platformerView.localScale = Vector3.zero;
         Homunculus = true;
         HomunculusController.Rebound();
     }

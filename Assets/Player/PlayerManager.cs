@@ -15,7 +15,8 @@ public class PlayerManager : MonoBehaviour
         public PlayerInputManager   PlayerInputs         => player.playerInputs;
 
 
-        public PlayerRespawn     PlayerRespawn     => player.playerRespawn;
+        public PlayerRespawnMenu     PlayerRespawn     => player.playerRespawn;
+        public PlayerCompleteMenu    PlayerComplete    => player.playerComplete;
         public PlayerTransitions PlayerTransitions => player.playerTransitions;
     }
 
@@ -29,14 +30,16 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private PlayerInputManager   playerInputs;
 
     [Header("VFX")]
-    [SerializeField] private PlayerRespawn     playerRespawn;
-    [SerializeField] private PlayerTransitions playerTransitions;
+    [SerializeField] private PlayerRespawnMenu  playerRespawn;
+    [SerializeField] private PlayerCompleteMenu playerComplete;
+    [SerializeField] private PlayerTransitions  playerTransitions;
 
     private void OnEnable()
     {
         homunculus.SetPlayer(this);
         platformer.SetPlayer(this);
         playerRespawn.SetPlayer(this);
+        playerComplete.SetPlayer(this);
         playerTransitions.SetPlayer(this);
 
         Instance = this;

@@ -263,6 +263,7 @@ MonoBehaviour:
   collisions: {fileID: 2798842559819918785}
   animator: {fileID: 1872581765119239319}
   rb: {fileID: 2516541481633871672}
+  capsuleCollider: {fileID: 2634461502356889384}
   moveSpeed: 12
   acceleration: 100
   gravity: 46

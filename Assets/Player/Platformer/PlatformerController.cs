@@ -202,6 +202,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
     [Header("Physics")]
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private CapsuleCollider capsuleCollider;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
@@ -294,6 +295,14 @@ public class PlatformerController : PlayerManager.PlayerController
         });
 
         hfsm.SetStartState(Falling);
+
+        capsuleCollider.enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        rb.linearVelocity = Vector3.zero;
+        capsuleCollider.enabled = false;
     }
 
     private void Update()

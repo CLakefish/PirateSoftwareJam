@@ -30,13 +30,18 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void CheckWin()
+    public void NextScene()
+    {
+        SceneManager.LoadScene(nextScene);
+    }
+
+    public bool CheckWin()
     {
         foreach (var enemy in enemies)
         {
-            if (!enemy.HasTriggered) return;
+            if (!enemy.HasTriggered) return false;
         }
 
-        SceneManager.LoadScene(nextScene);
+        return true;
     }
 }

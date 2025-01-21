@@ -129,7 +129,11 @@ public class HomunculusController : PlayerManager.PlayerController
             movePos = Vector3.Lerp(context.rb.position, pos, context.latchLerp.Evaluate(context.hfsm.Duration));
 
             Vector3 fwd = context.cam.CamComponent.transform.forward;
-            context.cam.CamComponent.transform.forward = Vector3.SmoothDamp(fwd, (pos - context.cam.CamComponent.transform.position).normalized, ref camVel, context.latchCamInterpolate);
+            Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
+            context.cam.CamComponent.transform.forward = new Vector3(
+                Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.latchCamInterpolate),
+                Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.latchCamInterpolate),
+                Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.latchCamInterpolate));
 
             float dist = Vector3.Distance(context.rb.position, pos);
             context.latchFinished = dist < 0.01f;

@@ -2,7 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class PlayerRespawn : PlayerManager.PlayerController
+public class PlayerRespawnMenu : PlayerManager.PlayerController
 {
     [Header("Respawn")]
     [SerializeField] private GameObject respawnMenu;

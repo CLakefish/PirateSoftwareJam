@@ -6,6 +6,8 @@ public class Area : MonoBehaviour
     [SerializeField] private AreaEnd   endPosition;
 
     public Transform SpawnPosition => spawnPosition;
+    public AreaEnd EndPosition => endPosition;
+
     private bool hasTriggered = false;
 
     private void Awake()
@@ -23,7 +25,7 @@ public class Area : MonoBehaviour
     {
         if (hasTriggered) return;
         hasTriggered = true;
-        PlayerManager.Instance.Transitions.ToHomunculus();
+        PlayerManager.Instance.Transitions.ToHomunculus(this);
     }
 
     public void SetPosition()
