@@ -5,8 +5,22 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField] private Area connected;
 
-    public void Trigger() {
+    public bool HasTriggered { get; private set; }
+
+    private void Awake()
+    {
+        HasTriggered = false;
+    }
+
+    public bool Trigger() {
+        if (HasTriggered) {
+            return false;
+        }
+
+        HasTriggered = true;
         connected.Trigger();
+
+        return true;
     }
 
     private void OnDrawGizmos()

@@ -1,15 +1,31 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera cam;
-    [SerializeField] private PlayerInputManager playerInputManager;
+    [SerializeField] private PlayerInputManager input;
+    [SerializeField] private bool resetRotation = false;
 
     [Header("Field of View")]
     [SerializeField] private float fov;
+    [SerializeField] private float pulseStartInterpolate = 0.05f;
+    [SerializeField] private float pulseEndInterpolate   = 0.4f;
 
-    public bool LockCamera = false;
+    [Header("View Tilting")]
+    [SerializeField] private float viewTiltAngle;
+    [SerializeField] private float viewRotationSmoothing;
+
+    [HideInInspector] public bool LockCamera = false;
+
+    private Coroutine fovPulse;
+
+    private Vector3 recoil;
+    private Vector3 recoilVel;
+
+    private Vector2 viewTilt;
+    private float cameraVel;
 
     public bool MouseLock {
         set {
@@ -36,23 +52,83 @@ public class PlayerCamera : MonoBehaviour
         }
     }
 
-    public Camera Cam => cam;
+    public Camera CamComponent => cam;
 
-    private void Awake() => MouseLock = true;
+    private void OnEnable()
+    {
+        if (resetRotation) cam.transform.localEulerAngles = Vector3.zero;
+    }
 
-    private void LateUpdate()
+    private void Awake()
     {
         cam.fieldOfView = fov;
+        MouseLock = true;
+    }
 
-        if (LockCamera) return;
+    private void Update()
+    {
+        float currentZ = Mathf.SmoothDampAngle(cam.transform.localEulerAngles.z, viewTilt.x, ref cameraVel, viewRotationSmoothing);
+        currentZ += recoil.z;
 
-        float x = cam.transform.eulerAngles.x;
+        recoil   = Vector3.SmoothDamp(recoil, Vector3.zero, ref recoilVel, 0.2f);
+        viewTilt = Vector2.zero;
+
+        if (LockCamera)
+        {
+            cam.transform.rotation = Quaternion.Euler(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, currentZ);
+            return;
+        }
+
+        float x = cam.transform.localEulerAngles.x;
         if (x > 180) x -= 360;
 
         cam.transform.rotation = Quaternion.Euler(
             new Vector3(
-            Mathf.Clamp(x - playerInputManager.AlteredMouseDelta.y, -89.9f, 89.9f),
-            cam.transform.eulerAngles.y + playerInputManager.AlteredMouseDelta.x, 
-            0));
+            Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
+            cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y, 
+            currentZ));
+    }
+
+    public void ViewTilt() => viewTilt.x = -input.Input.x * viewTiltAngle;
+
+    public void Recoil(Vector3 recoilAmount)
+    {
+        Vector3 rand = Random.insideUnitSphere;
+        Vector3 rec = new(recoilAmount.x, rand.y * recoilAmount.y, recoilAmount.z);
+        recoil += rec;
+    }
+
+    public void FOVPulse(float fovAddition)
+    {
+        if (fovAddition == 0) return;
+
+        if (fovPulse != null) StopCoroutine(fovPulse);
+        if (!gameObject.activeSelf) return;
+
+        fovPulse = StartCoroutine(Pulse(fovAddition));
+    }
+
+    private IEnumerator Pulse(float addition)
+    {
+        Debug.Log("Pulsing!");
+
+        float endFOV = cam.fieldOfView + addition;
+        float vel = 0;
+
+        while (Mathf.Abs(cam.fieldOfView - endFOV) > 1)
+        {
+            cam.fieldOfView = Mathf.SmoothDamp(Camera.main.fieldOfView, endFOV, ref vel, pulseStartInterpolate, Mathf.Infinity, Time.unscaledDeltaTime);
+            yield return null;
+        }
+
+        cam.fieldOfView = endFOV;
+
+        while (Mathf.Abs(cam.fieldOfView - fov) > 1)
+        {
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, fov, ref vel, pulseEndInterpolate, Mathf.Infinity, Time.unscaledDeltaTime);
+            yield return null;
+        }
+
+        cam.fieldOfView = fov;
     }
 }

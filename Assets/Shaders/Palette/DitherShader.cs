@@ -57,6 +57,7 @@ public class DitherShader : MonoBehaviour
     [Header("Shader Parameters")]
     [SerializeField] private Shader ditherer;
     [SerializeField] private float  spread;
+    [SerializeField] private int downSamples;
 
     public bool IsLoaded 
     {
@@ -76,6 +77,7 @@ public class DitherShader : MonoBehaviour
 
         Enabled = true;
 
+        ditherMaterial.SetFloat("_Spread", spread);
         SetPalette(paletteReference);
     }
 
@@ -91,8 +93,6 @@ public class DitherShader : MonoBehaviour
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        Debug.Log("rendered");
-
         if (currentPalette.Count <= 0 || !Enabled)
         {
             Graphics.Blit(source, destination);
@@ -101,25 +101,30 @@ public class DitherShader : MonoBehaviour
 
         ditherMaterial.SetFloat("_Spread", spread);
 
-        int width  = source.width;
+        int width = source.width;
         int height = source.height;
 
+        RenderTexture[] textures = new RenderTexture[8];
         RenderTexture currentSource = source;
 
-        width /= 2;
-        height /= 2;
+        for (int i = 0; i < downSamples; ++i)
+        {
+            width /= 2;
+            height /= 2;
 
-        if (height < 2) return;
+            if (height < 2) break;
 
-        RenderTexture currentDestination = RenderTexture.GetTemporary(width, height, 0, source.format);
+            RenderTexture currentDestination = textures[i] = RenderTexture.GetTemporary(width, height, 0, source.format);
+            Graphics.Blit(currentSource, currentDestination);
+            currentSource = currentDestination;
+        }
+
         RenderTexture dither = RenderTexture.GetTemporary(width, height, 0, source.format);
-        Graphics.Blit(currentSource, currentDestination);
-        currentSource = currentDestination;
-
-        Graphics.Blit(currentSource, dither,      ditherMaterial, 0);
-        Graphics.Blit(dither,        destination, ditherMaterial, 1);
-
+        Graphics.Blit(currentSource, dither, ditherMaterial, 0);
+        Graphics.Blit(dither, destination, ditherMaterial, 1);
         RenderTexture.ReleaseTemporary(dither);
+
+        for (int i = 0; i < downSamples; ++i) RenderTexture.ReleaseTemporary(textures[i]);
     }
 
     public void SetPalette(ColorPalette palette)

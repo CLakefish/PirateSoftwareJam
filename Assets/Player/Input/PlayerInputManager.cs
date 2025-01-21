@@ -13,6 +13,7 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private Vector2Input moveInput;
     [SerializeField] private Vector2Input lookInput;
     [SerializeField] private BoolInput jump;
+    [SerializeField] private BoolInput slide;
 
     [Header("Variables")]
     [SerializeField] private Vector2 sensitivity;
@@ -68,6 +69,14 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    public bool Slide
+    {
+        get
+        {
+            return slide.Held;
+        }
+    }
+
     private void Awake()
     {
         if (Instance != null)
@@ -81,7 +90,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private void OnEnable()
     {
-        inputSet = new() { jump, moveInput, lookInput };
+        inputSet = new() { jump, moveInput, lookInput, slide };
 
         foreach (var action in inputSet)
         {

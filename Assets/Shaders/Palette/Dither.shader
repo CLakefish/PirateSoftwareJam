@@ -90,7 +90,7 @@ Shader "Hidden/Dither" {
                     }
                 }
 
-                return float4(color.rgb, col.a);
+                return float4(color.rgb, 1);
             }
             ENDCG
         }

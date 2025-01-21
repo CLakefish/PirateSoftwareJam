@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Jump
   m_EditorClassIdentifier: 
   action:
-    m_Name: 
-    m_Type: 0
+    m_Name: Jump
+    m_Type: 1
     m_ExpectedControlType: 
-    m_Id: 551d2929-72e5-4206-9259-c693aa1cb564
+    m_Id: 25d2fd1d-64d1-48e8-b7fd-51c034a563a1
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []

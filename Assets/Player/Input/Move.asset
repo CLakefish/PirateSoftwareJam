@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Move
   m_EditorClassIdentifier: 
   action:
-    m_Name: 
+    m_Name: Move
     m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: a9394d1d-b88f-43ee-958d-06ac03054856
+    m_ExpectedControlType: Vector2
+    m_Id: d2910b1d-403a-43c1-80cd-be37270f30dc
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
-    m_Flags: 0
+    m_Flags: 1
   map: {fileID: 0}
   bindName: Move
   locked: 0

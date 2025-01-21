@@ -6,6 +6,7 @@ public class Area : MonoBehaviour
     [SerializeField] private AreaEnd   endPosition;
 
     public Transform SpawnPosition => spawnPosition;
+    private bool hasTriggered = false;
 
     private void Awake()
     {
@@ -14,12 +15,20 @@ public class Area : MonoBehaviour
 
     public void Trigger()
     {
-        AreaTransitionManager.Instance.TransitionTo(this);
+        hasTriggered = false;
+        PlayerManager.Instance.Transitions.ToPlayer(this);
     }
 
     public void EndTrigger()
     {
-        AreaTransitionManager.Instance.TransitionFrom(this);
+        if (hasTriggered) return;
+        hasTriggered = true;
+        PlayerManager.Instance.Transitions.ToHomunculus();
+    }
+
+    public void SetPosition()
+    {
+        PlayerManager.Instance.Transitions.SetPlayer(SpawnPosition);
     }
 
     private void OnDrawGizmos()

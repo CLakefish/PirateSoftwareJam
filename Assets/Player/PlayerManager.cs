@@ -1,22 +1,45 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static PlayerManager Instance { get; private set; }
+    public class PlayerController : MonoBehaviour
+    {
+        protected PlayerManager player;
 
-    [SerializeField] private GameObject homunculus;
-    [SerializeField] private GameObject platformer;
+        public void SetPlayer(PlayerManager player) => this.player = player;
 
-    public bool Homunculus {
-        set {
-            homunculus.SetActive(value);
-            platformer.SetActive(!value);
-        } 
+        public HomunculusController HomunculusController => player.homunculus;
+        public PlatformerController PlatformerController => player.platformer;
+        public PlayerInputManager   PlayerInputs         => player.playerInputs;
+
+
+        public PlayerRespawn     PlayerRespawn     => player.playerRespawn;
+        public PlayerTransitions PlayerTransitions => player.playerTransitions;
     }
 
-    public void SetPlayer(Transform pos) {
-        platformer.transform.position = pos.position;
-        platformer.transform.forward  = pos.forward;
+    public static PlayerManager Instance { get; private set; }
+
+    public PlayerTransitions Transitions => playerTransitions;
+
+
+    [SerializeField] private HomunculusController homunculus;
+    [SerializeField] private PlatformerController platformer;
+    [SerializeField] private PlayerInputManager   playerInputs;
+
+    [Header("VFX")]
+    [SerializeField] private PlayerRespawn     playerRespawn;
+    [SerializeField] private PlayerTransitions playerTransitions;
+
+    private void OnEnable()
+    {
+        homunculus.SetPlayer(this);
+        platformer.SetPlayer(this);
+        playerRespawn.SetPlayer(this);
+        playerTransitions.SetPlayer(this);
+
+        Instance = this;
     }
 
     private void Awake()
@@ -26,5 +49,7 @@ public class PlayerManager : MonoBehaviour
             Instance = this;
             return;
         }
+
+        Destroy(gameObject);
     }
 }
