@@ -111,17 +111,6 @@
                 },
                 {
                     "name": "",
-                    "id": "4359d5e2-8568-4fb0-89d3-adfdb5ae8019",
-                    "path": "<VirtualMouse>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "2ceb507b-e06c-4737-8b48-d13b47a9b847",
                     "path": "<Keyboard>/space",
                     "interactions": "",

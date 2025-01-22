@@ -13,9 +13,12 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private float transitionSpeed;
     [SerializeField] private float returnSpeed;
     [SerializeField] private float transportPause;
+
+    [Header("Hand")]
+    [SerializeField] private PlatformerAnimator hand;
+    [SerializeField] private Vector3 snapRecoil;
     [SerializeField] private float snapPause;
     [SerializeField] private float snapFOVPulse;
-    [SerializeField] private Vector3 snapRecoil;
 
     private Coroutine anim;
 
@@ -47,10 +50,36 @@ public class PlayerTransitions : PlayerManager.PlayerController
         StartCoroutine(PullOut(area));
     }
 
+    public void IdleSnap()
+    {
+        if (anim != null) StopCoroutine(anim);
+        anim = StartCoroutine(Snap(true));
+    }
+
+    private IEnumerator Snap(bool turnOff = false)
+    {
+        hand.gameObject.SetActive(true);
+        hand.HandAnim("Grab");
+
+        yield return new WaitForSecondsRealtime(transportPause);
+
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position) > 0.1f) {
+            yield return null;
+        }
+
+        if (turnOff) {
+            hand.gameObject.SetActive(false);
+        }
+    }
+
     private IEnumerator ToPlayerTransition()
     {
         PlatformerController.Camera.LockCamera = true;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = false;
+
+        PlatformerController.gameObject.SetActive(true);
+
+        StartCoroutine(Snap());
 
         Vector3 vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchObject.transform.position);
         Vector2 targetCanvasPos = new(
@@ -62,8 +91,6 @@ public class PlayerTransitions : PlayerManager.PlayerController
         platformerView.localPosition = targetCanvasPos;
         platformerView.SetAsLastSibling();
 
-        PlatformerController.gameObject.SetActive(true);
-        PlatformerController.Animator.HandAnim("Grab");
         PlatformerController.enabled = true;
 
         yield return new WaitForSecondsRealtime(transportPause);
@@ -91,14 +118,11 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         PlatformerController.Camera.LockCamera = false;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = true;
-
-        platformerView.localPosition = Vector3.zero;
-        platformerView.localScale    = Vector3.one;
     }
 
     private IEnumerator ToHomunculusTransition(Area area)
     {
-        PlatformerController.Animator.HandAnim("Snap");
+        hand.HandAnim("Snap");
         PlatformerController.Camera.FOVPulse(snapFOVPulse);
         PlatformerController.Camera.Recoil(new Vector3(snapRecoil.x, snapRecoil.y, snapRecoil.z * Mathf.Sign(Random.Range(-1, 1))));
         PlatformerController.enabled = false;
@@ -106,6 +130,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
         area.EnemyController.OnExit();
 
         yield return new WaitForSecondsRealtime(snapPause);
+
+        hand.gameObject.SetActive(false);
 
         Transform pos = PlatformerController.Rigidbody.transform;
         Vector3 posVel = Vector3.zero;
@@ -128,9 +154,6 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         platformerView.localScale = Vector3.one;
         platformerView.SetAsLastSibling();
-
-        //HomunculusController.Rigidbody.transform.position = HomunculusController.LatchObject.transform.position;
-        //HomunculusController.Camera.CamComponent.Render();
 
         float startDist = Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position);
 

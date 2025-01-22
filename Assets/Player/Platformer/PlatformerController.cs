@@ -23,7 +23,7 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Enter()
         {
             context.jumpBuffer = 0;
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.jumpHeight, context.rb.linearVelocity.z);
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.jumpHeight * context.rb.transform.up.y, context.rb.linearVelocity.z);
         }
 
         public override void Update()
@@ -77,8 +77,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
                 if (context.collisions.SlopeCollision)
                 {
-                    Vector3 dir = (context.MoveDir * context.slideForce) + (context.gravity * Time.fixedDeltaTime * Vector3.down);
-                    momentum = Quaternion.FromToRotation(Vector3.up, context.collisions.GroundNormal) * dir;
+                    Vector3 dir = (context.MoveDir * context.slideForce) + (context.gravity * Time.fixedDeltaTime * -context.rb.transform.up);
+                    momentum = Quaternion.FromToRotation(context.rb.transform.up, context.collisions.GroundNormal) * dir;
                 }
                 else
                 {
@@ -109,8 +109,8 @@ public class PlatformerController : PlayerManager.PlayerController
             if (context.collisions.SlopeCollision)
             {
                 // Get the gravity, angle, and current momentumDirection
-                Vector3 slopeGravity = Vector3.ProjectOnPlane(Vector3.down * context.gravity, context.collisions.GroundNormal);
-                float normalizedAngle = Vector3.Angle(Vector3.up, context.collisions.GroundNormal) / 90.0f;
+                Vector3 slopeGravity = Vector3.ProjectOnPlane(-context.rb.transform.up * context.gravity, context.collisions.GroundNormal);
+                float normalizedAngle = Vector3.Angle(context.rb.transform.up, context.collisions.GroundNormal) / 90.0f;
                 Vector3 adjusted = slopeGravity * (1.0f + normalizedAngle);
                 desiredVelocity = momentum + adjusted;
             }
@@ -130,7 +130,7 @@ public class PlatformerController : PlayerManager.PlayerController
             if (context.MoveDir != Vector3.zero)
             {
                 Vector3 desiredDirection = Vector3.ProjectOnPlane(context.MoveDir.normalized, context.collisions.GroundNormal).normalized;
-                Vector3 slopeDirection   = Vector3.ProjectOnPlane(Vector3.down, context.collisions.GroundNormal).normalized;
+                Vector3 slopeDirection   = Vector3.ProjectOnPlane(-context.rb.transform.up, context.collisions.GroundNormal).normalized;
 
                 if (Vector3.Dot(desiredDirection, slopeDirection) >= context.slideDotMin)
                 {
@@ -198,7 +198,6 @@ public class PlatformerController : PlayerManager.PlayerController
     [Header("References")]
     [SerializeField] private PlayerCamera cam;
     [SerializeField] private PlatformerCollisions collisions;
-    [SerializeField] private PlatformerAnimator animator;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody rb;
@@ -236,7 +235,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
     public Rigidbody          Rigidbody => rb;
     public PlayerCamera       Camera    => cam;
-    public PlatformerAnimator Animator  => animator;
 
     private WalkingState Walking   { get; set; }
     private JumpingState Jumping   { get; set; }
@@ -324,7 +322,7 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.FixedUpdate();
     }
 
-    private void Gravity() => rb.linearVelocity -= Time.deltaTime * gravity * Vector3.up;
+    private void Gravity() => rb.linearVelocity -= Time.deltaTime * gravity * rb.transform.up;
 
     private void Move(bool keepMomentum)
     {
@@ -337,7 +335,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
         if (hfsm.CurrentState == Walking && collisions.SlopeCollision) {
             set.y = 0;
-            set = Quaternion.FromToRotation(Vector3.up, collisions.GroundNormal) * set;
+            set = Quaternion.FromToRotation(rb.transform.up, collisions.GroundNormal) * set;
         }
 
         rb.linearVelocity = set;

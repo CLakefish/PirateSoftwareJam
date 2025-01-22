@@ -30,7 +30,15 @@ public class HomunculusController : PlayerManager.PlayerController
 
     private class LaunchState : State<HomunculusController>
     {
+        bool hasLaunched = false;
+
         public LaunchState(HomunculusController context) : base(context) { }
+
+        public override void Enter()
+        {
+            hasLaunched = false;
+        }
+
         public override void Update()
         {
             if (context.Reticle(out RaycastHit hit))
@@ -47,8 +55,9 @@ public class HomunculusController : PlayerManager.PlayerController
                 context.reticle.gameObject.SetActive(false);
             }
 
-            if (context.PlayerInputs.Jump || context.launchBuffer > 0)
+            if ((context.PlayerInputs.Jump || context.launchBuffer > 0) && !hasLaunched)
             {
+                hasLaunched = true;
                 context.launchBuffer = 0;
 
                 if (context.hfsm.Duration <= context.latchLaunchGraceTime && context.hfsm.PreviousState == context.Latch)
@@ -88,7 +97,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Enter()
         {
-            context.LatchObject.GetComponent<EnemyController>().Trigger();
+            context.LatchObject.GetComponent<Latchable>().Latch(context);
 
             context.latchFinished     = false;
             context.rb.linearVelocity = Vector3.zero;
@@ -141,10 +150,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Exit()
         {
-            if (!context.LatchObject.GetComponent<EnemyController>().Trigger())
-            {
-                context.Rebound();
-            }
+            context.Rebound();
         }
     }
 
@@ -256,9 +262,17 @@ public class HomunculusController : PlayerManager.PlayerController
         hfsm.FixedUpdate();
     }
 
+    private void OnGUI()
+    {
+        hfsm.OnGUI();
+    }
+
+    private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;
+
     public void Rebound()
     {
         cam.LockCamera = false;
+        latchFinished  = true;
 
         cam.FOVPulse(jumpPulseFOV);
 
@@ -269,8 +283,6 @@ public class HomunculusController : PlayerManager.PlayerController
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, exitLaunch, rb.linearVelocity.z);
     }
-
-    private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;
 
     private bool Reticle(out RaycastHit hit)
     {

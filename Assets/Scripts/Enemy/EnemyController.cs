@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : Latchable
 {
     [SerializeField] private Area connected;
     [SerializeField] private GameObject fire;
@@ -11,17 +11,6 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         HasTriggered = false;
-    }
-
-    public bool Trigger() {
-        if (HasTriggered) {
-            return false;
-        }
-
-        HasTriggered = true;
-        connected.Trigger(this);
-
-        return true;
     }
 
     public void OnExit()
@@ -34,5 +23,15 @@ public class EnemyController : MonoBehaviour
     {
         Gizmos.color = Color.white;
         Gizmos.DrawLine(transform.position, connected.transform.position);
+    }
+
+    public override void Latch(HomunculusController controller)
+    {
+        if (HasTriggered) {
+            return;
+        }
+
+        HasTriggered = true;
+        connected.Trigger(this);
     }
 }
