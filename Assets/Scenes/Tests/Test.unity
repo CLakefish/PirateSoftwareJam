@@ -13557,7 +13557,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
       propertyPath: snapPause
-      value: 0.65
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
+      propertyPath: returnSpeed
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 918748876945523758, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
       propertyPath: m_Name
@@ -13829,6 +13833,10 @@ PrefabInstance:
     - target: {fileID: 699503034964946858, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
       propertyPath: m_Name
       value: Rain
+      objectReference: {fileID: 0}
+    - target: {fileID: 1484238620880267247, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
+      propertyPath: CollisionModule.quality
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2741915581578930349, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
       propertyPath: m_LocalPosition.x

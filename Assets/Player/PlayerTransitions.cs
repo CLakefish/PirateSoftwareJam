@@ -52,8 +52,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     public void IdleSnap()
     {
-        if (anim != null) StopCoroutine(anim);
-        anim = StartCoroutine(Snap(true));
+        StartCoroutine(Snap(true));
     }
 
     private IEnumerator Snap(bool turnOff = false)
@@ -125,6 +124,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         hand.HandAnim("Snap");
         PlatformerController.Camera.FOVPulse(snapFOVPulse);
         PlatformerController.Camera.Recoil(new Vector3(snapRecoil.x, snapRecoil.y, snapRecoil.z * Mathf.Sign(Random.Range(-1, 1))));
+        PlatformerController.Rigidbody.linearVelocity = Vector3.zero;
         PlatformerController.enabled = false;
 
         area.EnemyController.OnExit();
@@ -138,7 +138,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         while (Vector3.Distance(pos.position, area.SpawnPosition.position) > 0.1f)
         {
-            pos.position = Vector3.SmoothDamp(pos.position, area.SpawnPosition.position, ref posVel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
+            Vector3 newPos = Vector3.SmoothDamp(pos.position, area.SpawnPosition.position, ref posVel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
+            PlatformerController.Rigidbody.MovePosition(newPos);
             yield return null;
         }
 

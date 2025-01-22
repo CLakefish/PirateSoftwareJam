@@ -28,6 +28,7 @@ public class EnemyController : Latchable
     public override void Latch(HomunculusController controller)
     {
         if (HasTriggered) {
+            PlayerManager.Instance.Transitions.IdleSnap();
             return;
         }
 
