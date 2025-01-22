@@ -29,4 +29,4 @@ MonoBehaviour:
   - {r: 0.23053813, g: 1, b: 0, a: 1}
   - {r: 0, g: 0.47058824, b: 0.6, a: 1}
   - {r: 0, g: 0.15686275, b: 0.3529412, a: 1}
-  ditherValue: 0.5
+  ditherValue: 0.2

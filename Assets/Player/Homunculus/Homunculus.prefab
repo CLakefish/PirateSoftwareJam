@@ -450,7 +450,7 @@ MonoBehaviour:
   - {r: 0, g: 0.8650923, b: 1, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   ditherer: {fileID: 4800000, guid: 1cf4c00ded6753140b738840e3692db0, type: 3}
-  spread: 0.18
+  spread: 0.19
   downSamples: 1
 --- !u!1 &9152204048722714942
 GameObject:

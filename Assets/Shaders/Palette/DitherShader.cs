@@ -72,6 +72,8 @@ public class DitherShader : MonoBehaviour
 
     private void OnEnable()
     {
+        if (colorBuffer != null) colorBuffer.Release();
+
         ditherMaterial           = new Material(ditherer);
         ditherMaterial.hideFlags = HideFlags.HideAndDontSave;
 
@@ -123,6 +125,7 @@ public class DitherShader : MonoBehaviour
         Graphics.Blit(currentSource, dither, ditherMaterial, 0);
         Graphics.Blit(dither, destination, ditherMaterial, 1);
         RenderTexture.ReleaseTemporary(dither);
+        RenderTexture.ReleaseTemporary(currentSource);
 
         for (int i = 0; i < downSamples; ++i) RenderTexture.ReleaseTemporary(textures[i]);
     }
@@ -135,7 +138,11 @@ public class DitherShader : MonoBehaviour
 
     public void Refresh()
     {
-        if (colorBuffer != null) colorBuffer.Release();
+        if (colorBuffer != null)
+        {
+            colorBuffer.Release();
+            colorBuffer.Dispose();
+        }
 
         int colorCount = paletteReference.colors.Count;
 
