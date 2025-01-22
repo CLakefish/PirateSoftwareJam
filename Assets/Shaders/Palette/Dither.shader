@@ -2,6 +2,7 @@ Shader "Hidden/Dither" {
     Properties{
         _MainTex("Texture", 2D) = "white" {}
         _NumLevels("Number of Quantization Levels", Float) = 2
+
     }
     SubShader
     {
@@ -36,6 +37,8 @@ Shader "Hidden/Dither" {
             #pragma vertex vp
             #pragma fragment fp
 
+            StructuredBuffer<float4> _ColorPalette;
+            float _NumLevels;
             float _Spread;
 
             static const int bayer8[8 * 8] = {
@@ -49,39 +52,26 @@ Shader "Hidden/Dither" {
                 63, 31, 55, 23, 61, 29, 53, 21
             };
 
-            fixed4 fp(v2f i) : SV_Target {
-                float4 col = _MainTex.Sample(point_clamp_sampler, i.uv);
+            fixed4 fp(v2f iV) : SV_Target {
+                float4 col = _MainTex.Sample(point_clamp_sampler, iV.uv);
 
-                uint x = i.uv.x * _MainTex_TexelSize.z;
-                uint y = i.uv.y * _MainTex_TexelSize.w;
+                uint x = iV.uv.x * _MainTex_TexelSize.z;
+                uint y = iV.uv.y * _MainTex_TexelSize.w;
+
+                //float rand = frac(sin(dot(iV.uv, float2(12.9898, 78.233))) * 43758.5453);
+                //col.rgb = lerp(col.rgb, col.rgb * rand, 0.1f);
 
                 // woooooooo magic
                 float4 output = col + _Spread * (float(bayer8[(x % 8) + (y % 8) * 8]) * (1.0f / 64.0f) - 0.5f);
-                return output;
-            }
-            ENDCG
-        }
-            
-        // Palette swapping pass
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
 
-            // Oh boy!
-            StructuredBuffer<float4> _ColorPalette;
-            float _NumLevels;
-
-            fixed4 fp(v2f i) : SV_Target {
-
-                float4 sampled = _MainTex.Sample(point_clamp_sampler, i.uv);
+                float4 sampled = output;
                 float4 color = float4(0, 0, 0, 1);
                 float dist = 1000;
 
                 for (int i = 0; i < _NumLevels; ++i)
                 {
                     float4 paletteColor = _ColorPalette[i];
-                    float testDist      = distance(sampled.rgb, paletteColor.rgb);
+                    float testDist = distance(sampled.rgb, paletteColor.rgb);
 
                     if (testDist < dist)
                     {
@@ -94,7 +84,7 @@ Shader "Hidden/Dither" {
             }
             ENDCG
         }
-
+            
         // Final pass
         Pass {
             CGPROGRAM
