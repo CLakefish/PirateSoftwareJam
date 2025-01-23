@@ -79,7 +79,7 @@ public class PlatformerCollisions : MonoBehaviour
             float angle = Vector3.Angle(Vector3.up, groundNormal);
             groundPoint = interpolated.point;
             groundCollision = true;
-            slopeCollision = angle > 0 && angle <= 80;
+            slopeCollision = angle > 0 && angle <= 75;
             return;
         }
 

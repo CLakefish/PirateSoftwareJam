@@ -10,14 +10,10 @@ public class HomunculusController : PlayerManager.PlayerController
     {
         public BeginState(HomunculusController context) : base(context) { }
 
-        public override void Update()
-        {
-            if (context.hfsm.Duration > 0.01f) context.Reticle(out RaycastHit _);
-        }
-
         public override void FixedUpdate()
         {
             context.ApplyGravity();
+            context.reticle.Reticle();
         }
 
         public override void Exit()
@@ -41,27 +37,21 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Update()
         {
-            if (context.Reticle(out RaycastHit hit))
-            {
-                if (context.PlayerInputs.Jump)
-                {
-                    context.LatchObject = hit.collider.gameObject;
+            GameObject closest = context.reticle.GetClosestToCenter();
+
+            if (closest != null) {
+                if (context.PlayerInputs.Jump) {
+                    context.reticle.Set(closest);
                     context.canLatch = true;
                     return;
                 }
             }
-            else
-            {
-                context.reticle.gameObject.SetActive(false);
-            }
 
-            if ((context.PlayerInputs.Jump || context.launchBuffer > 0) && !hasLaunched)
-            {
-                hasLaunched = true;
+            if ((context.PlayerInputs.Jump || context.launchBuffer > 0) && !hasLaunched) {
+                hasLaunched          = true;
                 context.launchBuffer = 0;
 
-                if (context.hfsm.Duration <= context.latchLaunchGraceTime && context.hfsm.PreviousState == context.Latch)
-                {
+                if (context.hfsm.Duration <= context.latchLaunchGraceTime && context.hfsm.PreviousState == context.Latch) {
                     context.cam.FOVPulse(context.jumpPulseFOV);
                     context.rb.linearVelocity = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
                     return;
@@ -71,15 +61,14 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
+            context.reticle.Reticle();
             context.ApplyGravity();
         }
 
         public override void Exit()
         {
             context.cam.Recoil(context.recoil);
-
-            context.canLatch = false;
-            context.rb.linearVelocity = Vector3.zero;
+            TimeManager.Instance.SetScale(1);
         }
     }
 
@@ -97,6 +86,9 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Enter()
         {
+            context.canLatch = false;
+            context.rb.linearVelocity = Vector3.zero;
+
             context.LatchObject.GetComponent<Latchable>().Latch(context);
 
             context.latchFinished     = false;
@@ -105,7 +97,6 @@ public class HomunculusController : PlayerManager.PlayerController
 
             context.cam.FOVPulse(context.pulseFOV);
             context.cam.LockCamera = true;
-            context.ReticlePulse();
 
             startPosition = context.cam.CamComponent.transform.position - Vector3.up + context.cam.CamComponent.transform.right;
             endPosition   = context.LatchObject.transform.position;
@@ -132,8 +123,6 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
-            context.cam.FOVPulse(context.latchPassiveFOV);
-
             Vector3 pos = context.LatchObject.transform.position;
             movePos = Vector3.Lerp(context.rb.position, pos, context.latchLerp.Evaluate(context.hfsm.Duration));
 
@@ -159,10 +148,8 @@ public class HomunculusController : PlayerManager.PlayerController
 
     [Header("Physics")]
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private LayerMask latchableLayer;
+    [SerializeField] private HomunculusReticle reticle;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float latchRadius;
-    [SerializeField] private float latchDistance;
     [SerializeField] private float groundCheckRadius;
     [SerializeField] private float groundCheckDistance;
 
@@ -179,29 +166,20 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float latchCamInterpolate;
     [SerializeField] private float latchLaunchGraceTime;
     [SerializeField] private float launchBufferTime;
-    [SerializeField] private float latchBufferTime;
+    [SerializeField] private float latchLaunchTimeSlow;
     [SerializeField] private Vector3 recoil;
-
-    [Header("Canvas/VFX")]
-    [SerializeField] private CanvasScaler canvas;
-    [SerializeField] public RectTransform reticle;
-    [SerializeField] private float reticleRotateSpeed;
-
-    [Header("Reticle Pulse")]
-    [SerializeField] private float reticlePulseSize;
-    [SerializeField] private float reticlePulseAngle;
-    [SerializeField] private float reticleSmoothing;
-    [SerializeField] private Color reticlePulseColor;
 
     [Header("Latch VFX")]
     [SerializeField] private LineRenderer line;
     [SerializeField] private ParticleSystem fireParticles;
     [SerializeField] private float lineInterpolation;
     [SerializeField] private float pulseFOV;
-    [SerializeField] private float latchPassiveFOV;
 
     public Rigidbody Rigidbody => rb;
     public PlayerCamera Camera => cam;
+    public LayerMask GroundLayer => groundLayer;
+    public GameObject LatchObject => reticle.LatchObject;
+
     private float deathCounter = 0;
 
 
@@ -209,8 +187,6 @@ public class HomunculusController : PlayerManager.PlayerController
     private LaunchState Launch { get; set; }
     private LatchState  Latch  { get; set; }
     private StateMachine<HomunculusController> hfsm { get; set; }
-
-    public GameObject LatchObject { get; private set; }
 
     private float launchBuffer;
     private bool  latchFinished;
@@ -276,90 +252,11 @@ public class HomunculusController : PlayerManager.PlayerController
 
         cam.FOVPulse(jumpPulseFOV);
 
-        reticle.gameObject.SetActive(false);
         line.gameObject.SetActive(false);
 
-        TimeManager.Instance.SetScale(latchLaunchGraceTime);
+        TimeManager.Instance.Interpolate = true;
+        TimeManager.Instance.SetScale(latchLaunchTimeSlow);
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, exitLaunch, rb.linearVelocity.z);
-    }
-
-    private bool Reticle(out RaycastHit hit)
-    {
-        RaycastHit[] hits = Physics.SphereCastAll(cam.CamComponent.transform.position, latchRadius, cam.CamComponent.transform.forward, latchDistance, latchableLayer);
-
-        if (hits.Length <= 0)
-        {
-            hit = default;
-            reticle.gameObject.SetActive(false);
-            return false;
-        }
-        else
-        {
-            hit = default;
-
-            foreach (var h in hits)
-            {
-                if (Physics.Linecast(cam.CamComponent.transform.position, h.collider.transform.position, groundLayer)) {
-                    continue;
-                }
-
-                reticle.transform.localScale = Vector3.one;
-                reticle.gameObject.SetActive(true);
-
-                Vector3 pos = cam.CamComponent.WorldToViewportPoint(h.collider.transform.position);
-                reticle.transform.localPosition = new(
-                    (pos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
-                    (pos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
-                );
-
-                reticle.transform.localEulerAngles += new Vector3(0, 0, reticleRotateSpeed) * Time.deltaTime;
-
-                hit = h;
-                break;
-            }
-
-            return hit.collider != null;
-        }
-    }
-
-    private void ReticlePulse()
-    {
-        StartCoroutine(ReticlePulseCoroutine());
-    }
-
-    private IEnumerator ReticlePulseCoroutine()
-    {
-        Image image = reticle.GetComponent<Image>();
-
-        Vector3 scaleVel = Vector3.zero;
-        float angle    = reticlePulseAngle;
-        float angleVel = 0;
-        float time     = 0;
-
-        image.color = reticlePulseColor;
-        reticle.transform.localScale = Vector3.one * reticlePulseSize;
-
-        while (angle > Mathf.Epsilon)
-        {
-            reticle.gameObject.SetActive(true);
-
-            Vector3 pos = cam.CamComponent.WorldToViewportPoint(LatchObject.transform.position);
-            reticle.transform.localPosition = new(
-                (pos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
-                (pos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
-            );
-
-            reticle.transform.localScale        = Vector3.SmoothDamp(reticle.transform.localScale, Vector3.zero, ref scaleVel, reticleSmoothing, Mathf.Infinity, Time.unscaledDeltaTime);
-            reticle.transform.localEulerAngles += new Vector3(0, 0, angle) * Time.unscaledDeltaTime;
-            image.color = Color.Lerp(image.color, Color.white, time);
-
-            angle = Mathf.SmoothDamp(angle, 0, ref angleVel, reticleSmoothing);
-            time += Time.unscaledDeltaTime;
-            yield return null;
-        }
-
-        reticle.gameObject.SetActive(false);
-        reticle.transform.localScale = Vector3.one;
     }
 }

@@ -17,6 +17,11 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float viewTiltAngle;
     [SerializeField] private float viewRotationSmoothing;
 
+    [Header("Jump Bob")]
+    [SerializeField] private AnimCurve jumpBob;
+    [SerializeField] private float jumpBobReduction;
+    [SerializeField] private float jumpBobMaxIntensity;
+
     [HideInInspector] public bool LockCamera = false;
 
     private Coroutine fovPulse;
@@ -90,6 +95,17 @@ public class PlayerCamera : MonoBehaviour
     }
 
     public void ViewTilt() => viewTilt.x = -input.Input.x * viewTiltAngle;
+
+    public void JumpBob(float intensity = 1)
+    {
+        if (jumpBob.Coroutine != null) StopCoroutine(jumpBob.Coroutine);
+
+        intensity = Mathf.Clamp(intensity / jumpBobReduction, 1.0f, jumpBobMaxIntensity);
+
+        jumpBob.Coroutine = StartCoroutine(jumpBob.Run(() => {
+            cam.transform.localPosition = (intensity * jumpBob.Continue(Time.deltaTime) * Vector3.up) + (Vector3.up * 0.5f);
+        }));
+    }
 
     public void Recoil(Vector3 recoilAmount)
     {

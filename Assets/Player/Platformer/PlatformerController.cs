@@ -7,6 +7,11 @@ public class PlatformerController : PlayerManager.PlayerController
     {
         public WalkingState(PlatformerController context) : base(context) { }
 
+        public override void Enter()
+        {
+            context.Camera.JumpBob();
+        }
+
         public override void FixedUpdate()
         {
             context.slideBoost = context.hfsm.Duration > 0.1f;
@@ -160,7 +165,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Exit()
         {
-            context.rb.linearVelocity = new Vector3(momentum.x, Mathf.Min(momentum.y, 0), momentum.z);
+            context.rb.linearVelocity = new Vector3(momentum.x, context.rb.linearVelocity.y, momentum.z);
             context.DesiredHorizontalVelocity = new Vector2(momentum.x, momentum.z);
         }
     }
@@ -171,9 +176,9 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
-            context.cam.FOVPulse(context.slideJumpPulse);
-
             context.collisions.ResetCollisions();
+
+            context.cam.FOVPulse(context.slideJumpPulse);
 
             context.jumpBuffer = 0;
             context.slideBoost = false;
@@ -339,5 +344,16 @@ public class PlatformerController : PlayerManager.PlayerController
         }
 
         rb.linearVelocity = set;
+    }
+
+    private void OnGUI()
+    {
+        hfsm.OnGUI();
+
+        GUILayout.BeginArea(new Rect(10, 150, 800, 200));
+
+        string current = $"Current Velocity: {rb.linearVelocity}\nCurrent Magnitude: {rb.linearVelocity.magnitude}";
+        GUILayout.Label($"<size=15>{current}</size>");
+        GUILayout.EndArea();
     }
 }
