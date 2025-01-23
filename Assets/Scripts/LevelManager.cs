@@ -37,6 +37,8 @@ public class LevelManager : MonoBehaviour
 
     public bool CheckWin()
     {
+        Debug.Log("CHECK");
+
         foreach (var enemy in enemies)
         {
             if (!enemy.HasTriggered) return false;

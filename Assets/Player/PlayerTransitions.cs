@@ -108,10 +108,13 @@ public class PlayerTransitions : PlayerManager.PlayerController
             );
 
             platformerView.localScale    = Vector3.Lerp(Vector3.zero, Vector3.one, e);
-            platformerView.localPosition = Vector3.Lerp(targetCanvasPos, Vector3.zero, t);
+            platformerView.localPosition = Vector3.Lerp(targetCanvasPos, Vector3.zero, e);
 
             yield return null;
         }
+
+        platformerView.transform.localScale    = Vector3.one;
+        platformerView.transform.localPosition = Vector3.zero;
 
         Homunculus = false;
 
@@ -133,19 +136,13 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         hand.gameObject.SetActive(false);
 
-        Transform pos = PlatformerController.Rigidbody.transform;
         Vector3 posVel = Vector3.zero;
 
-        while (Vector3.Distance(pos.position, area.SpawnPosition.position) > 0.1f)
+        while (Vector3.Distance(PlatformerController.Rigidbody.position, area.SpawnPosition.position) > 0.1f)
         {
-            Vector3 newPos = Vector3.SmoothDamp(pos.position, area.SpawnPosition.position, ref posVel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
+            Vector3 newPos = Vector3.SmoothDamp(PlatformerController.Rigidbody.position, area.SpawnPosition.position, ref posVel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
             PlatformerController.Rigidbody.MovePosition(newPos);
             yield return null;
-        }
-
-        if (LevelManager.Instance.CheckWin())
-        {
-            PlayerComplete.Activate();
         }
     }
 
@@ -178,5 +175,12 @@ public class PlayerTransitions : PlayerManager.PlayerController
         platformerView.localScale = Vector3.zero;
         Homunculus = true;
         HomunculusController.Rebound();
+
+        if (LevelManager.Instance.CheckWin())
+        {
+            yield return new WaitForSecondsRealtime(snapPause);
+
+            PlayerComplete.Activate();
+        }
     }
 }

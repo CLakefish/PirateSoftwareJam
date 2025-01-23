@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Area : MonoBehaviour
 {
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private AreaEnd   endPosition;
+    [SerializeField] private DialogueScriptableObject dialogue;
 
     public EnemyController EnemyController { get; private set; }
     public Transform SpawnPosition => spawnPosition;
@@ -21,6 +23,7 @@ public class Area : MonoBehaviour
         EnemyController = controller;
 
         hasTriggered = false;
+        DialogueManager.Instance.DisplayDialogue(dialogue);
         PlayerManager.Instance.Transitions.ToPlayer(this);
     }
 
@@ -28,6 +31,7 @@ public class Area : MonoBehaviour
     {
         if (hasTriggered) return;
         hasTriggered = true;
+        DialogueManager.Instance.ResetText();
         PlayerManager.Instance.Transitions.ToHomunculus(this);
     }
 
