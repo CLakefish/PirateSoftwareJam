@@ -13,6 +13,8 @@ public class HomunculusReticle : MonoBehaviour
     [SerializeField] private CanvasScaler canvas;
     [SerializeField] public RectTransform reticle;
     [SerializeField] private float reticleRotateSpeed;
+    [SerializeField] private Color reticleHighlighted;
+    [SerializeField] private Color reticleObstructed;
 
     [Header("Collisions")]
     [SerializeField] private LayerMask latchableLayer;
@@ -45,7 +47,7 @@ public class HomunculusReticle : MonoBehaviour
     public void Set(GameObject obj)
     {
         LatchObject = obj;
-        ReticlePulse();
+        StartCoroutine(ReticlePulseCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
     }
 
     public void Reticle()
@@ -60,7 +62,7 @@ public class HomunculusReticle : MonoBehaviour
                 continue;
             }
 
-            rect.GetComponent<Image>().color = InRange(pair.Key) ? Color.white : Color.red;
+            rect.GetComponent<Image>().color = InRange(pair.Key) ? reticleHighlighted : reticleObstructed;
 
             Vector3 pos = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position);
             rect.transform.localPosition = new(
@@ -138,40 +140,43 @@ public class HomunculusReticle : MonoBehaviour
         return false;
     }
 
-    public GameObject GetClosestToCenter()
+    public (RectTransform reticle, Renderer obj) GetClosestToCenter()
     {
-        GameObject closest  = null;
-        float      distance = Mathf.Infinity;
+        (RectTransform reticle, Renderer obj) closest = new(null, null);
+        float distance = Mathf.Infinity;
 
         foreach (var pair in reticles)
         {
             float checkDist = Vector2.Distance(pair.Value.localPosition, Vector2.zero);
 
-            if (checkDist < distance && checkDist <= latchDistance)
+            if (checkDist < distance && InRange(pair.Key) && IsVisible(pair.Key))
             {
-                closest  = pair.Key.gameObject;
+                closest = new(pair.Value, pair.Key);
                 distance = checkDist;
             }
         }
 
+        CanLatch = closest.obj != null && closest.reticle != null;
+
         return closest;
     }
 
-    public void ReticlePulse() {
-        StartCoroutine(ReticlePulseCoroutine());
-    }
-
-    private IEnumerator ReticlePulseCoroutine()
+    private IEnumerator ReticlePulseCoroutine(RectTransform rect)
     {
-        GameObject rect = GetClosestToCenter();
-        Image image = reticle.GetComponent<Image>();
+        foreach (var r in reticles)
+        {
+            r.Value.gameObject.SetActive(false);
+        }
+
+        Image image = rect.GetComponent<Image>();
+        image.color = reticlePulseColor;
 
         Vector3 scaleVel = Vector3.zero;
-        float angle = reticlePulseAngle;
+        float angle    = reticlePulseAngle;
         float angleVel = 0;
-        float time = 0;
+        float time     = 0;
 
-        image.color = reticlePulseColor;
+        rect.gameObject.SetActive(true);
         rect.transform.localScale = Vector3.one * reticlePulseSize;
 
         while (angle > Mathf.Epsilon)
@@ -182,7 +187,7 @@ public class HomunculusReticle : MonoBehaviour
                 (pos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
             );
 
-            rect.transform.localScale = Vector3.SmoothDamp(rect.transform.localScale, Vector3.zero, ref scaleVel, reticleSmoothing, Mathf.Infinity, Time.unscaledDeltaTime);
+            rect.transform.localScale        = Vector3.SmoothDamp(rect.transform.localScale, Vector3.zero, ref scaleVel, reticleSmoothing, Mathf.Infinity, Time.unscaledDeltaTime);
             rect.transform.localEulerAngles += new Vector3(0, 0, angle) * Time.unscaledDeltaTime;
             image.color = Color.Lerp(image.color, Color.white, time);
 

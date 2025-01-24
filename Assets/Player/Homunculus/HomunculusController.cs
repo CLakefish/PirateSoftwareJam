@@ -10,10 +10,14 @@ public class HomunculusController : PlayerManager.PlayerController
     {
         public BeginState(HomunculusController context) : base(context) { }
 
+        public override void Update()
+        {
+            context.reticle.Reticle();
+        }
+
         public override void FixedUpdate()
         {
             context.ApplyGravity();
-            context.reticle.Reticle();
         }
 
         public override void Exit()
@@ -37,11 +41,15 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Update()
         {
-            GameObject closest = context.reticle.GetClosestToCenter();
+            context.reticle.Reticle();
 
-            if (closest != null) {
-                if (context.PlayerInputs.Jump) {
-                    context.reticle.Set(closest);
+            if (context.PlayerInputs.Jump)
+            {
+                Renderer closest = context.reticle.GetClosestToCenter().obj;
+
+                if (closest != null)
+                {
+                    context.reticle.Set(closest.gameObject);
                     context.canLatch = true;
                     return;
                 }
@@ -61,7 +69,6 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
-            context.reticle.Reticle();
             context.ApplyGravity();
         }
 
@@ -240,7 +247,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     private void OnGUI()
     {
-        hfsm.OnGUI();
+        //hfsm.OnGUI();
     }
 
     private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;

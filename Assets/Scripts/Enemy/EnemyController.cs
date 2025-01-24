@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class EnemyController : Latchable
 {
     [SerializeField] private Area connected;
     [SerializeField] private GameObject fire;
+    [SerializeField] private UnityEvent onTrigger;
 
     public bool HasTriggered { get; private set; }
 
@@ -32,6 +34,7 @@ public class EnemyController : Latchable
             return;
         }
 
+        onTrigger?.Invoke();
         HasTriggered = true;
         connected.Trigger(this);
     }

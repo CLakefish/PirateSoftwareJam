@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40e4e5d398bd98c4d8260a047eab59c3, type: 3}
-  m_Name: Tutorial1
+  m_Name: Tutorial2
   m_EditorClassIdentifier: 
   dialogues:
-  - TAKE THEIR MIND
-  - WASD TO MOVE. SPACE TO JUMP
-  color: {r: 1, g: 0.924858, b: 0, a: 1}
-  forceInput: 0
+  - PRESS SPACE TO LATCH ONTO AN ENEMY
+  - MAKE THEM BURN
+  color: {r: 1, g: 0.83753324, b: 0, a: 1}
+  forceInput: 1

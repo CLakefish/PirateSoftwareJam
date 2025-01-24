@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tutorial1
   m_EditorClassIdentifier: 
   dialogues:
-  - TAKE THEIR MIND
-  - WASD TO MOVE. SPACE TO JUMP
-  color: {r: 1, g: 0.924858, b: 0, a: 1}
+  - YOU ARE UNABLE TO WALK
+  - PRESS SPACE TO LUNGE
+  color: {r: 1, g: 0.83753324, b: 0, a: 1}
   forceInput: 0

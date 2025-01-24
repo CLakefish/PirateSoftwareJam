@@ -35,7 +35,7 @@ public class PlatformerCollisions : MonoBehaviour
             float hD = value - start;
 
             CapsuleCollider.height += hD;
-            if (GroundCollision) rb.MovePosition(rb.position + Vector3.up * hD / 2.0f);
+            if (GroundCollision) rb.MovePosition(rb.position + Vector3.up * (hD / 2.0f));
         }
     }
 
@@ -49,7 +49,7 @@ public class PlatformerCollisions : MonoBehaviour
     {
         while (Mathf.Abs(Size - endSize) > 0.01f)
         {
-            Size = Mathf.MoveTowards(Size, endSize, Time.fixedDeltaTime * speed);
+            Size = Mathf.MoveTowards(Size, endSize, Time.unscaledDeltaTime * speed);
             yield return new WaitForFixedUpdate();
         }
 
