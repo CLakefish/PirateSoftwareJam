@@ -7,11 +7,6 @@ public class PlatformerController : PlayerManager.PlayerController
     {
         public WalkingState(PlatformerController context) : base(context) { }
 
-        public override void Enter()
-        {
-            context.Camera.JumpBob();
-        }
-
         public override void FixedUpdate()
         {
             context.slideBoost = context.hfsm.Duration > 0.1f;
@@ -182,7 +177,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
             context.jumpBuffer = 0;
             context.slideBoost = false;
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.slideJumpForce, context.rb.linearVelocity.z);
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.slideJumpForce * context.Rigidbody.transform.up.y, context.rb.linearVelocity.z);
         }
 
         public override void Update()
@@ -314,8 +309,6 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.CheckTransitions();
         hfsm.Update();
 
-        collisions.ChangeSize(PlayerInputs.Slide ? crouchSize : standardSize, crouchTime);
-
         jumpBuffer -= Time.deltaTime;
 
         cam.ViewTilt();
@@ -324,6 +317,9 @@ public class PlatformerController : PlayerManager.PlayerController
     private void FixedUpdate()
     {
         collisions.CheckGroundCollisions();
+
+        collisions.ChangeSize(PlayerInputs.Slide ? crouchSize : standardSize, crouchTime);
+
         hfsm.FixedUpdate();
     }
 
@@ -344,6 +340,16 @@ public class PlatformerController : PlayerManager.PlayerController
         }
 
         rb.linearVelocity = set;
+    }
+
+    public void Launch(Vector3 force)
+    {
+        rb.linearVelocity += force;
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, force.y, rb.linearVelocity.z);
+        DesiredHorizontalVelocity += new Vector2(force.x, force.z);
+
+        hfsm.ChangeState(Falling);
+        collisions.ResetCollisions();
     }
 
     private void OnGUI()

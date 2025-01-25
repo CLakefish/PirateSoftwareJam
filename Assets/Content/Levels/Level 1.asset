@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40e4e5d398bd98c4d8260a047eab59c3, type: 3}
-  m_Name: Tutorial3
+  m_Script: {fileID: 11500000, guid: f6bf27468622b3d42a9cafab98befd0c, type: 3}
+  m_Name: Level 1
   m_EditorClassIdentifier: 
-  dialogues:
-  - LUNGE AGAIN AND TAKE ANOTHER
-  - MAKE THEM BURN.
-  color: {r: 1, g: 1, b: 1, a: 0.5254902}
-  forceInput: 1
+  sceneName: Hooks and Latches
+  displayName: Level 1
+  description: Make them burn.

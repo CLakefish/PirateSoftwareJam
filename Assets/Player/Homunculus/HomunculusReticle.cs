@@ -13,6 +13,7 @@ public class HomunculusReticle : MonoBehaviour
     [SerializeField] private CanvasScaler canvas;
     [SerializeField] public RectTransform reticle;
     [SerializeField] private float reticleRotateSpeed;
+    [SerializeField] private float reticleInRangeSize;
     [SerializeField] private Color reticleHighlighted;
     [SerializeField] private Color reticleObstructed;
 
@@ -56,13 +57,16 @@ public class HomunculusReticle : MonoBehaviour
         {
             RectTransform rect = pair.Value;
 
-            if (!IsVisible(pair.Key))
+            if (!IsVisible(pair.Key) || Obstructed(pair.Key))
             {
                 rect.gameObject.SetActive(false);
                 continue;
             }
 
-            rect.GetComponent<Image>().color = InRange(pair.Key) ? reticleHighlighted : reticleObstructed;
+            bool inRange = InRange(pair.Key);
+
+            rect.GetComponent<Image>().color = inRange ? reticleHighlighted : reticleObstructed;
+            rect.transform.localScale = inRange ? Vector3.one * reticleInRangeSize : Vector3.one;
 
             Vector3 pos = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position);
             rect.transform.localPosition = new(
@@ -113,19 +117,14 @@ public class HomunculusReticle : MonoBehaviour
         }*/
     }
 
+    private bool Obstructed(Renderer renderer)
+    {
+        return Physics.Linecast(cam.CamComponent.transform.position, renderer.transform.position, context.GroundLayer);
+    }
+
     private bool InRange(Renderer renderer)
     {
-        if (Physics.Linecast(cam.CamComponent.transform.position, renderer.transform.position, context.GroundLayer))
-        {
-            return false;
-        }
-
-        if (Vector3.Distance(renderer.transform.position, context.Rigidbody.position) >= latchDistance)
-        {
-            return false;
-        }
-
-        return true;
+        return !(Vector3.Distance(renderer.transform.position, context.Rigidbody.position) >= latchDistance);
     }
 
     private bool IsVisible(Renderer renderer)
@@ -149,7 +148,7 @@ public class HomunculusReticle : MonoBehaviour
         {
             float checkDist = Vector2.Distance(pair.Value.localPosition, Vector2.zero);
 
-            if (checkDist < distance && InRange(pair.Key) && IsVisible(pair.Key))
+            if (checkDist < distance && InRange(pair.Key) && IsVisible(pair.Key) && !Obstructed(pair.Key))
             {
                 closest = new(pair.Value, pair.Key);
                 distance = checkDist;

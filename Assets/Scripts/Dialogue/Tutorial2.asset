@@ -15,5 +15,5 @@ MonoBehaviour:
   dialogues:
   - PRESS SPACE TO LATCH ONTO AN ENEMY
   - MAKE THEM BURN
-  color: {r: 1, g: 0.83753324, b: 0, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 0.5254902}
   forceInput: 1

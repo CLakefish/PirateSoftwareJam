@@ -37,6 +37,11 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        canvas.worldCamera = Camera.main;
+    }
+
     public void DisplayDialogue(DialogueScriptableObject text)
     {
         if (text == null) return;

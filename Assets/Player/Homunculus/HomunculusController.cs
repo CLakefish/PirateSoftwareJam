@@ -71,39 +71,39 @@ public class HomunculusController : PlayerManager.PlayerController
         {
             context.ApplyGravity();
         }
-
-        public override void Exit()
-        {
-            context.cam.Recoil(context.recoil);
-            TimeManager.Instance.SetScale(1);
-        }
     }
 
     private class LatchState : State<HomunculusController>
     {
         private Vector3 latchVel;
-        private Vector3 movePos;
+
         private Vector3 camVel;
+        private Vector3 posVel;
 
         private Vector3 startPosition;
         private Vector3 endPosition;
-        private Vector3 posVel;
+        private Vector3 movePos;
 
         public LatchState(HomunculusController context) : base(context) { }
 
         public override void Enter()
         {
-            context.canLatch = false;
-            context.rb.linearVelocity = Vector3.zero;
+            context.canLatch = context.latchFinished = false;
 
-            context.LatchObject.GetComponent<Latchable>().Latch(context);
+            var latchable = context.LatchObject.GetComponent<Latchable>();
+            latchable.Latch(context);
 
-            context.latchFinished     = false;
+            latchVel = context.rb.linearVelocity;
+            movePos  = context.rb.position;
+
             context.rb.linearVelocity = Vector3.zero;
-            movePos = context.rb.position;
 
             context.cam.FOVPulse(context.pulseFOV);
-            context.cam.LockCamera = true;
+            context.cam.LockCamera = latchable.slowTime;
+
+            if (latchable.slowTime) context.cam.Recoil(context.recoil);
+
+            TimeManager.Instance.SetScale(1);
 
             startPosition = context.cam.CamComponent.transform.position - Vector3.up + context.cam.CamComponent.transform.right;
             endPosition   = context.LatchObject.transform.position;
@@ -131,7 +131,7 @@ public class HomunculusController : PlayerManager.PlayerController
         public override void FixedUpdate()
         {
             Vector3 pos = context.LatchObject.transform.position;
-            movePos = Vector3.Lerp(context.rb.position, pos, context.latchLerp.Evaluate(context.hfsm.Duration));
+            movePos     = Vector3.Lerp(context.rb.position, pos, context.latchLerp.Evaluate(context.hfsm.Duration));
 
             Vector3 fwd = context.cam.CamComponent.transform.forward;
             Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
@@ -140,13 +140,18 @@ public class HomunculusController : PlayerManager.PlayerController
                 Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.latchCamInterpolate),
                 Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.latchCamInterpolate));
 
-            float dist = Vector3.Distance(context.rb.position, pos);
-            context.latchFinished = dist < 0.01f;
+            context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
         }
 
         public override void Exit()
         {
-            context.Rebound();
+            bool slowTime = context.LatchObject.GetComponent<Latchable>().slowTime;
+
+            if (!slowTime) {
+                context.Rigidbody.linearVelocity = context.cam.ForwardNoY * latchVel.magnitude;
+            }
+
+            context.Rebound(slowTime);
         }
     }
 
@@ -187,15 +192,13 @@ public class HomunculusController : PlayerManager.PlayerController
     public LayerMask GroundLayer => groundLayer;
     public GameObject LatchObject => reticle.LatchObject;
 
-    private float deathCounter = 0;
-
-
     private BeginState  Begin  { get; set; }
     private LaunchState Launch { get; set; }
     private LatchState  Latch  { get; set; }
     private StateMachine<HomunculusController> hfsm { get; set; }
 
-    private float launchBuffer;
+    private float launchBuffer = 0;
+    private float deathCounter = 0;
     private bool  latchFinished;
     private bool  canLatch;
     private bool  started = false;
@@ -252,7 +255,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;
 
-    public void Rebound()
+    public void Rebound(bool timeSet = true)
     {
         cam.LockCamera = false;
         latchFinished  = true;
@@ -261,8 +264,11 @@ public class HomunculusController : PlayerManager.PlayerController
 
         line.gameObject.SetActive(false);
 
-        TimeManager.Instance.Interpolate = true;
-        TimeManager.Instance.SetScale(latchLaunchTimeSlow);
+        if (timeSet)
+        {
+            TimeManager.Instance.Interpolate = true;
+            TimeManager.Instance.SetScale(latchLaunchTimeSlow);
+        }
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, exitLaunch, rb.linearVelocity.z);
     }

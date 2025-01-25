@@ -6,7 +6,7 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
-    [SerializeField] private string nextScene;
+    [SerializeField] private LevelScriptableObject nextScene;
     private readonly HashSet<EnemyController> enemies = new();
 
     private void Awake()
@@ -32,7 +32,7 @@ public class LevelManager : MonoBehaviour
 
     public void NextScene()
     {
-        SceneManager.LoadScene(nextScene);
+        nextScene.Load();
     }
 
     public bool CheckWin()

@@ -1,16 +1,23 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SelectMenu : SubMenu
 {
     [SerializeField] private Transform levelPanel;
+    [SerializeField] private Transform buttonHolder;
+    [SerializeField] private Button buttonPrefab;
+
+    [Header("Levels")]
+    [SerializeField] private List<LevelScriptableObject> levels;
 
     [Header("Interpolation")]
     [SerializeField] private float smoothingTime;
     [SerializeField] private float startSize;
     [SerializeField] private float endSize;
 
+    private readonly List<Button> buttons = new();
     private Coroutine anim;
 
     private void Awake()
@@ -21,7 +28,25 @@ public class SelectMenu : SubMenu
 
     public override void OnEnter()
     {
-        levelPanel.gameObject.SetActive(true);
+        if (buttons.Count > 0)
+        {
+            foreach (var button in buttons) Destroy(button.gameObject);
+        }
+
+        buttons.Clear();
+
+        for (int i = 0; i < levels.Count; ++i)
+        {
+            var level = levels[i];
+
+            Button button = Instantiate(buttonPrefab, buttonHolder);
+            button.onClick.AddListener(() => { level.Load(); });
+
+            SelectMenuButton s = button.GetComponent<SelectMenuButton>();
+            s.DisplayName        = level.DisplayName;
+            s.DisplayDescription = level.Description;
+        }
+
         RunAnimation(startSize, true);
     }
 

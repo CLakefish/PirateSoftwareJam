@@ -34,14 +34,16 @@ Shader "Hidden/Dither" {
         // Pixelated Dithering pass
         Pass {
             CGPROGRAM
+            #pragma target 3.0
+
             #pragma vertex vp
             #pragma fragment fp
 
-            StructuredBuffer<float4> _ColorPalette;
+            uniform float4 _ColorPalette[32];
             float _NumLevels;
             float _Spread;
 
-            static const int bayer8[8 * 8] = {
+            static const float bayer8[8 * 8] = {
                 0, 32, 8, 40, 2, 34, 10, 42,
                 48, 16, 56, 24, 50, 18, 58, 26,
                 12, 44,  4, 36, 14, 46,  6, 38,
@@ -55,8 +57,8 @@ Shader "Hidden/Dither" {
             fixed4 fp(v2f iV) : SV_Target {
                 float4 col = _MainTex.Sample(point_clamp_sampler, iV.uv);
 
-                uint x = iV.uv.x * _MainTex_TexelSize.z;
-                uint y = iV.uv.y * _MainTex_TexelSize.w;
+                int x = iV.uv.x * _MainTex_TexelSize.z;
+                int y = iV.uv.y * _MainTex_TexelSize.w;
 
                 //float rand = frac(sin(dot(iV.uv, float2(12.9898, 78.233))) * 43758.5453);
                 //col.rgb = lerp(col.rgb, col.rgb * rand, 0.1f);
@@ -80,7 +82,7 @@ Shader "Hidden/Dither" {
                     }
                 }
 
-                return float4(color.rgb, 1);
+                return float4(color.rgb, 255);
             }
             ENDCG
         }

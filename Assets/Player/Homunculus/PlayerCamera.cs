@@ -6,7 +6,6 @@ public class PlayerCamera : MonoBehaviour
     [Header("References")]
     [SerializeField] private Camera cam;
     [SerializeField] private PlayerInputManager input;
-    [SerializeField] private bool resetRotation = false;
 
     [Header("Field of View")]
     [SerializeField] private float fov;
@@ -22,7 +21,9 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float jumpBobReduction;
     [SerializeField] private float jumpBobMaxIntensity;
 
-    [HideInInspector] public bool LockCamera = false;
+    [Header("Locking")]
+    [SerializeField] private bool resetRotation = false;
+    [SerializeField] public bool  LockCamera    = false;
 
     private Coroutine fovPulse;
 
@@ -80,14 +81,14 @@ public class PlayerCamera : MonoBehaviour
 
         if (LockCamera)
         {
-            cam.transform.rotation = Quaternion.Euler(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, currentZ);
+            cam.transform.localRotation = Quaternion.Euler(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, currentZ);
             return;
         }
 
         float x = cam.transform.localEulerAngles.x;
         if (x > 180) x -= 360;
 
-        cam.transform.rotation = Quaternion.Euler(
+        cam.transform.localRotation = Quaternion.Euler(
             new Vector3(
             Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
             cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y, 

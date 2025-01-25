@@ -146,20 +146,26 @@ public class DitherShader : MonoBehaviour
 
         int colorCount = paletteReference.colors.Count;
 
-        colorBuffer = new ComputeBuffer(colorCount, sizeof(float) * 4);
-        Vector4[] colors = new Vector4[colorCount];
+        //colorBuffer = new ComputeBuffer(colorCount, sizeof(float) * 4);
+        //Vector4[] colors = new Vector4[colorCount];
 
-        for (int i = 0; i < colors.Length; ++i)
-        {
-            colors[i] = currentPalette[i];
-        }
+        //for (int i = 0; i < colors.Length; ++i)
+        //{
+        //    colors[i] = currentPalette[i];
+        //}
 
-        colorBuffer.SetData(colors);
+        //colorBuffer.SetData(colors);
         spread = paletteReference.ditherValue;
 
         if (ditherMaterial == null) return;
 
-        ditherMaterial.SetBuffer("_ColorPalette", colorBuffer);
+        //ditherMaterial.SetBuffer("_ColorPalette", colorBuffer);
+        Vector4[] colors = new Vector4[colorCount];
+        for (int i = 0; i < colors.Length; ++i)
+        {
+            colors[i] = currentPalette[i];
+        }
+        ditherMaterial.SetVectorArray("_ColorPalette", colors);
         ditherMaterial.SetFloat("_NumLevels", colorCount);
     }
 

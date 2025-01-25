@@ -18,7 +18,7 @@ public class TimeManager : MonoBehaviour
         Destroy(this);
     }
 
-    public bool Interpolate { get; set; }
+    public bool Interpolate { get; set; } = true;
     public void SetScale(float scale) => Time.timeScale = scale;
 
     public void StopTime()
