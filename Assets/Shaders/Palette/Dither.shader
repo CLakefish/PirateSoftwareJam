@@ -34,7 +34,6 @@ Shader "Hidden/Dither" {
         // Pixelated Dithering pass
         Pass {
             CGPROGRAM
-            #pragma target 3.0
 
             #pragma vertex vp
             #pragma fragment fp

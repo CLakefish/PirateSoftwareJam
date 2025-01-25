@@ -116,16 +116,15 @@ public class DitherShader : MonoBehaviour
 
             if (height < 2) break;
 
-            RenderTexture currentDestination = textures[i] = RenderTexture.GetTemporary(width, height, 0, source.format);
+            RenderTexture currentDestination = textures[i] = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
             Graphics.Blit(currentSource, currentDestination);
             currentSource = currentDestination;
         }
 
-        RenderTexture dither = RenderTexture.GetTemporary(width, height, 0, source.format);
+        RenderTexture dither = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
         Graphics.Blit(currentSource, dither, ditherMaterial, 0);
         Graphics.Blit(dither, destination, ditherMaterial, 1);
         RenderTexture.ReleaseTemporary(dither);
-        RenderTexture.ReleaseTemporary(currentSource);
 
         for (int i = 0; i < downSamples; ++i) RenderTexture.ReleaseTemporary(textures[i]);
     }
@@ -146,20 +145,10 @@ public class DitherShader : MonoBehaviour
 
         int colorCount = paletteReference.colors.Count;
 
-        //colorBuffer = new ComputeBuffer(colorCount, sizeof(float) * 4);
-        //Vector4[] colors = new Vector4[colorCount];
-
-        //for (int i = 0; i < colors.Length; ++i)
-        //{
-        //    colors[i] = currentPalette[i];
-        //}
-
-        //colorBuffer.SetData(colors);
         spread = paletteReference.ditherValue;
 
         if (ditherMaterial == null) return;
 
-        //ditherMaterial.SetBuffer("_ColorPalette", colorBuffer);
         Vector4[] colors = new Vector4[colorCount];
         for (int i = 0; i < colors.Length; ++i)
         {

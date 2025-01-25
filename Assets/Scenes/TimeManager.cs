@@ -9,6 +9,8 @@ public class TimeManager : MonoBehaviour
 
     private void OnEnable()
     {
+        Time.timeScale = 1;
+
         if (Instance == null || Instance == this)
         {
             Instance = this;
