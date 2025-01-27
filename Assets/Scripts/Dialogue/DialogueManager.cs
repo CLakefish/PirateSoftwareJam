@@ -10,9 +10,14 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TMP_Text dialogue;
     [SerializeField] private float dialogueCharacterTime;
     [SerializeField] private float dialogueEndingPause;
+
+    private DialogueScriptableObject currentDialogueObj;
+    private DialogueScriptableObject.Dialogue currentDialogue;
     private Coroutine dialogueCoroutine;
+
     private PlayerManager player;
     private TimeManager timeManager;
+
     private bool cutscenePlaying;
 
     private void Awake()
@@ -28,12 +33,15 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (cutscenePlaying && player.PlayerInputs.Jump)
+        if (cutscenePlaying && currentDialogue != null)
         {
-            if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
-            timeManager.SetScale(1);
-            timeManager.Interpolate = true;
-            ResetText();
+            if (currentDialogue.skippable && (player.PlayerInputs.Jump || player.HomunculusController.Latching))
+            {
+                if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
+                timeManager.SetScale(1);
+                timeManager.Interpolate = true;
+                ResetText();
+            }
         }
     }
 
@@ -62,6 +70,9 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator RunDialogue(DialogueScriptableObject text)
     {
+        currentDialogueObj = text;
+        currentDialogue = currentDialogueObj.Dialogues[0];
+
         if (text.ForceInput)
         {
             timeManager.Interpolate = false;
@@ -70,17 +81,18 @@ public class DialogueManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(dialogueEndingPause);
 
-        dialogue.color = text.Color;
         dialogue.text = "";
 
         for (int i = 0; i < text.Dialogues.Count; i++)
         {
             var d = text.Dialogues[i];
+            currentDialogue = d;
+            dialogue.color = d.color;
             string c = "";
 
-            for (int j = 0; j < d.Length; j++)
+            for (int j = 0; j < d.dialogue.Length; j++)
             {
-                c += d[j];
+                c += d.dialogue[j];
                 dialogue.text = c;
                 yield return new WaitForSecondsRealtime(dialogueCharacterTime);
             }

@@ -295,8 +295,8 @@ MonoBehaviour:
   latchCamInterpolate: 0.5
   latchLaunchGraceTime: 1
   launchBufferTime: 0.3
-  latchLaunchTimeSlow: 0.5
-  recoil: {x: 0, y: 1.25, z: -2.5}
+  latchLaunchTimeSlow: 0.1
+  recoil: {x: 0, y: 0.25, z: 5}
   line: {fileID: 0}
   fireParticles: {fileID: 0}
   lineInterpolation: 0.1
@@ -403,7 +403,7 @@ Camera:
   field of view: 75
   orthographic: 0
   orthographic size: 5
-  m_Depth: 1
+  m_Depth: -3
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295

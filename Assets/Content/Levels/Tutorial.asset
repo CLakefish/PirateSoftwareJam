@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Tutorial
   m_EditorClassIdentifier: 
   sceneName: Tutorial
-  displayName: Level 0
+  displayName: Tutorial
   description: Make them burn.

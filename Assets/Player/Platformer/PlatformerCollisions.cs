@@ -35,7 +35,7 @@ public class PlatformerCollisions : MonoBehaviour
             float hD = value - start;
 
             CapsuleCollider.height += hD;
-            if (GroundCollision) rb.MovePosition(rb.position + rb.transform.up * (hD / 2.0f));
+            if (GroundCollision) rb.MovePosition(rb.position + Vector3.up * (hD / 2.0f));
         }
     }
 
@@ -60,13 +60,13 @@ public class PlatformerCollisions : MonoBehaviour
     {
         float castDist = groundCastDist * (Size / 2.0f);
 
-        if (Physics.SphereCast(rb.transform.position, castDist, -rb.transform.up, out RaycastHit interpolated, groundCastRadius, groundLayers))
+        if (Physics.SphereCast(rb.transform.position, castDist, Vector3.down, out RaycastHit interpolated, groundCastRadius, groundLayers))
         {
             Vector3 dir = (interpolated.point - rb.transform.position).normalized;
 
             if (Physics.Raycast(rb.transform.position, dir, out RaycastHit nonInterpolated, dir.magnitude + 0.01f, groundLayers))
             {
-                if (Vector3.Angle(rb.transform.up, nonInterpolated.normal) >= 80)
+                if (Vector3.Angle(Vector3.up, nonInterpolated.normal) >= 80)
                 {
                     groundNormal = rb.transform.up;
                 }
@@ -76,7 +76,7 @@ public class PlatformerCollisions : MonoBehaviour
                 }
             }
 
-            float angle = Vector3.Angle(rb.transform.up, groundNormal);
+            float angle = Vector3.Angle(Vector3.up, groundNormal);
             groundPoint = interpolated.point;
             groundCollision = true;
             slopeCollision = angle > 0 && angle <= 75;

@@ -51,6 +51,11 @@ public class HomunculusReticle : MonoBehaviour
         StartCoroutine(ReticlePulseCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
     }
 
+    public void ResetReticle()
+    {
+        LatchObject = null;
+    }
+
     public void Reticle()
     {
         foreach (var pair in reticles)
@@ -180,6 +185,8 @@ public class HomunculusReticle : MonoBehaviour
 
         while (angle > Mathf.Epsilon)
         {
+            if (LatchObject == null) yield break;
+
             Vector3 pos = cam.CamComponent.WorldToViewportPoint(LatchObject.transform.position);
             rect.transform.localPosition = new(
                 (pos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),

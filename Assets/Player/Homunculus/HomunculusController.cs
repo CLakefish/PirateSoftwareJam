@@ -22,6 +22,8 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Exit()
         {
+            TimeManager.Instance.SetScale(1);
+
             context.started = true;
             context.rb.linearVelocity = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
             context.cam.FOVPulse(context.jumpPulseFOV);
@@ -84,6 +86,8 @@ public class HomunculusController : PlayerManager.PlayerController
         private Vector3 endPosition;
         private Vector3 movePos;
 
+        private bool slowTime;
+
         public LatchState(HomunculusController context) : base(context) { }
 
         public override void Enter()
@@ -99,9 +103,9 @@ public class HomunculusController : PlayerManager.PlayerController
             context.rb.linearVelocity = Vector3.zero;
 
             context.cam.FOVPulse(context.pulseFOV);
-            context.cam.LockCamera = latchable.slowTime;
+            slowTime = latchable.slowTime;
 
-            if (latchable.slowTime) context.cam.Recoil(context.recoil);
+            context.cam.Recoil(context.recoil);
 
             TimeManager.Instance.SetScale(1);
 
@@ -133,25 +137,28 @@ public class HomunculusController : PlayerManager.PlayerController
             Vector3 pos = context.LatchObject.transform.position;
             movePos     = Vector3.Lerp(context.rb.position, pos, context.latchLerp.Evaluate(context.hfsm.Duration));
 
-            Vector3 fwd = context.cam.CamComponent.transform.forward;
-            Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
-            context.cam.CamComponent.transform.forward = new Vector3(
-                Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.latchCamInterpolate),
-                Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.latchCamInterpolate),
-                Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.latchCamInterpolate));
-
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
+
+            if (slowTime)
+            {
+                Vector3 fwd = context.cam.CamComponent.transform.forward;
+                Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
+                context.cam.CamComponent.transform.forward = new Vector3(
+                    Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.latchCamInterpolate),
+                    Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.latchCamInterpolate),
+                    Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.latchCamInterpolate));
+            }
         }
 
         public override void Exit()
         {
-            bool slowTime = context.LatchObject.GetComponent<Latchable>().slowTime;
-
-            if (!slowTime) {
-                context.Rigidbody.linearVelocity = context.cam.ForwardNoY * latchVel.magnitude;
-            }
-
             context.Rebound(slowTime);
+            context.reticle.ResetReticle();
+
+            if (!slowTime)
+            {
+                context.rb.linearVelocity += context.cam.ForwardNoY * latchVel.magnitude;
+            }
         }
     }
 
@@ -196,6 +203,12 @@ public class HomunculusController : PlayerManager.PlayerController
     private LaunchState Launch { get; set; }
     private LatchState  Latch  { get; set; }
     private StateMachine<HomunculusController> hfsm { get; set; }
+
+    public bool Latching {
+        get {
+            return hfsm.CurrentState == Latch;
+        } 
+    }
 
     private float launchBuffer = 0;
     private float deathCounter = 0;

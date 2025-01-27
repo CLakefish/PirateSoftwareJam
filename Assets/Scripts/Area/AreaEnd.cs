@@ -13,12 +13,12 @@ public class AreaEnd : MonoBehaviour
 
     private void Awake()
     {
-        startPos = transform.position;
+        startPos = transform.localPosition;
     }
 
     private void FixedUpdate()
     {
-        transform.position = startPos + new Vector3(0, Mathf.Sin(Time.time * bobSpeed) * bobIntensity, 0);
+        transform.localPosition = startPos + new Vector3(0, Mathf.Sin(Time.time * bobSpeed) * bobIntensity, 0);
         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + (Time.deltaTime * idleRotateSpeed), 0);
     }
 

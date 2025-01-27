@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -5,6 +6,7 @@ public class Area : MonoBehaviour
 {
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private AreaEnd   endPosition;
+    [SerializeField] private List<Transform> rotated;
     [SerializeField] private DialogueScriptableObject dialogue;
 
     public EnemyController EnemyController { get; private set; }
@@ -13,9 +15,13 @@ public class Area : MonoBehaviour
 
     private bool hasTriggered = false;
 
+    private List<RotationSpace> rotations = new List<RotationSpace>();
+
     private void Awake()
     {
         endPosition.SetParent(this);
+
+        rotations.AddRange(GetComponentsInChildren<RotationSpace>());
     }
 
     public void Trigger(EnemyController controller)
@@ -37,6 +43,8 @@ public class Area : MonoBehaviour
 
     public void SetPosition()
     {
+        foreach (var r in rotations) r.ClearAll();
+        foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;
         PlayerManager.Instance.Transitions.SetPlayer(SpawnPosition);
     }
 

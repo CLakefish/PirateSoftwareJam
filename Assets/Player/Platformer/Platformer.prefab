@@ -263,13 +263,12 @@ MonoBehaviour:
   collisions: {fileID: 2798842559819918785}
   rb: {fileID: 2516541481633871672}
   capsuleCollider: {fileID: 2634461502356889384}
-  moveSpeed: 12
+  moveSpeed: 14
   acceleration: 100
   gravity: 46
   jumpHeight: 15
-  coyoteTime: 0.1
+  coyoteTime: 0.15
   jumpBufferTime: 0.1
-  landRecoil: 0
   slideForce: 20
   slideRotationSpeed: 0.75
   slideAcceleration: 14

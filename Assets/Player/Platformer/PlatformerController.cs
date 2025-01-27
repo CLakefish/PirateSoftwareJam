@@ -23,7 +23,7 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Enter()
         {
             context.jumpBuffer = 0;
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.jumpHeight * context.rb.transform.up.y, context.rb.linearVelocity.z);
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.jumpHeight, context.rb.linearVelocity.z);
         }
 
         public override void Update()
@@ -77,7 +77,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
                 if (context.collisions.SlopeCollision)
                 {
-                    Vector3 dir = (context.MoveDir * context.slideForce) + (context.gravity * Time.fixedDeltaTime * -context.rb.transform.up);
+                    Vector3 dir = (context.MoveDir * context.slideForce) + (context.gravity * Time.fixedDeltaTime * Vector3.down);
                     momentum = Quaternion.FromToRotation(context.rb.transform.up, context.collisions.GroundNormal) * dir;
                 }
                 else
@@ -109,14 +109,14 @@ public class PlatformerController : PlayerManager.PlayerController
             if (context.collisions.SlopeCollision)
             {
                 // Get the gravity, angle, and current momentumDirection
-                Vector3 slopeGravity = Vector3.ProjectOnPlane(-context.rb.transform.up * context.gravity, context.collisions.GroundNormal);
+                Vector3 slopeGravity = Vector3.ProjectOnPlane(Vector3.down * context.gravity, context.collisions.GroundNormal);
                 float normalizedAngle = Vector3.Angle(context.rb.transform.up, context.collisions.GroundNormal) / 90.0f;
                 Vector3 adjusted = slopeGravity * (1.0f + normalizedAngle);
                 desiredVelocity = momentum + adjusted;
             }
             else
             {
-                desiredVelocity = new Vector3(context.MoveDir.x, momentum.y, context.MoveDir.z);
+                desiredVelocity = context.MoveDir;
             }
 
             // Move towards gathered velocity (y is seperated so I can tinker with it more, it can be simplified ofc)
@@ -129,8 +129,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
             if (context.MoveDir != Vector3.zero)
             {
-                Vector3 desiredDirection = Vector3.ProjectOnPlane(context.MoveDir.normalized, context.collisions.GroundNormal).normalized;
-                Vector3 slopeDirection   = Vector3.ProjectOnPlane(-context.rb.transform.up, context.collisions.GroundNormal).normalized;
+                Vector3 desiredDirection = Vector3.ProjectOnPlane(context.MoveDir, context.collisions.GroundNormal).normalized;
+                Vector3 slopeDirection = Vector3.ProjectOnPlane(Vector3.down, context.collisions.GroundNormal).normalized;
 
                 if (Vector3.Dot(desiredDirection, slopeDirection) >= context.slideDotMin)
                 {
@@ -150,18 +150,17 @@ public class PlatformerController : PlayerManager.PlayerController
                 }
                 else
                 {
-                    momentum.y = context.rb.linearVelocity.y;
+                    momentum = new Vector3(momentum.x, context.rb.linearVelocity.y, momentum.z);
                 }
             }
 
             context.rb.linearVelocity = momentum;
-            context.DesiredHorizontalVelocity = new Vector2(momentum.x, momentum.z);
         }
 
         public override void Exit()
         {
-            context.rb.linearVelocity = new Vector3(momentum.x, context.rb.linearVelocity.y, momentum.z);
-            context.DesiredHorizontalVelocity = new Vector2(momentum.x, momentum.z);
+            context.rb.linearVelocity = momentum;
+            context.DesiredHorizontalVelocity = new Vector3(momentum.x, 0, momentum.z);
         }
     }
 
@@ -177,7 +176,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
             context.jumpBuffer = 0;
             context.slideBoost = false;
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.slideJumpForce * context.Rigidbody.transform.up.y, context.rb.linearVelocity.z);
+
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.slideJumpForce, context.rb.linearVelocity.z);
         }
 
         public override void Update()
@@ -212,7 +212,6 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float jumpHeight;
     [SerializeField] private float coyoteTime;
     [SerializeField] private float jumpBufferTime;
-    [SerializeField] private float landRecoil;
 
     [Header("Sliding Parameters")]
     [SerializeField] private float slideForce;
@@ -233,30 +232,35 @@ public class PlatformerController : PlayerManager.PlayerController
     private readonly float slideDotMin = -0.25f;
     private readonly float jumpGraceTime = 0.1f;
 
-    public Rigidbody          Rigidbody => rb;
-    public PlayerCamera       Camera    => cam;
+    public Rigidbody Rigidbody => rb;
+    public PlayerCamera Camera => cam;
 
-    private WalkingState Walking   { get; set; }
-    private JumpingState Jumping   { get; set; }
-    private FallingState Falling   { get; set; }
-    private SlidingState Sliding   { get; set; }
+    private WalkingState Walking { get; set; }
+    private JumpingState Jumping { get; set; }
+    private FallingState Falling { get; set; }
+    private SlidingState Sliding { get; set; }
     private SlideJumping SlideJump { get; set; }
 
     private StateMachine<PlatformerController> hfsm { get; set; }
 
-    private Vector3 HorizontalVelocity {
-        get {
+    private Vector3 HorizontalVelocity
+    {
+        get
+        {
             return new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         }
     }
 
-    private Vector3 MoveDir {
-        get {
-            return (cam.ForwardNoY * PlayerInputs.Input.normalized.y + cam.RightNoY * PlayerInputs.Input.normalized.x).normalized;
+    private Vector3 MoveDir
+    {
+        get
+        {
+            Vector3 dir = (cam.ForwardNoY * PlayerInputs.Input.normalized.y + cam.RightNoY * PlayerInputs.Input.normalized.x).normalized;
+            return dir;
         }
     }
 
-    private Vector2 DesiredHorizontalVelocity;
+    private Vector3 DesiredHorizontalVelocity;
     private float jumpBuffer;
     private bool slideBoost = true;
 
@@ -277,10 +281,10 @@ public class PlatformerController : PlayerManager.PlayerController
 
             new(Falling, Jumping,   () => PlayerInputs.Jump && hfsm.PreviousState == Walking && hfsm.Duration <= coyoteTime),
             new(Falling, SlideJump, () => PlayerInputs.Jump && hfsm.PreviousState == Sliding && hfsm.Duration <= coyoteTime),
-            new(Falling, Walking,   () => collisions.GroundCollision && !PlayerInputs.Slide),
-            new(Falling, Sliding,   () => collisions.GroundCollision && PlayerInputs.Slide),
+            new(Falling, Walking,   () => collisions.GroundCollision && !PlayerInputs.Slide && hfsm.Duration >= 0.1f),
+            new(Falling, Sliding,   () => collisions.GroundCollision && PlayerInputs.Slide  && hfsm.Duration >= 0.1f),
 
-            new(Jumping, Falling,   () => rb.linearVelocity.y < 0 && hfsm.Duration > jumpGraceTime),
+            new(Jumping, Falling,   () => hfsm.Duration > jumpGraceTime),
 
             // Sliding transitions   
             new(Sliding, SlideJump, () => (PlayerInputs.Jump || jumpBuffer > 0) && collisions.GroundCollision),
@@ -288,9 +292,9 @@ public class PlatformerController : PlayerManager.PlayerController
             new(Sliding, Walking,   () => !PlayerInputs.Slide && collisions.GroundCollision),
 
             // Slide jump transitions
-            new(SlideJump, Falling, () => ((!PlayerInputs.Slide) || (rb.linearVelocity.y < 0)) && hfsm.Duration > jumpGraceTime),
+            new(SlideJump, Falling, () => !PlayerInputs.Slide || hfsm.Duration > jumpGraceTime),
             new(SlideJump, Walking, () => !PlayerInputs.Slide && collisions.GroundCollision && hfsm.Duration >= jumpGraceTime),
-            new(SlideJump, Sliding, () => PlayerInputs.Slide  && collisions.GroundCollision && hfsm.Duration >= jumpGraceTime),
+            new(SlideJump, Sliding, () => PlayerInputs.Slide && collisions.GroundCollision && hfsm.Duration >= jumpGraceTime),
         });
 
         hfsm.SetStartState(Falling);
@@ -300,6 +304,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private void OnDisable()
     {
+        DesiredHorizontalVelocity = Vector3.zero;
         rb.linearVelocity = Vector3.zero;
         capsuleCollider.enabled = false;
     }
@@ -309,7 +314,7 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.CheckTransitions();
         hfsm.Update();
 
-        jumpBuffer -= Time.deltaTime;
+        jumpBuffer   -= Time.deltaTime;
 
         cam.ViewTilt();
     }
@@ -323,20 +328,26 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.FixedUpdate();
     }
 
-    private void Gravity() => rb.linearVelocity -= Time.deltaTime * gravity * rb.transform.up;
+    private void Gravity()
+    {
+        rb.linearVelocity -= Time.deltaTime * gravity * rb.transform.up;
+    }
 
     private void Move(bool keepMomentum)
     {
-        float speed = keepMomentum ? Mathf.Max(moveSpeed, HorizontalVelocity.magnitude) : moveSpeed;
+        float speed = keepMomentum ? Mathf.Max(moveSpeed, new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude) : moveSpeed;
         float accel = acceleration;
 
-        DesiredHorizontalVelocity = Vector2.MoveTowards(DesiredHorizontalVelocity, new Vector2(MoveDir.x, MoveDir.z) * speed, Time.deltaTime * accel);
+        DesiredHorizontalVelocity = Vector3.MoveTowards(DesiredHorizontalVelocity, MoveDir * speed, Time.deltaTime * accel);
 
-        Vector3 set = new(DesiredHorizontalVelocity.x, rb.linearVelocity.y, DesiredHorizontalVelocity.y);
+        Vector3 set = new(DesiredHorizontalVelocity.x, rb.linearVelocity.y, DesiredHorizontalVelocity.z);
 
-        if (hfsm.CurrentState == Walking && collisions.SlopeCollision) {
+        // Add in better momentum
+
+        if (hfsm.CurrentState == Walking && collisions.SlopeCollision)
+        {
             set.y = 0;
-            set = Quaternion.FromToRotation(rb.transform.up, collisions.GroundNormal) * set;
+            set = Quaternion.FromToRotation(Vector3.up, collisions.GroundNormal) * set;
         }
 
         rb.linearVelocity = set;
@@ -344,23 +355,21 @@ public class PlatformerController : PlayerManager.PlayerController
 
     public void Launch(Vector3 force)
     {
-        rb.linearVelocity += force;
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, force.y, rb.linearVelocity.z);
-        DesiredHorizontalVelocity += new Vector2(force.x, force.z);
-
         hfsm.ChangeState(Falling);
         collisions.ResetCollisions();
+
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x + force.x, force.y, rb.linearVelocity.z + force.z);
+        DesiredHorizontalVelocity += new Vector3(force.x, 0, force.z);
     }
 
     private void OnGUI()
     {
-        /*
         hfsm.OnGUI();
 
         GUILayout.BeginArea(new Rect(10, 150, 800, 200));
 
         string current = $"Current Velocity: {rb.linearVelocity}\nCurrent Magnitude: {rb.linearVelocity.magnitude}";
         GUILayout.Label($"<size=15>{current}</size>");
-        GUILayout.EndArea();*/
+        GUILayout.EndArea();
     }
 }

@@ -4,11 +4,17 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Dialogue")]
 public class DialogueScriptableObject : ScriptableObject
 {
-    [SerializeField] private List<string> dialogues = new();
-    [SerializeField] private Color color;
+    [System.Serializable]
+    public class Dialogue {
+        public string dialogue;
+        public AudioClip audio;
+        public Color color;
+        public bool skippable = true;
+    }
+
+    [SerializeField] private List<Dialogue> dialogues = new();
     [SerializeField] private bool forceInput;
 
-    public List<string> Dialogues => dialogues;
-    public Color Color => color;
-    public bool ForceInput => forceInput;
+    public List<Dialogue> Dialogues => dialogues;
+    public bool           ForceInput => forceInput;
 }
