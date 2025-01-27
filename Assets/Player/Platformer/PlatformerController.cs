@@ -361,4 +361,13 @@ public class PlatformerController : PlayerManager.PlayerController
         rb.linearVelocity = new Vector3(rb.linearVelocity.x + force.x, force.y, rb.linearVelocity.z + force.z);
         DesiredHorizontalVelocity += new Vector3(force.x, 0, force.z);
     }
+
+    public void ResetVelocity()
+    {
+        hfsm.ChangeState(Falling);
+        collisions.ResetCollisions();
+
+        DesiredHorizontalVelocity = MoveDir.normalized * moveSpeed;
+        rb.linearVelocity = DesiredHorizontalVelocity;
+    }
 }

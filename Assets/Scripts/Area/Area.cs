@@ -14,6 +14,7 @@ public class Area : MonoBehaviour
     public AreaEnd EndPosition => endPosition;
 
     private bool hasTriggered = false;
+    private PlayerManager playerManager;
 
 
     private readonly List<RotationSpace> rotations = new List<RotationSpace>();
@@ -27,6 +28,11 @@ public class Area : MonoBehaviour
         TurnOff();
     }
 
+    private void Start()
+    {
+        playerManager = PlayerManager.Instance;
+    }
+
     public void Trigger(EnemyController controller)
     {
         foreach (var r in rotated)
@@ -38,7 +44,7 @@ public class Area : MonoBehaviour
 
         hasTriggered = false;
         DialogueManager.Instance.DisplayDialogue(dialogue);
-        PlayerManager.Instance.Transitions.ToPlayer(this);
+        playerManager.Transitions.ToPlayer(this);
     }
 
     public void EndTrigger()
@@ -46,14 +52,16 @@ public class Area : MonoBehaviour
         if (hasTriggered) return;
         hasTriggered = true;
         DialogueManager.Instance.ResetText();
-        PlayerManager.Instance.Transitions.ToHomunculus(this);
+        playerManager.Transitions.ToHomunculus(this);
     }
 
     public void SetPosition()
     {
         foreach (var r in rotations) r.ClearAll();
         foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;
-        PlayerManager.Instance.Transitions.SetPlayer(SpawnPosition);
+        playerManager.PlatformerController.Camera.ResetRotation();
+        playerManager.PlatformerController.ResetVelocity();
+        playerManager.Transitions.SetPlayer(SpawnPosition);
     }
 
     public void TurnOff()

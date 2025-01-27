@@ -265,7 +265,7 @@ MonoBehaviour:
   gravity: 40
   launchForce: 25
   jumpPulseFOV: 5
-  deathTime: 1
+  deathBounce: 10
   drag: 40
   exitLaunch: 22.5
   latchLerp:
@@ -320,17 +320,6 @@ MonoBehaviour:
   pulseEndInterpolate: 0.35
   viewTiltAngle: 0
   viewRotationSmoothing: 0
-  jumpBob:
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    speed: 1
-    loop: 0
-  jumpBobReduction: 0
-  jumpBobMaxIntensity: 0
   resetRotation: 0
   LockCamera: 0
 --- !u!1 &8122452909308010580

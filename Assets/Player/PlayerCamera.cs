@@ -27,6 +27,7 @@ public class PlayerCamera : MonoBehaviour
 
     private Vector2 viewTilt;
     private float cameraVel;
+    private bool resettingRotation;
 
     public bool MouseLock {
         set {
@@ -68,6 +69,12 @@ public class PlayerCamera : MonoBehaviour
 
     private void Update()
     {
+        if (resettingRotation)
+        {
+            resettingRotation = false;
+            return;
+        }
+
         float currentZ = Mathf.SmoothDampAngle(cam.transform.localEulerAngles.z, viewTilt.x, ref cameraVel, viewRotationSmoothing);
         currentZ += recoil.z;
 
@@ -97,6 +104,18 @@ public class PlayerCamera : MonoBehaviour
         Vector3 rand = Random.insideUnitSphere;
         Vector3 rec = new(recoilAmount.x, rand.y * recoilAmount.y, recoilAmount.z);
         recoil += rec;
+    }
+
+    public void ResetRotation()
+    {
+        resettingRotation = true;
+        cam.transform.localEulerAngles = Vector3.zero;
+    }
+
+    public void SetForward(Vector3 fwd)
+    {
+        resettingRotation = true;
+        cam.transform.forward = fwd;
     }
 
     public void FOVPulse(float fovAddition)

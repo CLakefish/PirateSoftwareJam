@@ -62,6 +62,8 @@ public class HomunculusReticle : MonoBehaviour
         {
             RectTransform rect = pair.Value;
 
+            if (pair.Key == null) continue;
+
             if (!IsVisible(pair.Key) || Obstructed(pair.Key))
             {
                 rect.gameObject.SetActive(false);

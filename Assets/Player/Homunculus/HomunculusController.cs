@@ -176,7 +176,7 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float gravity;
     [SerializeField] private float launchForce;
     [SerializeField] private float jumpPulseFOV;
-    [SerializeField] private float deathTime;
+    [SerializeField] private float deathBounce;
     [SerializeField] private float drag;
 
     [Header("Latching")]
@@ -247,16 +247,22 @@ public class HomunculusController : PlayerManager.PlayerController
     private void FixedUpdate()
     {
         if (started && hfsm.Duration > 0.1f && hfsm.CurrentState != Latch) {
-            if (Physics.SphereCast(rb.transform.position, groundCheckRadius, Vector3.down, out RaycastHit _, groundCheckDistance, groundLayer)) {
-                deathCounter += Time.deltaTime;
-                rb.linearVelocity = Vector3.MoveTowards(rb.linearVelocity, Vector3.zero, Time.deltaTime * drag);
-            }
-            else {
-                deathCounter = 0;
+
+            switch (deathCounter)
+            {
+                default:
+                    if (Physics.SphereCast(rb.transform.position, groundCheckRadius, Vector3.down, out RaycastHit _, groundCheckDistance, groundLayer))
+                    {
+                        deathCounter += 1;
+                        rb.linearVelocity = new Vector3(rb.linearVelocity.x, deathBounce, rb.linearVelocity.z);
+                    }
+                    break;
+
+                case 2:
+                    PlayerRespawn.Respawn();
+                    break;
             }
         }
-
-        if (deathCounter >= deathTime) PlayerRespawn.Respawn();
 
         hfsm.FixedUpdate();
     }
