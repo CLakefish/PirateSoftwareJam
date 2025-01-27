@@ -2878,7 +2878,7 @@ MonoBehaviour:
   - {r: 0.9490196, g: 0.6862745, b: 0.41960785, a: 1}
   - {r: 0.92941177, g: 0.78431374, b: 0.5372549, a: 1}
   ditherer: {fileID: 4800000, guid: 1cf4c00ded6753140b738840e3692db0, type: 3}
-  spread: 0.65
+  spread: 0.425
   downSamples: 0
 --- !u!1001 &5790529808253847380
 PrefabInstance:

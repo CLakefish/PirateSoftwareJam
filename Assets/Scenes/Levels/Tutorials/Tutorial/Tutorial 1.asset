@@ -16,7 +16,9 @@ MonoBehaviour:
   - dialogue: YOU ARE UNABLE TO WALK
     audio: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
+    skippable: 1
   - dialogue: PRESS SPACE TO LUNGE
     audio: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
-  forceInput: 0
+    skippable: 1
+  forceInput: 1

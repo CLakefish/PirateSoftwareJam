@@ -20,6 +20,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private float snapPause;
     [SerializeField] private float snapFOVPulse;
 
+    private GameObject homunculusPlatforming;
     private Coroutine anim;
 
     public bool Homunculus {
@@ -27,6 +28,11 @@ public class PlayerTransitions : PlayerManager.PlayerController
             HomunculusController.gameObject.SetActive(value);
             PlatformerController.gameObject.SetActive(!value);
         }
+    }
+
+    private void Start()
+    {
+        homunculusPlatforming = GameObject.FindGameObjectWithTag("HomunculusPlatforming");
     }
 
     public void SetPlayer(Transform pos)
@@ -113,6 +119,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
             yield return null;
         }
 
+        if (homunculusPlatforming != null) homunculusPlatforming.SetActive(false);
+
         platformerView.transform.localScale    = Vector3.one;
         platformerView.transform.localPosition = Vector3.zero;
 
@@ -171,6 +179,9 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
             yield return null;
         }
+
+        if (homunculusPlatforming != null) homunculusPlatforming.SetActive(true);
+        area.TurnOff();
 
         platformerView.localScale = Vector3.zero;
         Homunculus = true;

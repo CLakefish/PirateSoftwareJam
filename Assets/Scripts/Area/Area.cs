@@ -15,17 +15,25 @@ public class Area : MonoBehaviour
 
     private bool hasTriggered = false;
 
-    private List<RotationSpace> rotations = new List<RotationSpace>();
+
+    private readonly List<RotationSpace> rotations = new List<RotationSpace>();
 
     private void Awake()
     {
         endPosition.SetParent(this);
 
         rotations.AddRange(GetComponentsInChildren<RotationSpace>());
+
+        TurnOff();
     }
 
     public void Trigger(EnemyController controller)
     {
+        foreach (var r in rotated)
+        {
+            r.gameObject.SetActive(true);
+        }
+
         EnemyController = controller;
 
         hasTriggered = false;
@@ -46,6 +54,14 @@ public class Area : MonoBehaviour
         foreach (var r in rotations) r.ClearAll();
         foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;
         PlayerManager.Instance.Transitions.SetPlayer(SpawnPosition);
+    }
+
+    public void TurnOff()
+    {
+        foreach (var r in rotated)
+        {
+            r.gameObject.SetActive(false);
+        }
     }
 
     private void OnDrawGizmos()

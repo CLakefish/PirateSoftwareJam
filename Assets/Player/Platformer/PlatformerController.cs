@@ -361,15 +361,4 @@ public class PlatformerController : PlayerManager.PlayerController
         rb.linearVelocity = new Vector3(rb.linearVelocity.x + force.x, force.y, rb.linearVelocity.z + force.z);
         DesiredHorizontalVelocity += new Vector3(force.x, 0, force.z);
     }
-
-    private void OnGUI()
-    {
-        hfsm.OnGUI();
-
-        GUILayout.BeginArea(new Rect(10, 150, 800, 200));
-
-        string current = $"Current Velocity: {rb.linearVelocity}\nCurrent Magnitude: {rb.linearVelocity.magnitude}";
-        GUILayout.Label($"<size=15>{current}</size>");
-        GUILayout.EndArea();
-    }
 }

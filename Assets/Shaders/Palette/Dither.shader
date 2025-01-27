@@ -38,7 +38,9 @@ Shader "Hidden/Dither" {
             #pragma vertex vp
             #pragma fragment fp
 
-            uniform float4 _ColorPalette[32];
+            #define MAX_LEVELS 22
+
+            uniform float4 _ColorPalette[22];
             float _NumLevels;
             float _Spread;
 
@@ -56,23 +58,24 @@ Shader "Hidden/Dither" {
             fixed4 fp(v2f iV) : SV_Target {
                 float4 col = _MainTex.Sample(point_clamp_sampler, iV.uv);
 
-                int x = iV.uv.x * _MainTex_TexelSize.z;
-                int y = iV.uv.y * _MainTex_TexelSize.w;
+                uint x = iV.uv.x * _MainTex_TexelSize.z;
+                uint y = iV.uv.y * _MainTex_TexelSize.w;
 
-                //float rand = frac(sin(dot(iV.uv, float2(12.9898, 78.233))) * 43758.5453);
-                //col.rgb = lerp(col.rgb, col.rgb * rand, 0.1f);
-
-                // woooooooo magic
                 float4 output = col + _Spread * (float(bayer8[(x % 8) + (y % 8) * 8]) * (1.0f / 64.0f) - 0.5f);
 
                 float4 sampled = output;
                 float4 color = float4(0, 0, 0, 1);
-                float dist = 1000;
+                half dist = 1000;
 
-                for (int i = 0; i < _NumLevels; ++i)
+                [unroll]
+                for (int i = 0; i < MAX_LEVELS; ++i)
                 {
+                    if (i >= _NumLevels) break;
+
                     float4 paletteColor = _ColorPalette[i];
-                    float testDist = distance(sampled.rgb, paletteColor.rgb);
+
+                    half3 diff = (half3)sampled.rgb - (half3)paletteColor.rgb;
+                    half testDist = dot(diff, diff);
 
                     if (testDist < dist)
                     {
@@ -81,7 +84,7 @@ Shader "Hidden/Dither" {
                     }
                 }
 
-                return float4(color.rgb, 255);
+                return float4(color.rgb, 1);
             }
             ENDCG
         }
