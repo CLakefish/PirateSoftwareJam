@@ -6,6 +6,8 @@ public class AreaRespawn : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!other.CompareTag("Player")) return;
+
         parent.SetPosition();
     }
 }

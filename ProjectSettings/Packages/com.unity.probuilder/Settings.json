@@ -139,7 +139,7 @@
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "key": "ShapeBuilder.LastSize.Cube",
-                "value": "{\"m_Value\":{\"x\":24.281368255615236,\"y\":14.685626983642579,\"z\":29.995452880859376}}"
+                "value": "{\"m_Value\":{\"x\":44.84423828125,\"y\":174.4133758544922,\"z\":146.05519104003907}}"
             },
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -154,7 +154,7 @@
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "key": "ShapeBuilder.LastSize.Cylinder",
-                "value": "{\"m_Value\":{\"x\":-10.48223876953125,\"y\":2.6950416564941408,\"z\":-4.471405029296875}}"
+                "value": "{\"m_Value\":{\"x\":8.6141996383667,\"y\":23.810657501220704,\"z\":-11.054207801818848}}"
             },
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -169,7 +169,7 @@
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "key": "ShapeBuilder.LastSize.Pipe",
-                "value": "{\"m_Value\":{\"x\":48.5531005859375,\"y\":42.18376922607422,\"z\":-183.0362548828125}}"
+                "value": "{\"m_Value\":{\"x\":49.18257141113281,\"y\":68.3860855102539,\"z\":-173.07809448242188}}"
             },
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -324,7 +324,7 @@
             {
                 "type": "System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "BevelEdges.size",
-                "value": "{\"m_Value\":0.25999999046325686}"
+                "value": "{\"m_Value\":1.0}"
             }
         ]
     }

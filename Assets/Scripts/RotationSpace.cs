@@ -9,7 +9,13 @@ public class RotationSpace : MonoBehaviour
     [SerializeField] private float xAngle;
     [SerializeField] private float rotationSpeed;
     [SerializeField] private AnimationCurve rotationCurve;
+    private Quaternion startRotation;
     private readonly Dictionary<Collider, Coroutine> spinning = new();
+
+    private void Awake()
+    {
+        startRotation = parent.transform.localRotation;
+    }
 
     public void ClearAll()
     {
@@ -18,15 +24,14 @@ public class RotationSpace : MonoBehaviour
             if (s.Value != null) StopCoroutine(s.Value);
         }
 
-        parent.transform.localEulerAngles = Vector3.zero;
+        parent.transform.localRotation = startRotation;
 
         spinning.Clear();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (spinning.ContainsKey(other))
-        {
+        if (spinning.ContainsKey(other)) {
             return;
         }
 
@@ -39,7 +44,7 @@ public class RotationSpace : MonoBehaviour
     private IEnumerator Rotate(Collider other)
     {
         Quaternion start = parent.transform.localRotation;
-        Quaternion end   = Quaternion.Euler(new Vector3(xAngle, 0, zAngle));
+        Quaternion end   = Quaternion.Euler(new Vector3(xAngle, startRotation.eulerAngles.y, zAngle));
 
         float elapsed = 0f;
         while (elapsed < 1f)
