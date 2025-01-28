@@ -33,9 +33,9 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (cutscenePlaying && currentDialogue != null)
+        if (cutscenePlaying && currentDialogue != null && currentDialogue.skippable)
         {
-            if (currentDialogue.skippable && (player.PlayerInputs.Jump || player.HomunculusController.Latching))
+            if (player.PlayerInputs.Jump || player.HomunculusController.Latching)
             {
                 if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
                 timeManager.SetScale(1);

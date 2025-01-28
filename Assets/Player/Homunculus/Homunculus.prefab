@@ -266,7 +266,7 @@ MonoBehaviour:
   launchForce: 25
   jumpPulseFOV: 5
   deathBounce: 10
-  drag: 40
+  bounceTimeSlow: 0.25
   exitLaunch: 22.5
   latchLerp:
     serializedVersion: 2

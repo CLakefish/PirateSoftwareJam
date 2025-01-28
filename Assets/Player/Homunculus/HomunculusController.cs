@@ -32,7 +32,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     private class LaunchState : State<HomunculusController>
     {
-        bool hasLaunched = false;
+        private bool hasLaunched = false;
 
         public LaunchState(HomunculusController context) : base(context) { }
 
@@ -45,6 +45,18 @@ public class HomunculusController : PlayerManager.PlayerController
         {
             context.reticle.Reticle();
 
+            Debug.Log(hasLaunched);
+
+            if ((context.PlayerInputs.Jump || context.launchBuffer > 0) && !hasLaunched)
+            {
+                hasLaunched = true;
+                context.launchBuffer = 0;
+
+                context.cam.FOVPulse(context.jumpPulseFOV);
+                Vector3 dir = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
+                context.rb.linearVelocity = dir;
+            }
+
             if (context.PlayerInputs.Jump)
             {
                 Renderer closest = context.reticle.GetClosestToCenter().obj;
@@ -53,17 +65,6 @@ public class HomunculusController : PlayerManager.PlayerController
                 {
                     context.reticle.Set(closest.gameObject);
                     context.canLatch = true;
-                    return;
-                }
-            }
-
-            if ((context.PlayerInputs.Jump || context.launchBuffer > 0) && !hasLaunched) {
-                hasLaunched          = true;
-                context.launchBuffer = 0;
-
-                if (context.hfsm.Duration <= context.latchLaunchGraceTime && context.hfsm.PreviousState == context.Latch) {
-                    context.cam.FOVPulse(context.jumpPulseFOV);
-                    context.rb.linearVelocity = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
                     return;
                 }
             }
@@ -177,7 +178,7 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float launchForce;
     [SerializeField] private float jumpPulseFOV;
     [SerializeField] private float deathBounce;
-    [SerializeField] private float drag;
+    [SerializeField] private float bounceTimeSlow;
 
     [Header("Latching")]
     [SerializeField] private float exitLaunch;
@@ -250,16 +251,18 @@ public class HomunculusController : PlayerManager.PlayerController
 
             switch (deathCounter)
             {
+                case 2:
+                    rb.linearVelocity = Vector3.zero;
+                    PlayerRespawn.Respawn();
+                    return;
+
                 default:
                     if (Physics.SphereCast(rb.transform.position, groundCheckRadius, Vector3.down, out RaycastHit _, groundCheckDistance, groundLayer))
                     {
                         deathCounter += 1;
                         rb.linearVelocity = new Vector3(rb.linearVelocity.x, deathBounce, rb.linearVelocity.z);
+                        TimeManager.Instance.SetScale(bounceTimeSlow);
                     }
-                    break;
-
-                case 2:
-                    PlayerRespawn.Respawn();
                     break;
             }
         }
@@ -269,7 +272,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     private void OnGUI()
     {
-        //hfsm.OnGUI();
+        hfsm.OnGUI();
     }
 
     private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;

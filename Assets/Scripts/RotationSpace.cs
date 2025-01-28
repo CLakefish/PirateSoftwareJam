@@ -32,6 +32,7 @@ public class RotationSpace : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (spinning.ContainsKey(other)) {
+            
             return;
         }
 
