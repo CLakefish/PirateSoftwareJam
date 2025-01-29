@@ -12305,6 +12305,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
+      propertyPath: pullOutCurve.m_Curve.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
+      propertyPath: pullOutCurve.m_Curve.Array.data[1].time
+      value: 0.70205724
+      objectReference: {fileID: 0}
+    - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
+      propertyPath: pullOutCurve.m_Curve.Array.data[2].time
+      value: 0.9992008
+      objectReference: {fileID: 0}
+    - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
+      propertyPath: pullOutCurve.m_Curve.Array.data[1].value
+      value: 0.8981172
+      objectReference: {fileID: 0}
+    - target: {fileID: 129908289455956793, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
+      propertyPath: pullOutCurve.m_Curve.Array.data[2].value
+      value: 1.0008163
+      objectReference: {fileID: 0}
     - target: {fileID: 1900236576962390225, guid: 49955be2dfb133146814b74ed47969b0, type: 3}
       propertyPath: m_Name
       value: Player

@@ -273,7 +273,7 @@ MonoBehaviour:
   slideRotationSpeed: 0.75
   slideAcceleration: 14
   slideSlopeMomentumGain: 12
-  slidePulse: 7.5
+  slidePulse: 10
   slideJumpForce: 13
   slideJumpPulse: 5
   crouchSize: 1
@@ -298,17 +298,6 @@ MonoBehaviour:
   pulseEndInterpolate: 0.4
   viewTiltAngle: 2.5
   viewRotationSmoothing: 0.2
-  jumpBob:
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    speed: 1
-    loop: 0
-  jumpBobReduction: 0
-  jumpBobMaxIntensity: 0
   resetRotation: 1
   LockCamera: 0
 --- !u!114 &2798842559819918785

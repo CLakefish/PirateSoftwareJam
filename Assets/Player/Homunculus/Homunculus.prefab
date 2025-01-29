@@ -266,8 +266,8 @@ MonoBehaviour:
   launchForce: 25
   jumpPulseFOV: 5
   deathBounce: 10
-  bounceTimeSlow: 0.25
-  exitLaunch: 22.5
+  bounceTimeSlow: 0
+  exitLaunch: 25
   latchLerp:
     serializedVersion: 2
     m_Curve:
