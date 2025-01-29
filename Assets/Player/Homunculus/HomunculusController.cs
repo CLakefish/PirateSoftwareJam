@@ -272,7 +272,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     private void OnGUI()
     {
-        hfsm.OnGUI();
+        // hfsm.OnGUI();
     }
 
     private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bf27468622b3d42a9cafab98befd0c, type: 3}
   m_Name: Level 5
   m_EditorClassIdentifier: 
-  sceneName: Halls
+  sceneName: Castle
   displayName: Castle Halls
   description: Make them burn.
