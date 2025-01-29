@@ -264,7 +264,7 @@ MonoBehaviour:
   groundCheckDistance: 0.075
   gravity: 40
   launchForce: 25
-  jumpPulseFOV: 5
+  jumpPulseFOV: 7.5
   deathBounce: 10
   bounceTimeSlow: 0
   exitLaunch: 25
@@ -296,7 +296,7 @@ MonoBehaviour:
   latchLaunchGraceTime: 1
   launchBufferTime: 0.3
   latchLaunchTimeSlow: 0.1
-  recoil: {x: 0, y: 0.25, z: 5}
+  recoil: {x: 0, y: 0.25, z: 3.5}
   line: {fileID: 0}
   fireParticles: {fileID: 0}
   lineInterpolation: 0.1

@@ -21,7 +21,7 @@ public class TimeManager : MonoBehaviour
     }
 
     public bool Interpolate { get; set; } = true;
-    public void SetScale(float scale) => Time.timeScale = scale;
+    public void SetScale(float scale) => Time.timeScale = Mathf.Clamp(scale, 0, Mathf.Infinity);
 
     public void StopTime()
     {

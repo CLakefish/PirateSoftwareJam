@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Hand
+  m_Name: Shader Graphs_Hand 1
   m_Shader: {fileID: -6465566751694194690, guid: 137bdd4876a655a4e87f036145b773ad, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -31,8 +31,8 @@ Material:
     m_Floats:
     - _ColorMask: 15
     - _Contrast: 2
-    - _Density: 5.62
-    - _Size: 4
+    - _Density: 1
+    - _Size: 0.1
     - _Speed: 2
     - _Stencil: 0
     - _StencilComp: 8
@@ -43,8 +43,8 @@ Material:
     - _UIMaskSoftnessY: 1
     m_Colors:
     - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0, g: 0.9333333, b: 1, a: 1}
-    - _Color_1: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0, g: 0.61397314, b: 1, a: 1}
+    - _Color_1: {r: 0, g: 0.80927205, b: 1, a: 1}
     - _Direction: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
