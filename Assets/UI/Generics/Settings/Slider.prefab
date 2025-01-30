@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7184893095040606620}
   - component: {fileID: 5427572230742476178}
   - component: {fileID: 4262403207082970715}
+  - component: {fileID: 3121752464674242015}
   m_Layer: 5
   m_Name: Handle
   m_TagString: Untagged
@@ -75,6 +76,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3121752464674242015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2621396527797330310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb3ed7dafdc0bd848b935b8853ada5bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectSize: 1.2
+  standardSize: 1
+  smoothingTime: 0.05
+  deselectColorButton: {r: 1, g: 1, b: 1, a: 1}
+  deselectColorText: {r: 0, g: 0, b: 0, a: 0}
+  selectColorButton: {r: 1, g: 0.97048855, b: 0, a: 1}
+  selectColorText: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &3383056861712848552
 GameObject:
   m_ObjectHideFlags: 0

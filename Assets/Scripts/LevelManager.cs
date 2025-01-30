@@ -6,23 +6,36 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
+    [SerializeField] private LevelScriptableObject currentLevel;
     [SerializeField] private LevelScriptableObject nextScene;
+    [SerializeField] private float currentTime;
+
+    public bool AllowTimeIncrement { get; set; } = true;
+
+    public float CurrentTime => currentTime;
+    public float BestTime {
+        get {
+            if (currentLevel == null) return 0;
+            return currentLevel.GetTime();
+        }
+    }
+
     private readonly HashSet<EnemyController> enemies = new();
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
+        if (Instance != null) return;
 
-            var sceneEnemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        Instance = this;
 
-            foreach (var enemy in sceneEnemies) enemies.Add(enemy);
+        var sceneEnemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
 
-            return;
-        }
+        foreach (var enemy in sceneEnemies) enemies.Add(enemy);
+    }
 
-        Destroy(this);
+    private void Update()
+    {
+        if (AllowTimeIncrement) currentTime += Time.unscaledDeltaTime;
     }
 
     public void ReloadScene()
@@ -32,6 +45,11 @@ public class LevelManager : MonoBehaviour
 
     public void NextScene()
     {
+        float t = currentLevel.GetTime();
+
+        t = t == 0 ? currentTime : Mathf.Min(currentTime, t);
+
+        currentLevel.SaveTime(t);
         nextScene.Load();
     }
 
@@ -41,6 +59,8 @@ public class LevelManager : MonoBehaviour
         {
             if (!enemy.HasTriggered) return false;
         }
+
+        AllowTimeIncrement = false;
 
         return true;
     }

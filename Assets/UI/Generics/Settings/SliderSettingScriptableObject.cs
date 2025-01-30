@@ -7,6 +7,9 @@ public class SliderSettingScriptableObject : SettingsScriptableObject
     [SerializeField] private float max;
     [SerializeField] private bool intOnly;
 
+    [Header("Catch-all")]
+    [SerializeField] private float startValue;
+
     public float Min => min;
     public float Max => max;
     public bool IntOnly => intOnly;
@@ -18,6 +21,11 @@ public class SliderSettingScriptableObject : SettingsScriptableObject
 
     public float Load()
     {
+        if (!PlayerPrefs.HasKey(SaveName))
+        {
+            Save(startValue);
+        }
+
         return PlayerPrefs.GetFloat(SaveName);
     }
 }

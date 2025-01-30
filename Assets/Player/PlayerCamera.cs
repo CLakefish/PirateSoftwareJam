@@ -62,6 +62,7 @@ public class PlayerCamera : MonoBehaviour
     public void Reload()
     {
         fov = fovSettings.Load();
+        CamComponent.fieldOfView = fov;
     }
 
     private void OnEnable()

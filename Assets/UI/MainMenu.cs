@@ -19,14 +19,20 @@ public class MainMenu : MonoBehaviour
         {
             if (currentSubMenu.DisplayName == next.DisplayName)
             {
-                currentSubMenu.OnReEnter();
+                if (currentSubMenu.IsOpen) currentSubMenu.OnExit();
+                else currentSubMenu.OnEnter();
+
+                currentSubMenu.IsOpen = !currentSubMenu.IsOpen;
+
                 return;
             }
 
+            currentSubMenu.IsOpen = false;
             currentSubMenu.OnExit();
         }
 
         currentSubMenu = next;
+        currentSubMenu.IsOpen = true;
         currentSubMenu.OnEnter();
     }
 
@@ -35,6 +41,11 @@ public class MainMenu : MonoBehaviour
         startMenu.Init(this);
 
         foreach (var subMenu in subMenus) subMenu.Init(this);
+    }
+
+    private void OnDisable()
+    {
+        startMenu.Init(this);
     }
 
     private void Awake()

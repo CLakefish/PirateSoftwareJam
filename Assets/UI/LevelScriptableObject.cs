@@ -16,4 +16,14 @@ public class LevelScriptableObject : ScriptableObject
     {
         SceneManager.LoadScene(sceneName);
     }
+
+    public void SaveTime(float time)
+    {
+        PlayerPrefs.SetFloat(displayName, time);
+    }
+
+    public float GetTime()
+    {
+        return PlayerPrefs.GetFloat(displayName);
+    }
 }

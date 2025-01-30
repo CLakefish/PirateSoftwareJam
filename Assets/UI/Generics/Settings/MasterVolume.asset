@@ -17,3 +17,4 @@ MonoBehaviour:
   min: 0
   max: 100
   intOnly: 1
+  startValue: 100

@@ -44,8 +44,9 @@ public class SelectMenu : SubMenu
             button.onClick.AddListener(() => { level.Load(); });
 
             SelectMenuButton s = button.GetComponent<SelectMenuButton>();
-            s.DisplayName        = level.DisplayName;
-            s.DisplayDescription = level.Description;
+            s.DisplayName      = level.DisplayName;
+            s.DisplayTime      = level.GetTime().ToString("00:00.00");
+            s.DisplayCompleted = level.GetTime() > 0 ? "Completed" : "Uncompleted";
 
             buttons.Add(button);
         }

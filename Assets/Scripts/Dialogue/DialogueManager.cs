@@ -43,10 +43,7 @@ public class DialogueManager : MonoBehaviour
                 ResetText();
             }
         }
-    }
 
-    private void LateUpdate()
-    {
         canvas.worldCamera = Camera.main;
     }
 

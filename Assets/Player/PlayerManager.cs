@@ -37,6 +37,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private PlayerCompleteMenu playerComplete;
     [SerializeField] private PlayerTransitions  playerTransitions;
 
+    [Header("Menu")]
+    [SerializeField] private GameObject PauseMenu;
+
     private void OnEnable()
     {
         homunculus.SetPlayer(this);
@@ -58,6 +61,36 @@ public class PlayerManager : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private void Update()
+    {
+        if (playerInputs.Menu)
+        {
+            PauseMenu.SetActive(!PauseMenu.activeSelf);
+            bool active = !PauseMenu.activeSelf;
+
+            homunculus.Camera.MouseLock = active;
+
+            homunculus.Camera.enabled = platformer.Camera.enabled = playerTransitions.enabled = active;
+
+            if (PauseMenu.activeSelf) {
+                TimeManager.Instance.StopTime();
+            }
+            else {
+                ReloadSaveData();
+                TimeManager.Instance.ResumeTime();
+            }
+        }
+    }
+
+    public void CloseMenu()
+    {
+        PauseMenu.SetActive(false);
+        homunculus.Camera.MouseLock = homunculus.Camera.enabled = platformer.Camera.enabled = playerTransitions.enabled = true;
+
+        ReloadSaveData();
+        TimeManager.Instance.ResumeTime();
     }
 
     public void ReloadSaveData()

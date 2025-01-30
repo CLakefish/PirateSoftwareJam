@@ -14,6 +14,7 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private Vector2Input lookInput;
     [SerializeField] private BoolInput jump;
     [SerializeField] private BoolInput slide;
+    [SerializeField] private BoolInput menu;
 
     [Header("Variables")]
     [SerializeField] private Vector2 sensitivity;
@@ -83,6 +84,14 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    public bool Menu
+    {
+        get
+        {
+            return menu.Pressed;
+        }
+    }
+
     public void Reload()
     {
         invertX = invertXData.Load() == 1;
@@ -105,7 +114,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private void OnEnable()
     {
-        inputSet = new() { jump, moveInput, lookInput, slide };
+        inputSet = new() { jump, moveInput, lookInput, slide, menu };
 
         foreach (var action in inputSet)
         {

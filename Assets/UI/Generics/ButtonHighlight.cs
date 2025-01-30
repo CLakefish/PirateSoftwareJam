@@ -60,7 +60,7 @@ public class ButtonHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         while (Vector3.Distance(transform.localScale, desiredSize) > 0.01f)
         {
-            transform.localScale = Vector3.SmoothDamp(transform.localScale, desiredSize, ref scaleVel, smoothingTime);
+            transform.localScale = Vector3.SmoothDamp(transform.localScale, desiredSize, ref scaleVel, smoothingTime, Mathf.Infinity, Time.unscaledDeltaTime);
             yield return null;
         }
 

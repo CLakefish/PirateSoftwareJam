@@ -240,10 +240,6 @@ public class HomunculusController : PlayerManager.PlayerController
         hfsm.CheckTransitions();
         hfsm.Update();
 
-        if (Input.GetKeyDown(KeyCode.Q)) {
-            Application.targetFrameRate = Application.targetFrameRate == 15 ? 1000 : 15;
-        }
-
         launchBuffer -= Time.deltaTime;
     }
 

@@ -5,6 +5,7 @@ public abstract class SubMenu : MonoBehaviour
     [SerializeField] private string displayName;
 
     public string DisplayName => displayName;
+    public bool IsOpen;
 
     protected MainMenu context;
 
@@ -13,8 +14,6 @@ public abstract class SubMenu : MonoBehaviour
     public abstract void OnEnter();
     public abstract void OnExit();
 
-
-    public virtual void OnReEnter()     { }
     public virtual void OnFocusUpdate() { }
     public virtual void OnFocusFixed()  { }
 }
