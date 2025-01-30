@@ -14,6 +14,7 @@ public class HomunculusReticle : MonoBehaviour
     [SerializeField] public RectTransform reticle;
     [SerializeField] private float reticleRotateSpeed;
     [SerializeField] private float reticleInRangeSize;
+    [SerializeField] private float reticleOutsideRangeSize;
     [SerializeField] private Color reticleHighlighted;
     [SerializeField] private Color reticleObstructed;
 
@@ -73,7 +74,7 @@ public class HomunculusReticle : MonoBehaviour
             bool inRange = InRange(pair.Key);
 
             rect.GetComponent<Image>().color = inRange ? reticleHighlighted : reticleObstructed;
-            rect.transform.localScale = inRange ? Vector3.one * reticleInRangeSize : Vector3.one;
+            rect.transform.localScale = inRange ? Vector3.one * reticleInRangeSize : Vector3.one * reticleOutsideRangeSize;
 
             Vector3 pos = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position);
             rect.transform.localPosition = new(

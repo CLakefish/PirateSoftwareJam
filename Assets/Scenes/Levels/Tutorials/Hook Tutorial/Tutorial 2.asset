@@ -16,7 +16,9 @@ MonoBehaviour:
   - dialogue: LUNGE AGAIN AND LATCH ONTO THE ENEMY
     audio: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
+    skippable: 1
   - dialogue: MAKE THEM BURN.
     audio: {fileID: 0}
-    color: {r: 1, g: 1, b: 1, a: 0.78431374}
+    color: {r: 1, g: 0, b: 0, a: 0.78431374}
+    skippable: 1
   forceInput: 1
