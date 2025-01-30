@@ -7,7 +7,10 @@ public class Area : MonoBehaviour
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private AreaEnd   endPosition;
     [SerializeField] private List<Transform> rotated;
+
+    [Header("Displays")]
     [SerializeField] private DialogueScriptableObject dialogue;
+    [SerializeField] private MonologueScriptableObject monologue;
 
     public EnemyController EnemyController { get; private set; }
     public Transform SpawnPosition => spawnPosition;
@@ -44,6 +47,7 @@ public class Area : MonoBehaviour
 
         hasTriggered = false;
         DialogueManager.Instance.DisplayDialogue(dialogue);
+        MonologueManager.Instance.SetText(monologue);
         playerManager.Transitions.ToPlayer(this);
     }
 
@@ -52,6 +56,7 @@ public class Area : MonoBehaviour
         if (hasTriggered) return;
         hasTriggered = true;
         DialogueManager.Instance.ResetText();
+        MonologueManager.Instance.ClearText();
         playerManager.Transitions.ToHomunculus(this);
     }
 

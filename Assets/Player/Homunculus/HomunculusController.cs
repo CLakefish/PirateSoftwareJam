@@ -83,9 +83,8 @@ public class HomunculusController : PlayerManager.PlayerController
         private Vector3 camVel;
         private Vector3 posVel;
 
-        private Vector3 startPosition;
-        private Vector3 endPosition;
         private Vector3 movePos;
+        private Vector3 offset;
 
         private bool slowTime;
 
@@ -97,6 +96,8 @@ public class HomunculusController : PlayerManager.PlayerController
 
             var latchable = context.LatchObject.GetComponent<Latchable>();
             latchable.Latch(context);
+            offset = latchable.offset;
+            context.LatchPos = context.LatchObject.transform.position + offset;
 
             latchVel = context.rb.linearVelocity;
             movePos  = context.rb.position;
@@ -110,8 +111,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
             TimeManager.Instance.SetScale(1);
 
-            startPosition = context.cam.CamComponent.transform.position - Vector3.up + context.cam.CamComponent.transform.right;
-            endPosition   = context.LatchObject.transform.position;
+            Vector3 startPosition = context.cam.CamComponent.transform.position - Vector3.up + context.cam.CamComponent.transform.right;
 
             context.line.positionCount = 2;
             context.line.SetPosition(0, startPosition);
@@ -129,13 +129,13 @@ public class HomunculusController : PlayerManager.PlayerController
             }
 
             context.rb.MovePosition(movePos);
-            context.line.SetPosition(1, Vector3.SmoothDamp(context.line.GetPosition(1), endPosition, ref posVel, context.lineInterpolation));
+            context.line.SetPosition(1, Vector3.SmoothDamp(context.line.GetPosition(1), context.LatchObject.transform.position + offset, ref posVel, context.lineInterpolation));
             context.fireParticles.transform.position = context.line.GetPosition(1);
         }
 
         public override void FixedUpdate()
         {
-            Vector3 pos = context.LatchObject.transform.position;
+            Vector3 pos = context.LatchObject.transform.position + offset;
             movePos     = Vector3.Lerp(context.rb.position, pos, context.latchLerp.Evaluate(context.hfsm.Duration));
 
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
@@ -199,6 +199,8 @@ public class HomunculusController : PlayerManager.PlayerController
     public PlayerCamera Camera => cam;
     public LayerMask GroundLayer => groundLayer;
     public GameObject LatchObject => reticle.LatchObject;
+
+    public Vector3 LatchPos { get; private set; }
 
     private BeginState  Begin  { get; set; }
     private LaunchState Launch { get; set; }

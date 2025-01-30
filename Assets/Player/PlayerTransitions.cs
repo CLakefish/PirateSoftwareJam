@@ -68,7 +68,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         yield return new WaitForSecondsRealtime(transportPause);
 
-        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position) > 0.1f) {
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.1f) {
             yield return null;
         }
 
@@ -102,12 +102,12 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         float startDist = Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position);
 
-        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position) > 0.01f)
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.01f)
         {
-            float t = 1.0f - (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position) / startDist);
+            float t = 1.0f - (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) / startDist);
             float e = transitionCurve.Evaluate(t);
 
-            vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchObject.transform.position);
+            vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchPos);
             targetCanvasPos = new(
                 (vpPos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
                 (vpPos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)

@@ -38,7 +38,7 @@ public class PlayerRespawnMenu : PlayerManager.PlayerController
     private IEnumerator RespawnMenuEffects()
     {
         string titleText = "PERISHED";
-        string respawnText = "PRESS SPACE TO RESPAWN";
+        string respawnText = "PRESS SPACE TO EMERGE ANEW";
 
         title.text   = "";
         respawn.text = "";

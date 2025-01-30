@@ -37,7 +37,7 @@ public class PlayerCompleteMenu : PlayerManager.PlayerController
     private IEnumerator RespawnMenuEffects()
     {
         string titleText = "FLAMES REIGNITED";
-        string respawnText = "PRESS SPACE TO CONTINUE";
+        string respawnText = "PRESS SPACE TO EMERGE ANEW";
 
         title.text = "";
         respawn.text = "";

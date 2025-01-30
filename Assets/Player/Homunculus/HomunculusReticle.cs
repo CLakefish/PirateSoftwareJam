@@ -28,7 +28,8 @@ public class HomunculusReticle : MonoBehaviour
     [SerializeField] private float reticleSmoothing;
     [SerializeField] private Color reticlePulseColor;
 
-    private readonly Dictionary<Renderer, RectTransform> reticles = new();
+    private readonly Dictionary<Renderer, RectTransform>  reticles = new();
+    private readonly Dictionary<RectTransform, Latchable> latchables = new();
 
     public GameObject LatchObject { get; private set; }
     public bool      CanLatch     { get; private set; }
@@ -43,6 +44,7 @@ public class HomunculusReticle : MonoBehaviour
             RectTransform rect = Instantiate(reticle, canvas.transform);
             rect.transform.localPosition = Vector3.zero;
             reticles.Add(rend, rect);
+            latchables.Add(rect, latch);
         }
     }
 
@@ -76,7 +78,7 @@ public class HomunculusReticle : MonoBehaviour
             rect.GetComponent<Image>().color = inRange ? reticleHighlighted : reticleObstructed;
             rect.transform.localScale = inRange ? Vector3.one * reticleInRangeSize : Vector3.one * reticleOutsideRangeSize;
 
-            Vector3 pos = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position);
+            Vector3 pos = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position + latchables[rect].offset);
             rect.transform.localPosition = new(
                 (pos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
                 (pos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
@@ -190,7 +192,7 @@ public class HomunculusReticle : MonoBehaviour
         {
             if (LatchObject == null) yield break;
 
-            Vector3 pos = cam.CamComponent.WorldToViewportPoint(LatchObject.transform.position);
+            Vector3 pos = cam.CamComponent.WorldToViewportPoint(LatchObject.transform.position + latchables[rect].offset);
             rect.transform.localPosition = new(
                 (pos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
                 (pos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)

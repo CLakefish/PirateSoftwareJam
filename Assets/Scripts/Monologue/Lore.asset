@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce1d85c47b6de394491ade55473401e5, type: 3}
+  m_Name: Lore
+  m_EditorClassIdentifier: 
+  monologues:
+  - If only we could've known the damage it would cause...
+  - Will this rain ever cease?
+  - Why can't I seem to forget...
+  - This infinite rain, if only we could've known
+  - How can I live with myself?
+  - I hope to see him still alive...
+  - I hope to see them again...
