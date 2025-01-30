@@ -32,7 +32,7 @@ Material:
     - _ColorMask: 15
     - _Contrast: 2
     - _Density: 5.62
-    - _Size: 4
+    - _Size: 10
     - _Speed: 2
     - _Stencil: 0
     - _StencilComp: 8
@@ -44,7 +44,7 @@ Material:
     m_Colors:
     - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 0, g: 0.9333333, b: 1, a: 1}
-    - _Color_1: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_1: {r: 0, g: 0.7795005, b: 1, a: 1}
     - _Direction: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

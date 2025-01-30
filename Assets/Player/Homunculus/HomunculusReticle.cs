@@ -87,44 +87,6 @@ public class HomunculusReticle : MonoBehaviour
             rect.gameObject.SetActive(true);
             rect.transform.localEulerAngles += new Vector3(0, 0, reticleRotateSpeed) * Time.deltaTime;
         }
-
-        /*
-        RaycastHit[] hits = Physics.SphereCastAll(cam.CamComponent.transform.position, latchRadius, cam.CamComponent.transform.forward, latchDistance, latchableLayer);
-
-        if (hits.Length <= 0)
-        {
-            hit = default;
-            reticle.gameObject.SetActive(false);
-            return false;
-        }
-        else
-        {
-            hit = default;
-
-            foreach (var h in hits)
-            {
-                if (Physics.Linecast(cam.CamComponent.transform.position, h.collider.transform.position, context.GroundLayer))
-                {
-                    continue;
-                }
-
-                reticle.transform.localScale = Vector3.one;
-                reticle.gameObject.SetActive(true);
-
-                Vector3 pos = cam.CamComponent.WorldToViewportPoint(h.collider.transform.position);
-                reticle.transform.localPosition = new(
-                    (pos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
-                    (pos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
-                );
-
-                reticle.transform.localEulerAngles += new Vector3(0, 0, reticleRotateSpeed) * Time.deltaTime;
-
-                hit = h;
-                break;
-            }
-
-            return hit.collider != null;
-        }*/
     }
 
     private bool Obstructed(Renderer renderer)

@@ -20,6 +20,9 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private bool resetRotation = false;
     [SerializeField] public bool  LockCamera    = false;
 
+    [Header("Settings")]
+    [SerializeField] private SliderSettingScriptableObject fovSettings;
+
     private Coroutine fovPulse;
 
     private Vector3 recoil;
@@ -55,6 +58,11 @@ public class PlayerCamera : MonoBehaviour
     }
 
     public Camera CamComponent => cam;
+
+    public void Reload()
+    {
+        fov = fovSettings.Load();
+    }
 
     private void OnEnable()
     {

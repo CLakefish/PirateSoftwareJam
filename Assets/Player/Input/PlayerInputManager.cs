@@ -20,6 +20,12 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private bool invertX;
     [SerializeField] private bool invertY;
 
+    [Header("Save Data")]
+    [SerializeField] private ToggleSettingScriptableObject invertXData;
+    [SerializeField] private ToggleSettingScriptableObject invertYData;
+    [SerializeField] private SliderSettingScriptableObject sensitivityDataX;
+    [SerializeField] private SliderSettingScriptableObject sensitivityDataY;
+
     private HashSet<InputScriptableObject> inputSet;
 
     public Vector2 Input
@@ -77,6 +83,14 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    public void Reload()
+    {
+        invertX = invertXData.Load() == 1;
+        invertY = invertYData.Load() == 1;
+        sensitivity.x = sensitivityDataX.Load();
+        sensitivity.y = sensitivityDataY.Load();
+    }
+
     private void Awake()
     {
         if (Instance != null)
@@ -86,6 +100,7 @@ public class PlayerInputManager : MonoBehaviour
         }
 
         Instance = this;
+        Reload();
     }
 
     private void OnEnable()

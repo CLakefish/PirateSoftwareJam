@@ -13,24 +13,25 @@ public class SelectMenu : SubMenu
     [SerializeField] private List<LevelScriptableObject> levels;
 
     [Header("Interpolation")]
+    [SerializeField] private RectTransform openPosition;
+    [SerializeField] private RectTransform closePosition;
     [SerializeField] private float smoothingTime;
-    [SerializeField] private float startSize;
-    [SerializeField] private float endSize;
 
     private readonly List<Button> buttons = new();
     private Coroutine anim;
 
     private void Awake()
     {
+        levelPanel.position = closePosition.position;
         levelPanel.gameObject.SetActive(false);
-        levelPanel.localScale = Vector3.one * endSize;
     }
 
     public override void OnEnter()
     {
         if (buttons.Count > 0)
         {
-            foreach (var button in buttons) Destroy(button.gameObject);
+            RunAnimation(true);
+            return;
         }
 
         buttons.Clear();
@@ -45,35 +46,39 @@ public class SelectMenu : SubMenu
             SelectMenuButton s = button.GetComponent<SelectMenuButton>();
             s.DisplayName        = level.DisplayName;
             s.DisplayDescription = level.Description;
+
+            buttons.Add(button);
         }
 
-        RunAnimation(startSize, true);
+        RunAnimation(true);
     }
 
     public override void OnExit()
     {
-        RunAnimation(endSize, false);
+        RunAnimation(false);
     }
 
-    private void RunAnimation(float size, bool active)
+    private void RunAnimation(bool active)
     {
         if (anim != null) StopCoroutine(anim);
-        anim = StartCoroutine(OpenAnimation(size, active));
+        anim = StartCoroutine(OpenAnimation(active));
     }
 
-    private IEnumerator OpenAnimation(float size, bool active)
+    private IEnumerator OpenAnimation(bool active)
     {
-        Vector3 desiredSize = Vector3.one * size;
-        Vector3 scaleVel    = Vector3.zero;
+        Vector3 desiredPos = active ? openPosition.position : closePosition.position;
+        Vector3 posVel     = Vector3.zero;
 
-        while (Vector3.Distance(levelPanel.localScale, desiredSize) > 0.01f)
+        if (active) levelPanel.gameObject.SetActive(true);
+
+        while (Vector3.Distance(levelPanel.position, desiredPos) > 0.01f)
         {
-            levelPanel.localScale = Vector3.SmoothDamp(levelPanel.localScale, desiredSize, ref scaleVel, smoothingTime);
+            levelPanel.position = Vector3.SmoothDamp(levelPanel.position, desiredPos, ref posVel, smoothingTime, Mathf.Infinity, Time.unscaledDeltaTime);
             yield return null;
         }
 
-        levelPanel.localScale = desiredSize;
+        levelPanel.position = desiredPos;
 
-        levelPanel.gameObject.SetActive(active);
+        if (!active) levelPanel.gameObject.SetActive(false);
     }
 }
