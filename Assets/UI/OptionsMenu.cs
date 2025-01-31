@@ -92,6 +92,11 @@ public class OptionsMenu : SubMenu
         RunAnimation(true);
     }
 
+    public void Update()
+    {
+        AudioManager.Instance.ReloadVolumes();
+    }
+
     public override void OnExit()
     {
         RunAnimation(false);

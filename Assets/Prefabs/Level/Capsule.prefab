@@ -327,6 +327,9 @@ MonoBehaviour:
   slowTime: 1
   connected: {fileID: 0}
   fire: {fileID: 3262308802463748137, guid: 0b2034abf65553e4ead5531cbf7d016a, type: 3}
+  triggerSFX:
+  - {fileID: 8300000, guid: a4a33008f6d69e74bbd3c4bd6cfadcbe, type: 3}
+  - {fileID: 8300000, guid: 02d1743bbe8287f448e6c9ae10e2e256, type: 3}
   onTrigger:
     m_PersistentCalls:
       m_Calls:

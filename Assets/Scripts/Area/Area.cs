@@ -7,6 +7,7 @@ public class Area : MonoBehaviour
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private AreaEnd   endPosition;
     [SerializeField] private List<Transform> rotated;
+    [SerializeField] private List<AudioClip> triggerSFX;
 
     [Header("Displays")]
     [SerializeField] private DialogueScriptableObject dialogue;
@@ -55,6 +56,12 @@ public class Area : MonoBehaviour
     {
         if (hasTriggered) return;
         hasTriggered = true;
+
+        foreach (var clip in triggerSFX)
+        {
+            AudioManager.Instance.PlaySFX(clip);
+        }
+
         DialogueManager.Instance.ResetText();
         MonologueManager.Instance.ClearText();
         playerManager.Transitions.ToHomunculus(this);

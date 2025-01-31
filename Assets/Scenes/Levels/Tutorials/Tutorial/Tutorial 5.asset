@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogues:
   - dialogue: HOLD LEFT SHIFT TO SLIDE
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: d286e9b064e81e245864dbb91c038e1e, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
     skippable: 0
   forceInput: 0

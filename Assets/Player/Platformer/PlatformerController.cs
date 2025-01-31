@@ -5,7 +5,24 @@ public class PlatformerController : PlayerManager.PlayerController
 {
     private class WalkingState : State<PlatformerController>
     {
+        private float time = 0;
+
         public WalkingState(PlatformerController context) : base(context) { }
+
+        public override void Enter()
+        {
+            AudioManager.Instance.PlaySFX(context.land);
+            time = Time.time;
+        }
+
+        public override void Update()
+        {
+            if (Time.time > time + context.stepTime && context.PlayerInputs.IsInputting)
+            {
+                AudioManager.Instance.PlaySFX(context.step);
+                time = Time.time;
+            }
+        }
 
         public override void FixedUpdate()
         {
@@ -22,6 +39,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
+            AudioManager.Instance.PlaySFX(context.jump);
+
             context.jumpBuffer = 0;
             context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.jumpHeight, context.rb.linearVelocity.z);
         }
@@ -69,6 +88,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
+            AudioManager.Instance.PlaySFX(context.slide);
+
             momentum = context.rb.linearVelocity;
 
             if (context.slideBoost && context.HorizontalVelocity.magnitude <= context.slideForce)
@@ -170,6 +191,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
+            AudioManager.Instance.PlaySFX(context.jump);
+
             context.collisions.ResetCollisions();
 
             context.cam.FOVPulse(context.slideJumpPulse);
@@ -228,6 +251,14 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float crouchSize;
     [SerializeField] private float standardSize;
     [SerializeField] private float crouchTime;
+
+    [Header("SFX")]
+    [SerializeField] private AudioClip land;
+    [SerializeField] private AudioClip jump;
+    [SerializeField] private AudioClip slide;
+    [SerializeField] private AudioClip step;
+    [SerializeField] private AudioClip die;
+    [SerializeField] private float stepTime;
 
     private readonly float slideDotMin = -0.25f;
     private readonly float jumpGraceTime = 0.1f;
@@ -364,6 +395,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
     public void ResetVelocity()
     {
+        AudioManager.Instance.PlaySFX(die);
+
         hfsm.ChangeState(Falling);
         collisions.ResetCollisions();
 

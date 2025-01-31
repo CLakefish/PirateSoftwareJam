@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogues:
   - dialogue: YOU ARE UNABLE TO WALK
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: cc23d095db9965a449018f76ab48e943, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
     skippable: 1
   - dialogue: PRESS SPACE TO LUNGE
-    audio: {fileID: 0}
-    color: {r: 1, g: 1, b: 1, a: 0.78431374}
+    audio: {fileID: 8300000, guid: b9c12ec94fa27304bab0e41b0670b6a4, type: 3}
+    color: {r: 1, g: 0.937262, b: 0, a: 0.78431374}
     skippable: 1
   forceInput: 1

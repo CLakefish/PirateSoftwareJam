@@ -19,6 +19,7 @@ public class StartMenu : SubMenu
 
         Button quitButton = Instantiate(buttonPrefab, buttonHolder);
         quitButton.GetComponent<StartMenuButton>().DisplayName = "Quit";
+        quitButton.onClick.AddListener(() => { Application.Quit(); });
         buttons.Add(quitButton);
     }
 

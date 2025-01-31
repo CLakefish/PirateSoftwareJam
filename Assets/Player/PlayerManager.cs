@@ -56,11 +56,15 @@ public class PlayerManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            ReloadSaveData();
             return;
         }
 
         Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        ReloadSaveData();
     }
 
     private void Update()
@@ -98,5 +102,6 @@ public class PlayerManager : MonoBehaviour
         playerInputs.Reload();
         HomunculusController.Camera.Reload();
         PlatformerController.Camera.Reload();
+        AudioManager.Instance.ReloadVolumes();
     }
 }

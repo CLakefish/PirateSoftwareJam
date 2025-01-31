@@ -8,9 +8,11 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private LevelScriptableObject currentLevel;
     [SerializeField] private LevelScriptableObject nextScene;
+    [SerializeField] private bool lastLevel;
     [SerializeField] private float currentTime;
 
     public bool AllowTimeIncrement { get; set; } = true;
+    public bool LastLevel => lastLevel;
 
     public float CurrentTime => currentTime;
     public float BestTime {

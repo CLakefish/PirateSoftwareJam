@@ -82,7 +82,11 @@ MonoBehaviour:
   endPosition: {fileID: 2667340071021746135}
   rotated:
   - {fileID: 2660911552306390905}
+  triggerSFX:
+  - {fileID: 8300000, guid: a4a33008f6d69e74bbd3c4bd6cfadcbe, type: 3}
+  - {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
   dialogue: {fileID: 0}
+  monologue: {fileID: 0}
 --- !u!1 &7528239213247856781
 GameObject:
   m_ObjectHideFlags: 0

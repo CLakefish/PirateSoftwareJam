@@ -24,6 +24,8 @@ public class HomunculusController : PlayerManager.PlayerController
         {
             TimeManager.Instance.SetScale(1);
 
+            AudioManager.Instance.PlaySFX(context.lunge);
+
             context.started = true;
             context.rb.linearVelocity = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
             context.cam.FOVPulse(context.jumpPulseFOV);
@@ -51,6 +53,8 @@ public class HomunculusController : PlayerManager.PlayerController
             {
                 hasLaunched = true;
                 context.launchBuffer = 0;
+
+                AudioManager.Instance.PlaySFX(context.lunge);
 
                 context.cam.FOVPulse(context.jumpPulseFOV);
                 Vector3 dir = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
@@ -120,6 +124,8 @@ public class HomunculusController : PlayerManager.PlayerController
             context.line.gameObject.SetActive(true);
             context.fireParticles.transform.position = startPosition;
             context.fireParticles.Clear();
+
+            AudioManager.Instance.PlaySFX(context.latch);
         }
 
         public override void Update()
@@ -195,6 +201,12 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float lineInterpolation;
     [SerializeField] private float pulseFOV;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip latch;
+    [SerializeField] private AudioClip lunge;
+    [SerializeField] private AudioClip hitGround;
+    [SerializeField] private AudioClip die;
+
     public Rigidbody Rigidbody => rb;
     public PlayerCamera Camera => cam;
     public LayerMask GroundLayer => groundLayer;
@@ -250,6 +262,7 @@ public class HomunculusController : PlayerManager.PlayerController
             switch (deathCounter)
             {
                 case 2:
+                    AudioManager.Instance.PlaySFX(die);
                     rb.linearVelocity = Vector3.zero;
                     PlayerRespawn.Respawn();
                     return;
@@ -260,6 +273,7 @@ public class HomunculusController : PlayerManager.PlayerController
                         deathCounter += 1;
                         rb.linearVelocity = new Vector3(rb.linearVelocity.x, deathBounce, rb.linearVelocity.z);
                         TimeManager.Instance.SetScale(bounceTimeSlow);
+                        AudioManager.Instance.PlaySFX(hitGround);
                     }
                     break;
             }
@@ -290,6 +304,7 @@ public class HomunculusController : PlayerManager.PlayerController
             TimeManager.Instance.SetScale(latchLaunchTimeSlow);
         }
 
+        AudioManager.Instance.PlaySFX(lunge);
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, exitLaunch, rb.linearVelocity.z);
     }
 }

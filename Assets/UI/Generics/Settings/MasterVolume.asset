@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveName: Master Volume
   type: 1
-  min: 0
-  max: 100
+  min: -100
+  max: 0
   intOnly: 1
-  startValue: 100
+  startValue: 0

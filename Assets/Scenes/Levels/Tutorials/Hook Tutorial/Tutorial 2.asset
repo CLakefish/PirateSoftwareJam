@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogues:
   - dialogue: LUNGE AGAIN AND LATCH ONTO THE ENEMY
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: 97eada476aaeb214abd095884ea57d88, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
     skippable: 1
   - dialogue: MAKE THEM BURN.
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: d3e5a57ecb10db449afa7da1bb169a29, type: 3}
     color: {r: 1, g: 0, b: 0, a: 0.78431374}
     skippable: 1
   forceInput: 1

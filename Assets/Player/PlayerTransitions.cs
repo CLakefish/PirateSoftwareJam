@@ -10,6 +10,9 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private RectTransform platformerView;
     [SerializeField] private AnimationCurve transitionCurve;
     [SerializeField] private AnimationCurve pullOutCurve;
+    [SerializeField] private Transform endPos;
+    [SerializeField] private DialogueScriptableObject endDialogue;
+    [SerializeField] private GameObject fire;
     [SerializeField] private float transitionSpeed;
     [SerializeField] private float returnSpeed;
     [SerializeField] private float transportPause;
@@ -22,6 +25,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     private GameObject homunculusPlatforming;
     private Coroutine anim;
+    private Coroutine snap;
 
     public bool Homunculus {
         set {
@@ -58,7 +62,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     public void IdleSnap()
     {
-        StartCoroutine(Snap(true));
+        if (snap != null) StopCoroutine(snap);
+        snap = StartCoroutine(Snap(true));
     }
 
     private IEnumerator Snap(bool turnOff = false)
@@ -100,6 +105,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         yield return new WaitForSecondsRealtime(transportPause);
 
+        hand.gameObject.SetActive(true);
+
         float startDist = Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position);
 
         while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.01f)
@@ -120,6 +127,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
         }
 
         if (homunculusPlatforming != null) homunculusPlatforming.SetActive(false);
+
+        hand.gameObject.SetActive(true);
 
         platformerView.transform.localScale    = Vector3.one;
         platformerView.transform.localPosition = Vector3.zero;
@@ -189,9 +198,43 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         if (LevelManager.Instance.CheckWin())
         {
+            if (LevelManager.Instance.LastLevel)
+            {
+                anim = StartCoroutine(EndRoutine());
+                yield break;
+            }
+
             yield return new WaitForSecondsRealtime(snapPause);
 
             PlayerComplete.Activate();
         }
+    }
+
+    private IEnumerator EndRoutine()
+    {
+        Vector3 vel    = Vector3.zero;
+        HomunculusController.enabled = false;
+        HomunculusController.Rigidbody.linearVelocity = Vector3.zero;
+
+        DialogueManager.Instance.DisplayDialogue(endDialogue);
+
+        var fires = GameObject.FindGameObjectsWithTag("Lightable");
+
+        foreach (var f in fires)
+        {
+            GameObject obj = Instantiate(fire, f.transform);
+            obj.transform.localScale *= 2;
+            obj.transform.localPosition = Vector3.zero;
+        }
+
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, endPos.position) > 1.0f)
+        {
+            if (PlayerInputs.Jump) yield break;
+
+            HomunculusController.Rigidbody.MovePosition(Vector3.SmoothDamp(HomunculusController.Rigidbody.position, endPos.position, ref vel, 3, Mathf.Infinity, Time.unscaledDeltaTime));
+            yield return null;
+        }
+
+        PlayerComplete.Activate();
     }
 }

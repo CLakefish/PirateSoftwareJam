@@ -4798,7 +4798,7 @@ Transform:
   m_GameObject: {fileID: 178965813}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 114.71738, y: 60.59758, z: -178.44}
+  m_LocalPosition: {x: 114.71738, y: 60.59758, z: -178.99}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6709,8 +6709,11 @@ MonoBehaviour:
   endPosition: {fileID: 397925774}
   rotated:
   - {fileID: 969341653}
+  triggerSFX:
+  - {fileID: 8300000, guid: a4a33008f6d69e74bbd3c4bd6cfadcbe, type: 3}
+  - {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
   dialogue: {fileID: 11400000, guid: 56f09dfc185c75c419967b967a46b8e8, type: 2}
-  monologue: {fileID: 11400000, guid: 5da5cd36217073f46bc83e00fbb0b97e, type: 2}
+  monologue: {fileID: 0}
 --- !u!4 &339619225
 Transform:
   m_ObjectHideFlags: 0
@@ -20721,6 +20724,9 @@ MonoBehaviour:
   endPosition: {fileID: 750928191}
   rotated:
   - {fileID: 577344768}
+  triggerSFX:
+  - {fileID: 8300000, guid: a4a33008f6d69e74bbd3c4bd6cfadcbe, type: 3}
+  - {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
   dialogue: {fileID: 11400000, guid: eb9f5f5805b96ef4e9ab9eb82b9b1f6c, type: 2}
   monologue: {fileID: 0}
 --- !u!4 &1011965024

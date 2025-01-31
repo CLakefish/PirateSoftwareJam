@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogues:
   - dialogue: TAKE THEIR MIND
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: 6af349691282aa641a1fd9faa86ad27a, type: 3}
     color: {r: 1, g: 0, b: 0, a: 1}
     skippable: 0
   - dialogue: WASD TO MOVE. SPACE TO JUMP.
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: 8a55d8ca866d4794a9d71746e9886c30, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
     skippable: 0
   forceInput: 0

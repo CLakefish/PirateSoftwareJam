@@ -6,6 +6,7 @@ public class PlayerRespawnMenu : PlayerManager.PlayerController
 {
     [Header("Respawn")]
     [SerializeField] private GameObject respawnMenu;
+    [SerializeField] private AudioClip deathClip;
     [SerializeField] private TMP_Text title;
     [SerializeField] private TMP_Text respawn;
     [SerializeField] private float titlePause;
@@ -42,6 +43,8 @@ public class PlayerRespawnMenu : PlayerManager.PlayerController
 
         title.text   = "";
         respawn.text = "";
+
+        AudioManager.Instance.PlaySFX(deathClip);
 
         for (int i = 0; i < titleText.Length; i++)
         {

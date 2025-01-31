@@ -9,6 +9,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private TMP_Text dialogue;
     [SerializeField] private float dialogueCharacterTime;
+    [SerializeField] private float dialogueStartPause;
     [SerializeField] private float dialogueEndingPause;
 
     private DialogueScriptableObject currentDialogueObj;
@@ -76,7 +77,7 @@ public class DialogueManager : MonoBehaviour
             timeManager.SetScale(0.01f);
         }
 
-        yield return new WaitForSecondsRealtime(dialogueEndingPause);
+        yield return new WaitForSecondsRealtime(dialogueStartPause);
 
         dialogue.text = "";
 
@@ -86,6 +87,8 @@ public class DialogueManager : MonoBehaviour
             currentDialogue = d;
             dialogue.color = d.color;
             string c = "";
+
+            AudioManager.Instance.PlaySFX(d.audio);
 
             for (int j = 0; j < d.dialogue.Length; j++)
             {

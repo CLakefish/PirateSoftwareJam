@@ -539,7 +539,8 @@ PlayerSettings:
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
-  m_TemplateCustomTags: {}
+  m_TemplateCustomTags:
+    PRODUCT_DESCRIPTION: 
   mobileMTRendering:
     Android: 1
     iPhone: 1
@@ -800,7 +801,7 @@ PlayerSettings:
   webGLMemorySize: 32
   webGLExceptionSupport: 0
   webGLNameFilesAsHashes: 0
-  webGLShowDiagnostics: 1
+  webGLShowDiagnostics: 0
   webGLDataCaching: 1
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 

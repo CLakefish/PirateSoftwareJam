@@ -9111,6 +9111,9 @@ MonoBehaviour:
   endPosition: {fileID: 397925774}
   rotated:
   - {fileID: 1263360206}
+  triggerSFX:
+  - {fileID: 8300000, guid: a4a33008f6d69e74bbd3c4bd6cfadcbe, type: 3}
+  - {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
   dialogue: {fileID: 0}
   monologue: {fileID: 11400000, guid: 5da5cd36217073f46bc83e00fbb0b97e, type: 2}
 --- !u!4 &339619225
@@ -21688,6 +21691,9 @@ MonoBehaviour:
   endPosition: {fileID: 750928191}
   rotated:
   - {fileID: 659168684}
+  triggerSFX:
+  - {fileID: 8300000, guid: a4a33008f6d69e74bbd3c4bd6cfadcbe, type: 3}
+  - {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
   dialogue: {fileID: 0}
   monologue: {fileID: 11400000, guid: 5da5cd36217073f46bc83e00fbb0b97e, type: 2}
 --- !u!4 &1011965024

@@ -56,8 +56,8 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 600, y: 25}
-  m_Spacing: {x: 0, y: 115}
+  m_CellSize: {x: 600, y: 20}
+  m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 1
 --- !u!1 &3129378288858103574
@@ -355,6 +355,8 @@ MonoBehaviour:
   sliderPrefab: {fileID: 281387074242175815, guid: a656b4e0677d7eb4e9930290993c663a, type: 3}
   settings:
   - {fileID: 11400000, guid: 01cce93737945384da7a02eaf432568d, type: 2}
+  - {fileID: 11400000, guid: bf3c2f68b31cb6b4b8ad9a3b965305a7, type: 2}
+  - {fileID: 11400000, guid: 0dc226663104678478231fb287346013, type: 2}
   - {fileID: 11400000, guid: f4b4ba0bb4c0c424481e9c1d7675d2eb, type: 2}
   - {fileID: 11400000, guid: 879854d420572134cb1cf1f237cf6d4b, type: 2}
   - {fileID: 11400000, guid: dc1a69ab6cc2c334ebb1f48cd12b3931, type: 2}
@@ -888,8 +890,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -700, y: 0}
-  m_SizeDelta: {x: 519, y: 1078.7697}
+  m_AnchoredPosition: {x: -695.25, y: 0}
+  m_SizeDelta: {x: 509.5, y: 1078.7697}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2275559806301639060
 MonoBehaviour:
