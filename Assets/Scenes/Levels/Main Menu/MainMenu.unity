@@ -1244,22 +1244,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Audio Manager
       objectReference: {fileID: 0}
-    - target: {fileID: 7937647242732271809, guid: 2ee93811837ade446807bd16c1645a59, type: 3}
-      propertyPath: m_Volume
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937647242732271809, guid: 2ee93811837ade446807bd16c1645a59, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937647242732271809, guid: 2ee93811837ade446807bd16c1645a59, type: 3}
-      propertyPath: m_Resource
-      value: 
-      objectReference: {fileID: 8300000, guid: 98dadd0421cf3f2488aa5789e05058e0, type: 3}
-    - target: {fileID: 7937647242732271809, guid: 2ee93811837ade446807bd16c1645a59, type: 3}
-      propertyPath: m_audioClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 98dadd0421cf3f2488aa5789e05058e0, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
