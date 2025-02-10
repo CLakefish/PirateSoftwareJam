@@ -218,13 +218,82 @@ public class PlatformerController : PlayerManager.PlayerController
         }
     }
 
+    private class LatchingState : State<PlatformerController>
+    {
+        private Vector3 movePos, startVel;
+        private Vector3 offset;
+
+        public LatchingState(PlatformerController context) : base(context) { }
+
+        public override void Enter()
+        {
+            context.cam.LockCamera = true;
+            context.latchFinished = false;
+
+            startVel = context.rb.linearVelocity;
+            movePos  = context.rb.position;
+            context.rb.linearVelocity = Vector3.zero;
+
+            var latchable = context.reticle.Closest.obj.GetComponent<Latchable>();
+            latchable.Latch();
+
+            context.reticle.Set(context.reticle.Closest.obj.gameObject);
+
+            context.cam.Recoil(context.line.recoil);
+            context.cam.FOVPulse(context.pulseFOV);
+
+            context.line.InitLine(context.cam);
+        }
+
+        public override void Update()
+        {
+            context.line.InterpolateLine();
+            context.rb.MovePosition(movePos);
+        }
+
+        public override void FixedUpdate()
+        {
+            Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
+            movePos     = Vector3.Lerp(context.rb.position, pos, context.line.latchLerp.Evaluate(context.hfsm.Duration));
+
+            context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
+
+/*            Vector3 fwd = context.cam.CamComponent.transform.forward;
+            Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
+            context.cam.CamComponent.transform.forward = new Vector3(
+                Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.line.latchCamInterpolate),
+                Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.line.latchCamInterpolate),
+                Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.line.latchCamInterpolate));*/
+        }
+
+        public override void Exit()
+        {
+            context.cam.LockCamera = false;
+            context.cam.FOVPulse(context.pulseFOV);
+
+            Vector3 dir = new Vector3(startVel.x, 0, startVel.z).normalized;
+            dir *= Mathf.Max(startVel.magnitude, context.launchForce);
+            context.rb.linearVelocity = new Vector3(dir.x, context.line.exitLaunch, dir.z);
+
+            context.reticle.ResetPulse();
+            context.line.SetActive(false);
+        }
+    }
+
+    private class LungingState : State<PlatformerController>
+    {
+        public LungingState(PlatformerController context) : base(context) { }
+    }
+
     [Header("References")]
-    [SerializeField] private PlayerCamera cam;
-    [SerializeField] private PlatformerCollisions collisions;
+    [SerializeField] private PlayerCamera   cam;
+    [SerializeField] private PlayerReticle  reticle;
+    [SerializeField] private PlayerLatching line;
 
     [Header("Physics")]
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private CapsuleCollider capsuleCollider;
+    [SerializeField] private PlatformerCollisions collisions;
+    [SerializeField] private CapsuleCollider      capsuleCollider;
+    [SerializeField] private Rigidbody            rb;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
@@ -252,40 +321,41 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float standardSize;
     [SerializeField] private float crouchTime;
 
+    [Header("Latch VFX")]
+    [SerializeField] private float launchForce;
+    [SerializeField] private float pulseFOV;
+
     [Header("SFX")]
     [SerializeField] private AudioClip land;
     [SerializeField] private AudioClip jump;
     [SerializeField] private AudioClip slide;
     [SerializeField] private AudioClip step;
     [SerializeField] private AudioClip die;
-    [SerializeField] private float stepTime;
+    [SerializeField] private float     stepTime;
 
     private readonly float slideDotMin = -0.25f;
     private readonly float jumpGraceTime = 0.1f;
 
-    public Rigidbody Rigidbody => rb;
-    public PlayerCamera Camera => cam;
+    public PlayerCamera Camera    => cam;
 
-    private WalkingState Walking { get; set; }
-    private JumpingState Jumping { get; set; }
-    private FallingState Falling { get; set; }
-    private SlidingState Sliding { get; set; }
-    private SlideJumping SlideJump { get; set; }
+    private WalkingState  Walking   { get; set; }
+    private JumpingState  Jumping   { get; set; }
+    private FallingState  Falling   { get; set; }
+    private SlidingState  Sliding   { get; set; }
+    private SlideJumping  SlideJump { get; set; }
+    private LatchingState Latching  { get; set; }
+    private LungingState  Lunging   { get; set; }
 
     private StateMachine<PlatformerController> hfsm { get; set; }
 
-    private Vector3 HorizontalVelocity
-    {
-        get
-        {
+    private Vector3 HorizontalVelocity {
+        get {
             return new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         }
     }
 
-    private Vector3 MoveDir
-    {
-        get
-        {
+    private Vector3 MoveDir {
+        get {
             Vector3 dir = (cam.ForwardNoY * PlayerInputs.Input.normalized.y + cam.RightNoY * PlayerInputs.Input.normalized.x).normalized;
             return dir;
         }
@@ -293,28 +363,34 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private Vector3 DesiredHorizontalVelocity;
     private float jumpBuffer;
-    private bool slideBoost = true;
+    private bool  slideBoost = true;
+    private bool  latchFinished;
 
     private void OnEnable()
     {
         hfsm = new(this);
-        Walking = new(this);
-        Jumping = new(this);
-        Falling = new(this);
-        Sliding = new(this);
+        Walking   = new(this);
+        Jumping   = new(this);
+        Falling   = new(this);
+        Sliding   = new(this);
         SlideJump = new(this);
+        Latching  = new(this);
+        Lunging   = new(this);
 
         hfsm.AddTransitions(new()
         {
+            // Walking transitions
             new(Walking, Jumping,   () => PlayerInputs.Jump || jumpBuffer > 0),
             new(Walking, Falling,   () => !collisions.GroundCollision),
             new(Walking, Sliding,   () => PlayerInputs.Slide),
 
+            // Falling transitions
             new(Falling, Jumping,   () => PlayerInputs.Jump && hfsm.PreviousState == Walking && hfsm.Duration <= coyoteTime),
             new(Falling, SlideJump, () => PlayerInputs.Jump && hfsm.PreviousState == Sliding && hfsm.Duration <= coyoteTime),
             new(Falling, Walking,   () => collisions.GroundCollision && !PlayerInputs.Slide && hfsm.Duration >= 0.1f),
             new(Falling, Sliding,   () => collisions.GroundCollision && PlayerInputs.Slide  && hfsm.Duration >= 0.1f),
 
+            // Jumping transitions
             new(Jumping, Falling,   () => hfsm.Duration > jumpGraceTime),
 
             // Sliding transitions   
@@ -325,19 +401,26 @@ public class PlatformerController : PlayerManager.PlayerController
             // Slide jump transitions
             new(SlideJump, Falling, () => !PlayerInputs.Slide || hfsm.Duration > jumpGraceTime),
             new(SlideJump, Walking, () => !PlayerInputs.Slide && collisions.GroundCollision && hfsm.Duration >= jumpGraceTime),
-            new(SlideJump, Sliding, () => PlayerInputs.Slide && collisions.GroundCollision && hfsm.Duration >= jumpGraceTime),
+            new(SlideJump, Sliding, () => PlayerInputs.Slide  && collisions.GroundCollision && hfsm.Duration >= jumpGraceTime),
+
+            // Latching transititions
+            new(null,     Latching, () => PlayerInputs.Jump && reticle.Closest.obj != null),
+            new(Latching, Falling,  () => latchFinished || reticle.Closest.obj == null),
+
+            // Lunging transitions
+            new(Lunging,  Falling,  () => true),
         });
 
         hfsm.SetStartState(Falling);
 
+        cam.Reload();
         capsuleCollider.enabled = true;
     }
 
     private void OnDisable()
     {
-        DesiredHorizontalVelocity = Vector3.zero;
-        rb.linearVelocity = Vector3.zero;
-        capsuleCollider.enabled = false;
+        DesiredHorizontalVelocity = rb.linearVelocity = Vector3.zero;
+        capsuleCollider.enabled   = false;
     }
 
     private void Update()
@@ -345,18 +428,23 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.CheckTransitions();
         hfsm.Update();
 
-        jumpBuffer   -= Time.deltaTime;
+        jumpBuffer -= Time.deltaTime;
 
         cam.ViewTilt();
+        if (hfsm.CurrentState != Latching) reticle.CheckReticle();
     }
 
     private void FixedUpdate()
     {
         collisions.CheckGroundCollisions();
-
         collisions.ChangeSize(PlayerInputs.Slide ? crouchSize : standardSize, crouchTime);
 
         hfsm.FixedUpdate();
+    }
+
+    private void OnGUI()
+    {
+        hfsm.OnGUI();
     }
 
     private void Gravity()

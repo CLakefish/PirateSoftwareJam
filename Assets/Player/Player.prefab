@@ -1992,9 +1992,12 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   endPos: {fileID: 0}
+  endDialogue: {fileID: 0}
+  fire: {fileID: 0}
   transitionSpeed: 0.5
   returnSpeed: 0.2
   transportPause: 0.1
+  teleporter: {fileID: 0}
   hand: {fileID: 6431305498034141618}
   snapRecoil: {x: 0, y: 0.25, z: -0.25}
   snapPause: 0.55
@@ -3491,6 +3494,7 @@ MonoBehaviour:
   reticlePulseSize: 3
   reticlePulseAngle: 65
   reticleSmoothing: 0.25
+  reticleScaleTimeMult: 8
   reticlePulseColor: {r: 1, g: 0.91944766, b: 0, a: 1}
 --- !u!114 &2056461139819135779 stripped
 MonoBehaviour:
@@ -3755,7 +3759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2627bdb4086f4e44b6f7a2d2b9a3c1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  paletteReference: {fileID: 11400000, guid: 38b03dd015dcac84c8acabb1cd6a7440, type: 2}
+  paletteReference: {fileID: 11400000, guid: cf1197ff767de204eb22e57bc6d60a5a, type: 2}
   currentPalette:
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
@@ -3779,7 +3783,7 @@ MonoBehaviour:
   - {r: 0.92941177, g: 0.78431374, b: 0.5372549, a: 1}
   ditherer: {fileID: 4800000, guid: 1cf4c00ded6753140b738840e3692db0, type: 3}
   spread: 0.425
-  downSamples: 0
+  downSamples: 1
 --- !u!1001 &4867989235591961343
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -131,12 +131,12 @@
                 },
                 {
                     "name": "",
-                    "id": "9f8169d7-1f3a-4dfe-86a9-e892c1b9ae8b",
+                    "id": "59341d38-b298-40c3-bef9-ef80de18b4e1",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Slide",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

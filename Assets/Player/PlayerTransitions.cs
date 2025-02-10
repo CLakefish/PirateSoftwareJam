@@ -17,56 +17,45 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private float returnSpeed;
     [SerializeField] private float transportPause;
 
+    [Header("Portal")]
+    [SerializeField] private GameObject teleporter;
+
     [Header("Hand")]
     [SerializeField] private PlatformerAnimator hand;
     [SerializeField] private Vector3 snapRecoil;
     [SerializeField] private float snapPause;
     [SerializeField] private float snapFOVPulse;
 
-    private GameObject homunculusPlatforming;
     private Coroutine anim;
-    private Coroutine snap;
+    private Coroutine grab;
 
-    public bool Homunculus {
+    private bool Homunculus {
         set {
             HomunculusController.gameObject.SetActive(value);
             PlatformerController.gameObject.SetActive(!value);
         }
     }
 
-    private void Start()
-    {
-        homunculusPlatforming = GameObject.FindGameObjectWithTag("HomunculusPlatforming");
-    }
-
-    public void SetPlayer(Transform pos)
+    public void SetPlayerPosition(Transform pos)
     {
         PlatformerController.transform.position = pos.position;
         PlatformerController.transform.forward = pos.forward;
     }
 
-    public void ToPlayer(Area area)
+    public void Snap(Area area)
     {
-        SetPlayer(area.SpawnPosition);
-
-        if (anim != null) StopCoroutine(anim);
-        anim = StartCoroutine(ToPlayerTransition());
+        hand.HandAnim("Snap");
+        PlatformerController.Camera.FOVPulse(snapFOVPulse);
+        PlatformerController.Camera.Recoil(new Vector3(snapRecoil.x, snapRecoil.y, snapRecoil.z * Mathf.Sign(Random.Range(-1, 1))));
     }
 
-    public void ToHomunculus(Area area)
+    public void Grab()
     {
-        if (anim != null) StopCoroutine(anim);
-        anim = StartCoroutine(ToHomunculusTransition(area));
-        StartCoroutine(PullOut(area));
+        if (grab != null) StopCoroutine(grab);
+        grab = StartCoroutine(HandGrab());
     }
 
-    public void IdleSnap()
-    {
-        if (snap != null) StopCoroutine(snap);
-        snap = StartCoroutine(Snap(true));
-    }
-
-    private IEnumerator Snap(bool turnOff = false)
+    private IEnumerator HandGrab()
     {
         hand.gameObject.SetActive(true);
         hand.HandAnim("Grab");
@@ -76,131 +65,82 @@ public class PlayerTransitions : PlayerManager.PlayerController
         while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.1f) {
             yield return null;
         }
-
-        if (turnOff) {
-            hand.gameObject.SetActive(false);
-        }
     }
 
-    private IEnumerator ToPlayerTransition()
+    public void ToPlayer(Area area)
+    {
+        SetPlayerPosition(area.SpawnPosition);
+
+        if (anim != null) StopCoroutine(anim);
+        anim = StartCoroutine(ToPlayerTransition(area));
+    }
+
+    private IEnumerator ToPlayerTransition(Area area)
     {
         PlatformerController.Camera.LockCamera = true;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = false;
 
         PlatformerController.gameObject.SetActive(true);
 
-        StartCoroutine(Snap());
-
-        Vector3 vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchObject.transform.position);
-        Vector2 targetCanvasPos = new(
-            (vpPos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
-            (vpPos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
-        );
-
-        platformerView.localScale    = Vector3.zero;
-        platformerView.localPosition = targetCanvasPos;
-        platformerView.SetAsLastSibling();
+        StartCoroutine(HandGrab());
 
         PlatformerController.enabled = true;
 
+        teleporter.transform.forward  = (teleporter.transform.position - HomunculusController.Rigidbody.position).normalized;
+        teleporter.transform.position = area.EnemyController.transform.position + area.EnemyController.offset + (Vector3.up * 0.25f);
+        teleporter.SetActive(true);
+
         yield return new WaitForSecondsRealtime(transportPause);
 
-        hand.gameObject.SetActive(true);
-
-        float startDist = Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchObject.transform.position);
-
-        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.01f)
-        {
-            float t = 1.0f - (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) / startDist);
-            float e = transitionCurve.Evaluate(t);
-
-            vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchPos);
-            targetCanvasPos = new(
-                (vpPos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
-                (vpPos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
-            );
-
-            platformerView.localScale    = Vector3.Lerp(Vector3.zero, Vector3.one, e);
-            platformerView.localPosition = Vector3.Lerp(targetCanvasPos, Vector3.zero, e);
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.1f) {
+            teleporter.transform.forward = (teleporter.transform.position - HomunculusController.Rigidbody.position).normalized;
+            if (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) <= 1) {
+                area.SetEnemyRenderer(false);
+            }
 
             yield return null;
         }
 
-        if (homunculusPlatforming != null) homunculusPlatforming.SetActive(false);
-
-        hand.gameObject.SetActive(true);
-
-        platformerView.transform.localScale    = Vector3.one;
-        platformerView.transform.localPosition = Vector3.zero;
-
         Homunculus = false;
+        teleporter.SetActive(false);
+
+        platformerView.transform.localPosition = Vector3.zero;
+        platformerView.transform.localScale    = Vector3.one;
+        platformerView.SetAsLastSibling();
+
+        HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
+        HomunculusController.Camera.SetForward(HomunculusController.Camera.ForwardNoY);
+        HomunculusController.Line.SetActive(false);
 
         PlatformerController.Camera.LockCamera = false;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = true;
     }
 
-    private IEnumerator ToHomunculusTransition(Area area)
+
+    public void ToHomunculus(Area area)
     {
-        hand.HandAnim("Snap");
-        PlatformerController.Camera.FOVPulse(snapFOVPulse);
-        PlatformerController.Camera.Recoil(new Vector3(snapRecoil.x, snapRecoil.y, snapRecoil.z * Mathf.Sign(Random.Range(-1, 1))));
-        PlatformerController.Rigidbody.linearVelocity = Vector3.zero;
-        PlatformerController.enabled = false;
-
-        area.EnemyController.OnExit();
-
-        yield return new WaitForSecondsRealtime(snapPause);
-
-        hand.gameObject.SetActive(false);
-
-        Vector3 posVel = Vector3.zero;
-
-        while (Vector3.Distance(PlatformerController.Rigidbody.position, area.SpawnPosition.position) > 0.1f)
-        {
-            Vector3 newPos = Vector3.SmoothDamp(PlatformerController.Rigidbody.position, area.SpawnPosition.position, ref posVel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
-            PlatformerController.Rigidbody.MovePosition(newPos);
-            yield return null;
-        }
+        if (anim != null) StopCoroutine(anim);
+        anim = StartCoroutine(ToHomunculusTransition(area));
     }
 
-    private IEnumerator PullOut(Area area)
+    private IEnumerator ToHomunculusTransition(Area area)
     {
-        yield return new WaitForSecondsRealtime(snapPause);
+        platformerView.localScale = Vector3.zero;
 
-        platformerView.localScale = Vector3.one;
-        platformerView.SetAsLastSibling();
-
-        float startDist = Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position);
-
-        while (Vector3.Distance(platformerView.localScale, Vector3.zero) > 0.01f && Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position) > 0.1f)
-        {
-            float t = 1.0f - (Vector3.Distance(PlatformerController.Rigidbody.transform.position, area.SpawnPosition.position) / startDist);
-            float e = transitionCurve.Evaluate(t);
-
-            Vector3 vpPos = HomunculusController.Camera.CamComponent.WorldToViewportPoint(HomunculusController.LatchObject.transform.position);
-            Vector2 targetCanvasPos = new(
-                (vpPos.x * canvas.referenceResolution.x) - (canvas.referenceResolution.x * 0.5f),
-                (vpPos.y * canvas.referenceResolution.y) - (canvas.referenceResolution.y * 0.5f)
-            );
-
-            platformerView.localScale    = Vector3.Lerp(platformerView.localScale, Vector3.zero, e);
-            platformerView.localPosition = Vector3.Lerp(Vector3.zero, targetCanvasPos, e);
-
-            yield return null;
-        }
-
-        if (homunculusPlatforming != null) homunculusPlatforming.SetActive(true);
         area.TurnOff();
 
-        platformerView.localScale = Vector3.zero;
         Homunculus = true;
-        HomunculusController.Rebound();
+        HomunculusController.Camera.CamComponent.fieldOfView = PlatformerController.Camera.CamComponent.fieldOfView;
+        HomunculusController.Camera.SetForward(area.GetComponentInChildren<MindExitPortal>().Forward);
+        HomunculusController.Exit(area.GetComponentInChildren<MindExitPortal>().Forward * 10);
+
+        area.SetEnemyRenderer(true);
 
         if (LevelManager.Instance.CheckWin())
         {
             if (LevelManager.Instance.LastLevel)
             {
-                anim = StartCoroutine(EndRoutine());
+                anim = StartCoroutine(CompletedCutscene());
                 yield break;
             }
 
@@ -210,7 +150,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         }
     }
 
-    private IEnumerator EndRoutine()
+    private IEnumerator CompletedCutscene()
     {
         Vector3 vel    = Vector3.zero;
         HomunculusController.enabled = false;

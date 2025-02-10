@@ -255,8 +255,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 3254969349178913497}
-  rb: {fileID: 6815823902651454391}
   reticle: {fileID: 3822099097809591006}
+  line: {fileID: 0}
+  rb: {fileID: 6815823902651454391}
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
@@ -267,40 +268,11 @@ MonoBehaviour:
   jumpPulseFOV: 7.5
   deathBounce: 10
   bounceTimeSlow: 0
-  exitLaunch: 25
-  latchLerp:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.13721065
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1.106073
-      value: 1
-      inSlope: 3.0838423
-      outSlope: 3.0838423
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.033613443
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  latchCamInterpolate: 0.5
-  latchLaunchGraceTime: 1
-  launchBufferTime: 0.3
-  latchLaunchTimeSlow: 0.1
-  recoil: {x: 0, y: 0.25, z: 3.5}
-  line: {fileID: 0}
-  fireParticles: {fileID: 0}
-  lineInterpolation: 0.1
   pulseFOV: 15
+  latch: {fileID: 0}
+  lunge: {fileID: 0}
+  hitGround: {fileID: 0}
+  die: {fileID: 0}
 --- !u!114 &3254969349178913497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,8 +292,10 @@ MonoBehaviour:
   pulseEndInterpolate: 0.35
   viewTiltAngle: 0
   viewRotationSmoothing: 0
+  recoilReturnSpeed: 0.2
   resetRotation: 0
   LockCamera: 0
+  fovSettings: {fileID: 0}
 --- !u!1 &8122452909308010580
 GameObject:
   m_ObjectHideFlags: 0

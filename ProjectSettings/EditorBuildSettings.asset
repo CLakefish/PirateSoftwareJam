@@ -27,5 +27,5 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Castle.unity
     guid: a1c5d52aba6b9f34fb486fec0a7b1fa9
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 89c663c395b927048801b8ba05589327, type: 3}
   m_UseUCBPForAssetBundles: 0

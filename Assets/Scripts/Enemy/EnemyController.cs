@@ -10,6 +10,7 @@ public class EnemyController : Latchable
     [SerializeField] private UnityEvent onTrigger;
 
     public bool HasTriggered { get; private set; }
+    public bool HasCompleted { get; private set; }
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class EnemyController : Latchable
 
     public void OnExit()
     {
+        HasCompleted = true;
         GameObject particle = Instantiate(fire, transform);
         particle.transform.localPosition = Vector3.up * 1.1f;
     }
@@ -28,11 +30,11 @@ public class EnemyController : Latchable
         Gizmos.DrawLine(transform.position, connected.transform.position);
     }
 
-    public override void Latch(HomunculusController controller)
+    public override void Latch()
     {
-        if (HasTriggered) {
+        if (HasCompleted) {
             slowTime = false;
-            PlayerManager.Instance.Transitions.IdleSnap();
+            PlayerManager.Instance.Transitions.Grab();
             return;
         }
 

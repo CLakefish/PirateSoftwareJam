@@ -247,7 +247,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 2367
+  m_VersionIndex: 2370
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -359,13 +359,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3749258847903559637}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.25881907, w: 0.9659259}
-  m_LocalPosition: {x: -0.75, y: 2, z: 0}
-  m_LocalScale: {x: -0.6, y: 0.6, z: 0.6}
-  m_ConstrainProportionsScale: 1
+  m_LocalRotation: {x: -0.258819, y: 0.9659259, z: -0, w: 0}
+  m_LocalPosition: {x: -0.85, y: 2, z: 0}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1831751980068262757}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: -60}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: -30}
 --- !u!114 &8122531352806865023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,7 +1058,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 3385
+  m_VersionIndex: 3388
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1178,6 +1178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a222ec5e295c1f14e9e58f66a8dd6084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offset: {x: 0, y: 0, z: 0}
   slowTime: 0
 --- !u!1 &4855292011961238742
 GameObject:
@@ -1428,7 +1429,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1538
+  m_VersionIndex: 1541
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []

@@ -4,7 +4,7 @@ public class RotateToCamera : MonoBehaviour
 {
     [SerializeField] private bool perserveXZ = true;
 
-    private void Update()
+    private void LateUpdate()
     {
         transform.LookAt(Camera.main.transform.position);
 

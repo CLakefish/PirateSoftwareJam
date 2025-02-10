@@ -16,6 +16,9 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float viewTiltAngle;
     [SerializeField] private float viewRotationSmoothing;
 
+    [Header("Recoil")]
+    [SerializeField] private float recoilReturnSpeed = 0.2f;
+
     [Header("Locking")]
     [SerializeField] private bool resetRotation = false;
     [SerializeField] public bool  LockCamera    = false;
@@ -61,6 +64,7 @@ public class PlayerCamera : MonoBehaviour
 
     public void Reload()
     {
+        if (fovPulse != null) StopCoroutine(fovPulse);
         fov = fovSettings.Load();
         CamComponent.fieldOfView = fov;
     }
@@ -68,10 +72,13 @@ public class PlayerCamera : MonoBehaviour
     private void OnEnable()
     {
         if (resetRotation) cam.transform.localEulerAngles = Vector3.zero;
+
+        Reload();
     }
 
     private void Awake()
     {
+        Reload();
         cam.fieldOfView = fov;
         MouseLock = true;
     }
@@ -87,7 +94,7 @@ public class PlayerCamera : MonoBehaviour
         float currentZ = Mathf.SmoothDampAngle(cam.transform.localEulerAngles.z, viewTilt.x, ref cameraVel, viewRotationSmoothing);
         currentZ += recoil.z;
 
-        recoil   = Vector3.SmoothDamp(recoil, Vector3.zero, ref recoilVel, 0.2f);
+        recoil   = Vector3.SmoothDamp(recoil, Vector3.zero, ref recoilVel, recoilReturnSpeed);
         viewTilt = Vector2.zero;
 
         if (LockCamera)
@@ -119,6 +126,12 @@ public class PlayerCamera : MonoBehaviour
     {
         resettingRotation = true;
         cam.transform.localEulerAngles = Vector3.zero;
+    }
+
+    public void ResetFOV()
+    {
+        if (fovPulse != null) StopCoroutine(fovPulse);
+        cam.fieldOfView = fov;
     }
 
     public void SetForward(Vector3 fwd)

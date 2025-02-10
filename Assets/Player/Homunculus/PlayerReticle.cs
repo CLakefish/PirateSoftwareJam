@@ -4,35 +4,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HomunculusReticle : MonoBehaviour
+public class PlayerReticle : MonoBehaviour
 {
-    [SerializeField] private HomunculusController context;
+    [Header("References")]
+    [SerializeField] private Rigidbody    Rigidbody;
     [SerializeField] private PlayerCamera cam;
+
+    [Header("Collisions")]
+    [SerializeField] private LayerMask latchableLayer;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float     latchDistance;
+    [SerializeField] private float     maxDeviation = 0.1f;
+    [SerializeField] private float     deviationIgnoreDist = 1.5f;
 
     [Header("Canvas/VFX")]
     [SerializeField] private CanvasScaler canvas;
     [SerializeField] public RectTransform reticle;
-    [SerializeField] private float reticleRotateSpeed;
-    [SerializeField] private float reticleInRangeSize;
-    [SerializeField] private float reticleOutsideRangeSize;
-    [SerializeField] private Color reticleHighlighted;
-    [SerializeField] private Color reticleObstructed;
-
-    [Header("Collisions")]
-    [SerializeField] private LayerMask latchableLayer;
-    [SerializeField] private float latchDistance;
+    [SerializeField] private float        reticleRotateSpeed;
+    [SerializeField] private float        reticleInRangeSize;
+    [SerializeField] private float        reticleOutsideRangeSize;
+    [SerializeField] private Color        reticleHighlighted;
+    [SerializeField] private Color        reticleObstructed;
 
     [Header("Reticle Pulse")]
     [SerializeField] private float reticlePulseSize;
     [SerializeField] private float reticlePulseAngle;
     [SerializeField] private float reticleSmoothing;
+    [SerializeField] private float reticleScaleTimeMult = 4;
     [SerializeField] private Color reticlePulseColor;
 
-    private readonly Dictionary<Renderer, RectTransform>  reticles = new();
+    private readonly Dictionary<Renderer, RectTransform>  reticles   = new();
     private readonly Dictionary<RectTransform, Latchable> latchables = new();
+    public (RectTransform reticle, Renderer obj) Closest { get; private set; }
 
     public GameObject LatchObject { get; private set; }
-    public bool      CanLatch     { get; private set; }
+    public bool       CanLatch    { get; private set; }
+
+    private float reticleTimeScale = 0;
+    private Coroutine reticlePulse;
 
     private void Awake()
     {
@@ -48,18 +57,31 @@ public class HomunculusReticle : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if (reticles.Count <= 0) return;
+
+        reticleTimeScale = 0;
+    }
+
+    private void Update()
+    {
+        reticleTimeScale += Time.deltaTime * reticleScaleTimeMult;
+    }
+
     public void Set(GameObject obj)
     {
         LatchObject = obj;
-        StartCoroutine(ReticlePulseCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
+        if (reticlePulse != null) StopCoroutine(reticlePulse);
+        reticlePulse = StartCoroutine(ReticlePulseCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
     }
 
-    public void ResetReticle()
+    public void ResetPulse()
     {
-        LatchObject = null;
+        if (reticlePulse != null) StopCoroutine(reticlePulse);
     }
 
-    public void Reticle()
+    public void CheckReticle()
     {
         foreach (var pair in reticles)
         {
@@ -77,6 +99,7 @@ public class HomunculusReticle : MonoBehaviour
 
             rect.GetComponent<Image>().color = inRange ? reticleHighlighted : reticleObstructed;
             rect.transform.localScale = inRange ? Vector3.one * reticleInRangeSize : Vector3.one * reticleOutsideRangeSize;
+            rect.transform.localScale *= Mathf.Min(1, reticleTimeScale);
 
             Vector3 pos = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position + latchables[rect].offset);
             rect.transform.localPosition = new(
@@ -87,40 +110,49 @@ public class HomunculusReticle : MonoBehaviour
             rect.gameObject.SetActive(true);
             rect.transform.localEulerAngles += new Vector3(0, 0, reticleRotateSpeed) * Time.deltaTime;
         }
+
+        GetClosestToCenter();
+
+        if (Closest.obj == null) return;
+
+        Closest.reticle.GetComponent<Image>().color = Color.yellow;
     }
 
     private bool Obstructed(Renderer renderer)
     {
-        return Physics.Linecast(cam.CamComponent.transform.position, renderer.transform.position, context.GroundLayer);
+        return Physics.Linecast(cam.CamComponent.transform.position, renderer.transform.position, groundLayer);
     }
 
     private bool InRange(Renderer renderer)
     {
-        return !(Vector3.Distance(renderer.transform.position, context.Rigidbody.position) >= latchDistance);
+        return Vector3.Distance(renderer.transform.position, Rigidbody.position) <= latchDistance;
     }
 
     private bool IsVisible(Renderer renderer)
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam.CamComponent);
-
-        if (GeometryUtility.TestPlanesAABB(planes, renderer.bounds))
-        {
-            return true;
-        }
-
-        return false;
+        return GeometryUtility.TestPlanesAABB(planes, renderer.bounds);
     }
 
-    public (RectTransform reticle, Renderer obj) GetClosestToCenter()
+    private void GetClosestToCenter()
     {
         (RectTransform reticle, Renderer obj) closest = new(null, null);
         float distance = Mathf.Infinity;
 
         foreach (var pair in reticles)
         {
-            float checkDist = Vector2.Distance(pair.Value.localPosition, Vector2.zero);
+            Vector3 scr = cam.CamComponent.WorldToViewportPoint(pair.Key.transform.position);
+            Vector3 mid = new(0.5f, 0.5f, 0);
+            scr.z = 0;
+            float checkDist = Vector3.Distance(scr, mid);
+            float worldDist = Vector3.Distance(pair.Key.transform.position, Rigidbody.position);
 
-            if (checkDist < distance && InRange(pair.Key) && IsVisible(pair.Key) && !Obstructed(pair.Key))
+            if (checkDist > maxDeviation && worldDist > deviationIgnoreDist) continue;
+
+            bool maxDistCheck = checkDist < distance && InRange(pair.Key) && IsVisible(pair.Key) && !Obstructed(pair.Key);
+            bool minDistCheck = worldDist <= deviationIgnoreDist && !Obstructed(pair.Key);
+
+            if (maxDistCheck || minDistCheck)
             {
                 closest = new(pair.Value, pair.Key);
                 distance = checkDist;
@@ -128,27 +160,31 @@ public class HomunculusReticle : MonoBehaviour
         }
 
         CanLatch = closest.obj != null && closest.reticle != null;
-
-        return closest;
+        Closest = closest;
     }
 
-    private IEnumerator ReticlePulseCoroutine(RectTransform rect)
+    public void TurnOffAll()
     {
         foreach (var r in reticles)
         {
             r.Value.gameObject.SetActive(false);
         }
+    }
 
-        Image image = rect.GetComponent<Image>();
-        image.color = reticlePulseColor;
-
+    private IEnumerator ReticlePulseCoroutine(RectTransform rect)
+    {
         Vector3 scaleVel = Vector3.zero;
         float angle    = reticlePulseAngle;
         float angleVel = 0;
         float time     = 0;
 
-        rect.gameObject.SetActive(true);
+        Image image = rect.GetComponent<Image>();
+        image.color = reticlePulseColor;
+
         rect.transform.localScale = Vector3.one * reticlePulseSize;
+
+        TurnOffAll();
+        rect.gameObject.SetActive(true);
 
         while (angle > Mathf.Epsilon)
         {
@@ -164,12 +200,12 @@ public class HomunculusReticle : MonoBehaviour
             rect.transform.localEulerAngles += new Vector3(0, 0, angle) * Time.unscaledDeltaTime;
             image.color = Color.Lerp(image.color, Color.white, time);
 
-            angle = Mathf.SmoothDamp(angle, 0, ref angleVel, reticleSmoothing);
+            angle = Mathf.SmoothDamp(angle, 0, ref angleVel, reticleSmoothing, Mathf.Infinity, Time.unscaledDeltaTime);
             time += Time.unscaledDeltaTime;
             yield return null;
         }
 
-        rect.gameObject.SetActive(false);
         rect.transform.localScale = Vector3.one;
+        rect.gameObject.SetActive(false);
     }
 }

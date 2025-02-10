@@ -15,13 +15,13 @@ public class Area : MonoBehaviour
 
     public EnemyController EnemyController { get; private set; }
     public Transform SpawnPosition => spawnPosition;
-    public AreaEnd EndPosition => endPosition;
+    public AreaEnd   EndPosition => endPosition;
 
     private bool hasTriggered = false;
     private PlayerManager playerManager;
 
 
-    private readonly List<RotationSpace> rotations = new List<RotationSpace>();
+    private readonly List<RotationSpace> rotations = new();
 
     private void Awake()
     {
@@ -44,6 +44,18 @@ public class Area : MonoBehaviour
             r.gameObject.SetActive(true);
         }
 
+        var mindPortal = GetComponentInChildren<MindExitPortal>();
+
+        if (mindPortal) {
+            mindPortal.IsActive = true;
+
+            var triggers = mindPortal.GetComponentsInChildren<MindPortalTrigger>();
+            foreach (var t in triggers)
+            {
+                t.OnTrigger += () => { PlayerManager.Instance.Transitions.ToHomunculus(this); };
+            }
+        }
+
         EnemyController = controller;
 
         hasTriggered = false;
@@ -52,10 +64,17 @@ public class Area : MonoBehaviour
         playerManager.Transitions.ToPlayer(this);
     }
 
+    public void SetEnemyRenderer(bool enabled)
+    {
+        EnemyController.GetComponent<Renderer>().enabled = enabled;
+    }
+
     public void EndTrigger()
     {
         if (hasTriggered) return;
         hasTriggered = true;
+
+        if (EnemyController.HasTriggered) EnemyController.OnExit();
 
         foreach (var clip in triggerSFX)
         {
@@ -64,7 +83,7 @@ public class Area : MonoBehaviour
 
         DialogueManager.Instance.ResetText();
         MonologueManager.Instance.ClearText();
-        playerManager.Transitions.ToHomunculus(this);
+        playerManager.Transitions.Snap(this);
     }
 
     public void SetPosition()
@@ -73,7 +92,7 @@ public class Area : MonoBehaviour
         foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;
         playerManager.PlatformerController.Camera.ResetRotation();
         playerManager.PlatformerController.ResetVelocity();
-        playerManager.Transitions.SetPlayer(SpawnPosition);
+        playerManager.Transitions.SetPlayerPosition(SpawnPosition);
     }
 
     public void TurnOff()
@@ -81,6 +100,12 @@ public class Area : MonoBehaviour
         foreach (var r in rotated)
         {
             r.gameObject.SetActive(false);
+        }
+
+        var mindPortal = GetComponentInChildren<MindExitPortal>();
+        if (mindPortal)
+        {
+            mindPortal.IsActive = false;
         }
     }
 

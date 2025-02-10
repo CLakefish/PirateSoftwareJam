@@ -27,18 +27,20 @@ public class TimeManager : MonoBehaviour
     {
         Interpolate = false;
         Time.timeScale = 0;
+        timeVel = 0;
     }
 
     public void ResumeTime()
     {
         Time.timeScale = 1;
         Interpolate = true;
+        timeVel = 0;
     }
 
     public void Update()
     {
         if (!Interpolate) return;
 
-        Time.timeScale = Mathf.SmoothDamp(Time.timeScale, 1, ref timeVel, timeInterpolationSpeed, Mathf.Infinity, Time.unscaledDeltaTime);
+        Time.timeScale = Mathf.Max(0, Mathf.SmoothDamp(Time.timeScale, 1, ref timeVel, timeInterpolationSpeed, Mathf.Infinity, Time.unscaledDeltaTime));
     }
 }

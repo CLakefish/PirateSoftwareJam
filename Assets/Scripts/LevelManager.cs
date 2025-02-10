@@ -59,7 +59,7 @@ public class LevelManager : MonoBehaviour
     {
         foreach (var enemy in enemies)
         {
-            if (!enemy.HasTriggered) return false;
+            if (!enemy.HasCompleted) return false;
         }
 
         AllowTimeIncrement = false;

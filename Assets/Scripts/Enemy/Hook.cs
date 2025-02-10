@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Hook : Latchable
 {
-    public override void Latch(HomunculusController controller)
+    public override void Latch()
     {
-        PlayerManager.Instance.Transitions.IdleSnap();
+        PlayerManager.Instance.Transitions.Grab();
     }
 }

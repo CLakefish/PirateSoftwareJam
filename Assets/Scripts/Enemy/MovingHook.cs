@@ -21,9 +21,9 @@ public class MovingHook : Latchable
         attached.MovePosition(Vector3.MoveTowards(attached.position, desiredPos.position, Time.unscaledDeltaTime * moveSpeed));
     }
 
-    public override void Latch(HomunculusController controller)
+    public override void Latch()
     {
         desiredPos = desiredPos == startPosition ? endPosition : startPosition;
-        PlayerManager.Instance.Transitions.IdleSnap();
+        PlayerManager.Instance.Transitions.Grab();
     }
 }
