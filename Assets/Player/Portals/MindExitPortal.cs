@@ -78,8 +78,7 @@ public class MindExitPortal : MonoBehaviour
 
             Vector3 pos = (Vector3)mat.GetColumn(3);
             Vector3 dir = (StartPosition - pos) * scaling;
-            dir.y = -dir.y;
-            Vector3 newPos = StartPosition + dir;
+            Vector3 newPos = StartPosition - new Vector3(0, dir.y, 0);
 
             targetCamera.transform.position = newPos;
             targetCamera.transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0)) * mat.rotation;
