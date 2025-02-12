@@ -35,6 +35,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void Enter() {
             hasLaunched = false;
+            context.deathCounter = 0;
         }
 
         public override void Update() {
@@ -86,6 +87,8 @@ public class HomunculusController : PlayerManager.PlayerController
         }
 
         public override void Enter() {
+            context.deathCounter = 0;
+
             context.canLatch = context.latchFinished = false;
 
             context.rb.linearVelocity = Vector3.zero;
@@ -130,7 +133,6 @@ public class HomunculusController : PlayerManager.PlayerController
 
             context.latchFinished  = true;
             context.cam.LockCamera = false;
-            context.deathCounter   = 0;
 
             context.reticle.ResetPulse();
             context.Exit(slowTime ? context.cam.ForwardNoY * context.launchForce : Vector3.zero, slowTime);

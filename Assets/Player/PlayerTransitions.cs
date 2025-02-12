@@ -19,6 +19,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     [Header("Portal")]
     [SerializeField] private GameObject teleporter;
+    [SerializeField] private float teleportDist = 0.2f;
+    [SerializeField] private float heightOffset = 0.25f;
 
     [Header("Hand")]
     [SerializeField] private PlatformerAnimator hand;
@@ -86,8 +88,10 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         PlatformerController.enabled = true;
 
+        Vector3 pos = area.EnemyController.transform.position + area.EnemyController.offset + (Vector3.up * heightOffset);
+        Vector3 dir = HomunculusController.Camera.CamComponent.transform.forward * teleportDist;
+        teleporter.transform.position = pos - dir;
         teleporter.transform.forward  = (teleporter.transform.position - HomunculusController.Rigidbody.position).normalized;
-        teleporter.transform.position = area.EnemyController.transform.position + area.EnemyController.offset + (Vector3.up * 0.25f);
         teleporter.SetActive(true);
 
         yield return new WaitForSecondsRealtime(transportPause);
