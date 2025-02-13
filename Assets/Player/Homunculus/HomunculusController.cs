@@ -23,7 +23,7 @@ public class HomunculusController : PlayerManager.PlayerController
             AudioManager.Instance.PlaySFX(context.lunge);
 
             context.started = true;
-            context.rb.linearVelocity = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
+            context.rb.linearVelocity = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.beginLaunchForce;
             context.cam.FOVPulse(context.jumpPulseFOV);
         }
     }
@@ -41,21 +41,25 @@ public class HomunculusController : PlayerManager.PlayerController
         public override void Update() {
             context.reticle.CheckReticle();
 
-            if (context.PlayerInputs.Jump && !hasLaunched) {
-                hasLaunched = true;
-
-                context.cam.FOVPulse(context.jumpPulseFOV);
-
-                AudioManager.Instance.PlaySFX(context.lunge);
-
-                Vector3 dir               = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
-                context.rb.linearVelocity = dir;
-            }
-
             if (context.PlayerInputs.Jump) {
+
+                if (!hasLaunched && context.hfsm.Duration > 0.01f)
+                {
+                    hasLaunched = true;
+
+                    context.cam.FOVPulse(context.jumpPulseFOV);
+
+                    AudioManager.Instance.PlaySFX(context.lunge);
+
+                    Vector3 dir = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
+                    dir.y = Mathf.Max(dir.y, context.rb.linearVelocity.y + dir.y);
+                    context.rb.linearVelocity = dir;
+                }
+
                 Renderer closest = context.reticle.Closest.obj;
 
-                if (closest != null) {
+                if (closest != null)
+                {
                     context.canLatch = true;
                     return;
                 }
@@ -68,8 +72,8 @@ public class HomunculusController : PlayerManager.PlayerController
     }
 
     private class LatchState : State<HomunculusController> {
-        private Vector3 camVel;
-
+        //private Vector3 camVel;
+        private Vector3 startVel;
         private Vector3 movePos;
         private Vector3 offset;
 
@@ -91,58 +95,62 @@ public class HomunculusController : PlayerManager.PlayerController
 
             context.canLatch = context.latchFinished = false;
 
+            startVel = context.rb.linearVelocity;
+            movePos  = context.rb.position;
             context.rb.linearVelocity = Vector3.zero;
-            movePos                   = context.rb.position;
 
-            context.reticle.Set(context.reticle.Closest.obj.gameObject);
             GetLatchable();
-
-            context.cam.LockCamera = true;
-            context.cam.Recoil(context.line.recoil);
-            context.cam.FOVPulse(context.pulseFOV);
-
-            context.line.InitLine(context.cam);
 
             TimeManager.Instance.SetScale(1);
             AudioManager.Instance.PlaySFX(context.latch);
+
+            context.cam.LockCamera = slowTime;
+
+            context.cam.Recoil(context.PlayerLatching.recoil);
+            context.cam.FOVPulse(context.pulseFOV);
+
+            context.reticle.Set(context.reticle.Closest.obj.gameObject);
+            context.PlayerLatching.InitLine(context.cam);
         }
 
         public override void Update() {
-            context.line.InterpolateLine();
+            context.PlayerLatching.InterpolateLine();
             context.rb.MovePosition(movePos);
         }
 
         public override void FixedUpdate() {
             Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
-            movePos     = Vector3.Lerp(context.rb.position, pos, context.line.latchLerp.Evaluate(context.hfsm.Duration));
+            movePos     = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration));
 
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
 
-            if (slowTime) {
+/*            if (slowTime && context.hfsm.Duration > 1f) {
                 Vector3 fwd = context.cam.CamComponent.transform.forward;
                 Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
                 context.cam.CamComponent.transform.forward = new Vector3(
-                    Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.line.latchCamInterpolate),
-                    Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.line.latchCamInterpolate),
-                    Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.line.latchCamInterpolate));
-            }
+                    Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.PlayerLatching.latchCamInterpolate),
+                    Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.PlayerLatching.latchCamInterpolate),
+                    Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.PlayerLatching.latchCamInterpolate));
+            }*/
         }
 
         public override void Exit() {
-            context.line.SetActive(false);
+            context.PlayerLatching.SetActive(false);
 
             context.latchFinished  = true;
             context.cam.LockCamera = false;
 
             context.reticle.ResetPulse();
-            context.Exit(slowTime ? context.cam.ForwardNoY * context.launchForce : Vector3.zero, slowTime);
+
+            Vector3 dir = context.cam.ForwardNoY * Mathf.Max(context.launchForce, new Vector2(startVel.x, startVel.z).magnitude);
+
+            context.Exit(dir, slowTime);
         }
     }
 
     [Header("References")]
     [SerializeField] private PlayerCamera   cam;
     [SerializeField] private PlayerReticle  reticle;
-    [SerializeField] private PlayerLatching line;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody rb;
@@ -153,8 +161,11 @@ public class HomunculusController : PlayerManager.PlayerController
     [Header("Movement Parameters")]
     [SerializeField] private float gravity;
     [SerializeField] private float launchForce;
-    [SerializeField] private float jumpPulseFOV;
+    [SerializeField] private float beginLaunchForce;
     [SerializeField] private float deathBounce;
+
+    [Header("VFX")]
+    [SerializeField] private float jumpPulseFOV;
     [SerializeField] private float bounceTimeSlow;
 
     [Header("Latch VFX")]
@@ -168,7 +179,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     public Rigidbody      Rigidbody   => rb;
     public PlayerCamera   Camera      => cam;
-    public PlayerLatching Line        => line;
+    public PlayerReticle  Reticle     => reticle;
 
     private BeginState  Begin  { get; set; }
     private LaunchState Launch { get; set; }
@@ -234,11 +245,11 @@ public class HomunculusController : PlayerManager.PlayerController
         hfsm.FixedUpdate();
     }
 
-/*    private void OnGUI()
+    private void OnGUI()
     {
         hfsm.OnGUI();
     }
-*/
+
     private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;
     public void Exit(Vector3 dir, bool timeSet = true)
     {
@@ -247,10 +258,10 @@ public class HomunculusController : PlayerManager.PlayerController
         if (timeSet)
         {
             TimeManager.Instance.Interpolate = true;
-            TimeManager.Instance.SetScale(line.latchLaunchTimeSlow);
+            TimeManager.Instance.SetScale(PlayerLatching.latchLaunchTimeSlow);
         }
 
         AudioManager.Instance.PlaySFX(lunge);
-        rb.linearVelocity = new Vector3(dir.x, line.exitLaunch, dir.z);
+        rb.linearVelocity = new Vector3(dir.x, PlayerLatching.exitLaunch, dir.z);
     }
 }

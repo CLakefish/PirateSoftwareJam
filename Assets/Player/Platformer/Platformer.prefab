@@ -260,9 +260,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 5228717620892235620}
+  reticle: {fileID: 0}
   collisions: {fileID: 2798842559819918785}
-  rb: {fileID: 2516541481633871672}
   capsuleCollider: {fileID: 2634461502356889384}
+  rb: {fileID: 2516541481633871672}
   moveSpeed: 14
   acceleration: 100
   gravity: 46
@@ -279,6 +280,15 @@ MonoBehaviour:
   crouchSize: 1
   standardSize: 2
   crouchTime: 2
+  launchForce: 0
+  launchMinDist: 0.75
+  pulseFOV: 0
+  land: {fileID: 0}
+  jump: {fileID: 0}
+  slide: {fileID: 0}
+  step: {fileID: 0}
+  die: {fileID: 0}
+  stepTime: 0
 --- !u!114 &5228717620892235620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,8 +308,10 @@ MonoBehaviour:
   pulseEndInterpolate: 0.4
   viewTiltAngle: 2.5
   viewRotationSmoothing: 0.2
+  recoilReturnSpeed: 0.2
   resetRotation: 1
   LockCamera: 0
+  fovSettings: {fileID: 0}
 --- !u!114 &2798842559819918785
 MonoBehaviour:
   m_ObjectHideFlags: 0

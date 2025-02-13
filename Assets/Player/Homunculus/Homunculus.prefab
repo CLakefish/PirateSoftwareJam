@@ -256,7 +256,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 3254969349178913497}
   reticle: {fileID: 3822099097809591006}
-  line: {fileID: 0}
   rb: {fileID: 6815823902651454391}
   groundLayer:
     serializedVersion: 2
@@ -264,9 +263,10 @@ MonoBehaviour:
   groundCheckRadius: 0.45
   groundCheckDistance: 0.075
   gravity: 40
-  launchForce: 25
-  jumpPulseFOV: 7.5
+  launchForce: 18
+  beginLaunchForce: 25
   deathBounce: 10
+  jumpPulseFOV: 7.5
   bounceTimeSlow: 0
   pulseFOV: 15
   latch: {fileID: 0}
@@ -289,7 +289,7 @@ MonoBehaviour:
   input: {fileID: 0}
   fov: 75
   pulseStartInterpolate: 0.05
-  pulseEndInterpolate: 0.35
+  pulseEndInterpolate: 0.4
   viewTiltAngle: 0
   viewRotationSmoothing: 0
   recoilReturnSpeed: 0.2

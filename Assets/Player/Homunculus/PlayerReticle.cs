@@ -89,7 +89,7 @@ public class PlayerReticle : MonoBehaviour
 
             if (pair.Key == null) continue;
 
-            if (!IsVisible(pair.Key) || Obstructed(pair.Key))
+            if (!IsVisible(pair.Key) || Obstructed(pair.Key) || Vector3.Distance(pair.Key.transform.position, Rigidbody.position) <= 1)
             {
                 rect.gameObject.SetActive(false);
                 continue;

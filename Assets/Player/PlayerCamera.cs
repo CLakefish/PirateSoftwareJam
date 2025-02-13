@@ -74,6 +74,8 @@ public class PlayerCamera : MonoBehaviour
         if (resetRotation) cam.transform.localEulerAngles = Vector3.zero;
 
         Reload();
+
+        recoilVel = Vector3.zero;
     }
 
     private void Awake()
@@ -99,7 +101,7 @@ public class PlayerCamera : MonoBehaviour
 
         if (LockCamera)
         {
-            cam.transform.localRotation = Quaternion.Euler(cam.transform.localEulerAngles.x, cam.transform.localEulerAngles.y, currentZ);
+            cam.transform.localRotation = Quaternion.Euler(cam.transform.localEulerAngles.x + recoil.x, cam.transform.localEulerAngles.y + recoil.y, currentZ);
             return;
         }
 
@@ -118,7 +120,7 @@ public class PlayerCamera : MonoBehaviour
     public void Recoil(Vector3 recoilAmount)
     {
         Vector3 rand = Random.insideUnitSphere;
-        Vector3 rec = new(recoilAmount.x, rand.y * recoilAmount.y, recoilAmount.z);
+        Vector3 rec  = new(recoilAmount.x, rand.y * recoilAmount.y, recoilAmount.z);
         recoil += rec;
     }
 
@@ -162,6 +164,7 @@ public class PlayerCamera : MonoBehaviour
         }
 
         cam.fieldOfView = endFOV;
+        vel = 0;
 
         while (Mathf.Abs(cam.fieldOfView - fov) > 1)
         {

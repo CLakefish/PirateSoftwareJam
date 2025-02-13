@@ -227,7 +227,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
-            context.cam.LockCamera = true;
             context.latchFinished = false;
 
             startVel = context.rb.linearVelocity;
@@ -239,44 +238,36 @@ public class PlatformerController : PlayerManager.PlayerController
 
             context.reticle.Set(context.reticle.Closest.obj.gameObject);
 
-            context.cam.Recoil(context.line.recoil);
+            context.cam.Recoil(context.PlayerLatching.recoil);
             context.cam.FOVPulse(context.pulseFOV);
 
-            context.line.InitLine(context.cam);
+            context.PlayerLatching.InitLine(context.cam);
         }
 
         public override void Update()
         {
-            context.line.InterpolateLine();
+            context.PlayerLatching.InterpolateLine();
             context.rb.MovePosition(movePos);
         }
 
         public override void FixedUpdate()
         {
             Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
-            movePos     = Vector3.Lerp(context.rb.position, pos, context.line.latchLerp.Evaluate(context.hfsm.Duration));
+            movePos = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration));
 
-            context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
-
-/*            Vector3 fwd = context.cam.CamComponent.transform.forward;
-            Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
-            context.cam.CamComponent.transform.forward = new Vector3(
-                Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.line.latchCamInterpolate),
-                Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.line.latchCamInterpolate),
-                Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.line.latchCamInterpolate));*/
+            context.latchFinished = Vector3.Distance(context.rb.position, pos) < context.launchMinDist;
         }
 
         public override void Exit()
         {
-            context.cam.LockCamera = false;
             context.cam.FOVPulse(context.pulseFOV);
 
-            Vector3 dir = new Vector3(startVel.x, 0, startVel.z).normalized;
-            dir *= Mathf.Max(startVel.magnitude, context.launchForce);
-            context.rb.linearVelocity = new Vector3(dir.x, context.line.exitLaunch, dir.z);
-
             context.reticle.ResetPulse();
-            context.line.SetActive(false);
+            context.PlayerLatching.SetActive(false);
+
+            Vector3 dir = context.cam.CamComponent.transform.forward * Mathf.Max(context.launchEndForce, new Vector2(startVel.x, startVel.z).magnitude);
+            context.rb.linearVelocity = dir + new Vector3(0, context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + 0.8f), 0);
+            context.DesiredHorizontalVelocity = new Vector3(context.rb.linearVelocity.x, 0, context.rb.linearVelocity.z);
         }
     }
 
@@ -288,7 +279,6 @@ public class PlatformerController : PlayerManager.PlayerController
     [Header("References")]
     [SerializeField] private PlayerCamera   cam;
     [SerializeField] private PlayerReticle  reticle;
-    [SerializeField] private PlayerLatching line;
 
     [Header("Physics")]
     [SerializeField] private PlatformerCollisions collisions;
@@ -322,7 +312,8 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float crouchTime;
 
     [Header("Latch VFX")]
-    [SerializeField] private float launchForce;
+    [SerializeField] private float launchEndForce;
+    [SerializeField] private float launchMinDist = 0.6f;
     [SerializeField] private float pulseFOV;
 
     [Header("SFX")]
@@ -336,7 +327,8 @@ public class PlatformerController : PlayerManager.PlayerController
     private readonly float slideDotMin = -0.25f;
     private readonly float jumpGraceTime = 0.1f;
 
-    public PlayerCamera Camera    => cam;
+    public PlayerCamera  Camera    => cam;
+    public PlayerReticle Reticle   => reticle;
 
     private WalkingState  Walking   { get; set; }
     private JumpingState  Jumping   { get; set; }

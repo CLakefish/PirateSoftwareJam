@@ -35,6 +35,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
         set {
             HomunculusController.gameObject.SetActive(value);
             PlatformerController.gameObject.SetActive(!value);
+
+            PlayerLatching.SetReticle(value ? HomunculusController.Reticle : PlatformerController.Reticle);
         }
     }
 
@@ -81,15 +83,13 @@ public class PlayerTransitions : PlayerManager.PlayerController
     {
         PlatformerController.Camera.LockCamera = true;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = false;
-
-        PlatformerController.gameObject.SetActive(true);
+        PlatformerController.Camera.CamComponent.Render();
 
         StartCoroutine(HandGrab());
 
-        PlatformerController.enabled = true;
-
         Vector3 pos = area.EnemyController.transform.position + area.EnemyController.offset + (Vector3.up * heightOffset);
         Vector3 dir = HomunculusController.Camera.CamComponent.transform.forward * teleportDist;
+
         teleporter.transform.position = pos - dir;
         teleporter.transform.forward  = (teleporter.transform.position - HomunculusController.Rigidbody.position).normalized;
         teleporter.SetActive(true);
@@ -97,7 +97,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         yield return new WaitForSecondsRealtime(transportPause);
 
         while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.1f) {
-            teleporter.transform.forward = (teleporter.transform.position - HomunculusController.Rigidbody.position).normalized;
+            //teleporter.transform.forward = (teleporter.transform.position - HomunculusController.Rigidbody.position).normalized;
             if (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) <= 1) {
                 area.SetEnemyRenderer(false);
             }
@@ -106,16 +106,15 @@ public class PlayerTransitions : PlayerManager.PlayerController
         }
 
         Homunculus = false;
-        teleporter.SetActive(false);
+        HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
+        HomunculusController.Camera.SetForward(HomunculusController.Camera.ForwardNoY);
 
+        teleporter.SetActive(false);
         platformerView.transform.localPosition = Vector3.zero;
         platformerView.transform.localScale    = Vector3.one;
         platformerView.SetAsLastSibling();
 
-        HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
-        HomunculusController.Camera.SetForward(HomunculusController.Camera.ForwardNoY);
-        HomunculusController.Line.SetActive(false);
-
+        PlayerLatching.ResetLine();
         PlatformerController.Camera.LockCamera = false;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = true;
     }

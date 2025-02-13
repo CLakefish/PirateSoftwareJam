@@ -24,6 +24,18 @@ public class PlayerLatching : MonoBehaviour
 
     private Vector3 posVel;
 
+    public void SetReticle(PlayerReticle reticle)
+    {
+        this.reticle = reticle;
+        ClearParticles();
+    }
+
+    public void SetActive(bool active)
+    {
+        line.gameObject.SetActive(active);
+        line.enabled = active;
+    }
+
     public void InitLine(PlayerCamera cam)
     {
         Vector3 startPosition = cam.CamComponent.transform.position - Vector3.up + cam.CamComponent.transform.right;
@@ -33,7 +45,7 @@ public class PlayerLatching : MonoBehaviour
         line.SetPosition(0, startPosition);
         line.SetPosition(1, startPosition);
 
-        ClearLine();
+        ClearParticles();
         SetActive(true);
 
         fireParticles.transform.position = startPosition;
@@ -42,21 +54,26 @@ public class PlayerLatching : MonoBehaviour
         posVel = Vector3.zero;
     }
 
-    public void ClearLine()
-    {
-        fireParticles.Stop();
-        fireParticles.Clear();
-    }
-
-    public void SetActive(bool active)
-    {
-        line.gameObject.SetActive(active);
-        line.enabled = active;
-    }
-
     public void InterpolateLine()
     {
         line.SetPosition(1, Vector3.SmoothDamp(line.GetPosition(1), reticle.LatchObject.transform.position, ref posVel, lineInterpolation));
         fireParticles.transform.position = line.GetPosition(1);
+    }
+
+    public void ResetLine()
+    {
+        line.SetPosition(0, Vector3.zero);
+        line.SetPosition(1, Vector3.zero);
+    }
+
+    public bool LineFinished()
+    {
+        return Vector3.Distance(line.GetPosition(1), reticle.LatchObject.transform.position) <= 0.1f;
+    }
+
+    public void ClearParticles()
+    {
+        fireParticles.Stop();
+        fireParticles.Clear();
     }
 }

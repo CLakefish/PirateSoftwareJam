@@ -51,6 +51,9 @@ public class MindExitPortal : MonoBehaviour
         targetCamera.depthTextureMode = DepthTextureMode.Depth;
 
         targetCamera.gameObject.SetActive(false);
+
+        homunculus = PlayerManager.Instance.HomunculusController.Rigidbody.transform;
+        platformerCamera = PlayerManager.Instance.PlatformerController.Camera.CamComponent;
     }
 
     private void LateUpdate()
@@ -59,6 +62,8 @@ public class MindExitPortal : MonoBehaviour
 
         StartPosition = PlayerManager.Instance.HomunculusController.Rigidbody.transform.position;
 
+        bool rendered = false;
+
         foreach (var rend in renderers)
         {
             if (!Visible(rend, platformerCamera))
@@ -66,6 +71,9 @@ public class MindExitPortal : MonoBehaviour
                 targetCamera.gameObject.SetActive(false);
                 continue;
             }
+
+            if (rendered) break;
+            rendered = true;
 
             targetCamera.gameObject.SetActive(true);
 

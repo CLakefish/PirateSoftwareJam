@@ -12,12 +12,13 @@ public class PlayerManager : MonoBehaviour
 
         public HomunculusController HomunculusController => player.homunculus;
         public PlatformerController PlatformerController => player.platformer;
+        public PlayerLatching       PlayerLatching       => player.playerLatching;
         public PlayerInputManager   PlayerInputs         => player.playerInputs;
 
 
         public PlayerRespawnMenu     PlayerRespawn     => player.playerRespawn;
         public PlayerCompleteMenu    PlayerComplete    => player.playerComplete;
-        public PlayerTransitions PlayerTransitions => player.playerTransitions;
+        public PlayerTransitions     PlayerTransitions => player.playerTransitions;
     }
 
     public static PlayerManager Instance { get; private set; }
@@ -26,10 +27,12 @@ public class PlayerManager : MonoBehaviour
     public HomunculusController HomunculusController => homunculus;
     public PlatformerController PlatformerController => platformer;
     public PlayerInputManager PlayerInputs => playerInputs;
+    public PlayerLatching PlayerLatching => playerLatching;
 
 
     [SerializeField] private HomunculusController homunculus;
     [SerializeField] private PlatformerController platformer;
+    [SerializeField] private PlayerLatching       playerLatching;
     [SerializeField] private PlayerInputManager   playerInputs;
 
     [Header("VFX")]
