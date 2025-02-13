@@ -51,7 +51,10 @@ public class MindExitPortal : MonoBehaviour
         targetCamera.depthTextureMode = DepthTextureMode.Depth;
 
         targetCamera.gameObject.SetActive(false);
+    }
 
+    private void Start()
+    {
         homunculus = PlayerManager.Instance.HomunculusController.Rigidbody.transform;
         platformerCamera = PlayerManager.Instance.PlatformerController.Camera.CamComponent;
     }

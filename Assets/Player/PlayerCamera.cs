@@ -99,14 +99,14 @@ public class PlayerCamera : MonoBehaviour
         recoil   = Vector3.SmoothDamp(recoil, Vector3.zero, ref recoilVel, recoilReturnSpeed);
         viewTilt = Vector2.zero;
 
-        if (LockCamera)
-        {
-            cam.transform.localRotation = Quaternion.Euler(cam.transform.localEulerAngles.x + recoil.x, cam.transform.localEulerAngles.y + recoil.y, currentZ);
-            return;
-        }
-
         float x = cam.transform.localEulerAngles.x;
         if (x > 180) x -= 360;
+
+        if (LockCamera)
+        {
+            cam.transform.localRotation = Quaternion.Euler(x + recoil.x, cam.transform.localEulerAngles.y + recoil.y, currentZ);
+            return;
+        }
 
         cam.transform.localRotation = Quaternion.Euler(
             new Vector3(

@@ -23,11 +23,11 @@ public class PlayerManager : MonoBehaviour
 
     public static PlayerManager Instance { get; private set; }
 
-    public PlayerTransitions Transitions => playerTransitions;
+    public PlayerTransitions    Transitions          => playerTransitions;
     public HomunculusController HomunculusController => homunculus;
     public PlatformerController PlatformerController => platformer;
-    public PlayerInputManager PlayerInputs => playerInputs;
-    public PlayerLatching PlayerLatching => playerLatching;
+    public PlayerInputManager   PlayerInputs         => playerInputs;
+    public PlayerLatching       PlayerLatching       => playerLatching;
 
 
     [SerializeField] private HomunculusController homunculus;
