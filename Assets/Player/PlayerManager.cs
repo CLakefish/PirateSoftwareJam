@@ -107,4 +107,10 @@ public class PlayerManager : MonoBehaviour
         PlatformerController.Camera.Reload();
         AudioManager.Instance.ReloadVolumes();
     }
+
+    public void SetPlayerPosition(Transform pos)
+    {
+        PlatformerController.transform.position = pos.position;
+        PlatformerController.transform.forward  = pos.forward;
+    }
 }

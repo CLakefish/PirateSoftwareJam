@@ -220,7 +220,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private class LatchingState : State<PlatformerController>
     {
-        private Vector3 movePos, startVel;
+        private Vector3 startVel;
         private Vector3 offset;
 
         public LatchingState(PlatformerController context) : base(context) { }
@@ -230,15 +230,15 @@ public class PlatformerController : PlayerManager.PlayerController
             context.latchFinished = false;
 
             startVel = context.rb.linearVelocity;
-            movePos  = context.rb.position;
+            //movePos  = context.rb.position;
             context.rb.linearVelocity = Vector3.zero;
 
             var latchable = context.reticle.Closest.obj.GetComponent<Latchable>();
             latchable.Latch();
 
-            context.reticle.Set(context.reticle.Closest.obj.gameObject);
+            context.reticle.PulseReticle(context.reticle.Closest.obj.gameObject);
 
-            context.cam.Recoil(context.PlayerLatching.recoil);
+            context.cam.Recoil(context.recoil);
             context.cam.FOVPulse(context.pulseFOV);
 
             context.PlayerLatching.InitLine(context.cam);
@@ -247,13 +247,14 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Update()
         {
             context.PlayerLatching.InterpolateLine();
-            context.rb.MovePosition(movePos);
+            Vector3 dir = (context.reticle.Closest.obj.transform.position - context.rb.position).normalized;
+            context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * context.latchCurveSpeedIncrease) * dir;
         }
 
         public override void FixedUpdate()
         {
             Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
-            movePos = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration));
+            //movePos = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration));
 
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < context.launchMinDist;
         }
@@ -261,12 +262,13 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Exit()
         {
             context.cam.FOVPulse(context.pulseFOV);
+            context.slideBoost = true;
 
             context.reticle.ResetPulse();
             context.PlayerLatching.SetActive(false);
 
-            Vector3 dir = context.cam.CamComponent.transform.forward * Mathf.Max(context.launchEndForce, new Vector2(startVel.x, startVel.z).magnitude);
-            context.rb.linearVelocity = dir + new Vector3(0, context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + 0.8f), 0);
+            Vector3 dir = context.cam.CamComponent.transform.forward * Mathf.Max(context.launchEndForce, startVel.magnitude);
+            context.rb.linearVelocity = dir + new Vector3(0, context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + context.latchDownwardLaunchThreshold), 0);
             context.DesiredHorizontalVelocity = new Vector3(context.rb.linearVelocity.x, 0, context.rb.linearVelocity.z);
         }
     }
@@ -311,10 +313,16 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float standardSize;
     [SerializeField] private float crouchTime;
 
-    [Header("Latch VFX")]
+    [Header("Latch Parameters")]
+    [SerializeField] private float latchVelocitySpeed = 45;
+    [SerializeField] private float latchCurveSpeedIncrease = 2;
+    [SerializeField] private float latchDownwardLaunchThreshold = 0.8f;
     [SerializeField] private float launchEndForce;
     [SerializeField] private float launchMinDist = 0.6f;
+
+    [Header("Latch VFX")]
     [SerializeField] private float pulseFOV;
+    [SerializeField] private Vector3 recoil;
 
     [Header("SFX")]
     [SerializeField] private AudioClip land;
@@ -329,6 +337,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
     public PlayerCamera  Camera    => cam;
     public PlayerReticle Reticle   => reticle;
+    public Rigidbody     Rigidbody => rb;
 
     private WalkingState  Walking   { get; set; }
     private JumpingState  Jumping   { get; set; }

@@ -34,8 +34,7 @@ public class HomunculusController : PlayerManager.PlayerController
         public LaunchState(HomunculusController context) : base(context) { }
 
         public override void Enter() {
-            hasLaunched = false;
-            context.deathCounter = 0;
+            hasLaunched = context.hfsm.PreviousState == context.Begin;
         }
 
         public override void Update() {
@@ -72,13 +71,12 @@ public class HomunculusController : PlayerManager.PlayerController
     }
 
     private class LatchState : State<HomunculusController> {
-        //private Vector3 camVel;
+        private Vector3 camVel;
         private Vector3 startVel;
         private Vector3 movePos;
         private Vector3 offset;
 
         private bool slowTime;
-
         public LatchState(HomunculusController context) : base(context) { }
 
         private void GetLatchable() {
@@ -91,8 +89,6 @@ public class HomunculusController : PlayerManager.PlayerController
         }
 
         public override void Enter() {
-            context.deathCounter = 0;
-
             context.canLatch = context.latchFinished = false;
 
             startVel = context.rb.linearVelocity;
@@ -106,10 +102,10 @@ public class HomunculusController : PlayerManager.PlayerController
 
             context.cam.LockCamera = slowTime;
 
-            context.cam.Recoil(context.PlayerLatching.recoil);
+            context.cam.Recoil(context.recoil);
             context.cam.FOVPulse(context.pulseFOV);
 
-            context.reticle.Set(context.reticle.Closest.obj.gameObject);
+            context.reticle.PulseReticle(context.reticle.Closest.obj.gameObject);
             context.PlayerLatching.InitLine(context.cam);
         }
 
@@ -124,14 +120,15 @@ public class HomunculusController : PlayerManager.PlayerController
 
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
 
-/*            if (slowTime && context.hfsm.Duration > 1f) {
+            if (slowTime && context.hfsm.Duration > 1f)
+            {
                 Vector3 fwd = context.cam.CamComponent.transform.forward;
                 Vector3 dir = (pos - context.cam.CamComponent.transform.position).normalized;
                 context.cam.CamComponent.transform.forward = new Vector3(
                     Mathf.SmoothDampAngle(fwd.x, dir.x, ref camVel.x, context.PlayerLatching.latchCamInterpolate),
                     Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.PlayerLatching.latchCamInterpolate),
                     Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.PlayerLatching.latchCamInterpolate));
-            }*/
+            }
         }
 
         public override void Exit() {
@@ -162,7 +159,8 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float gravity;
     [SerializeField] private float launchForce;
     [SerializeField] private float beginLaunchForce;
-    [SerializeField] private float deathBounce;
+    [SerializeField] private float deathBounceForce;
+    [SerializeField] private int   deathBounceTally = 3;
 
     [Header("VFX")]
     [SerializeField] private float jumpPulseFOV;
@@ -170,6 +168,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
     [Header("Latch VFX")]
     [SerializeField] private float pulseFOV;
+    [SerializeField] private Vector3 recoil;
 
     [Header("Audio")]
     [SerializeField] private AudioClip latch;
@@ -212,6 +211,10 @@ public class HomunculusController : PlayerManager.PlayerController
             new(Latch,  Launch, () => latchFinished),
         });
 
+        hfsm.AddOnChange(new() {
+            () => deathCounter = 0,
+        });
+
         hfsm.SetStartState(Begin);
     }
 
@@ -224,21 +227,20 @@ public class HomunculusController : PlayerManager.PlayerController
     private void FixedUpdate()
     {
         if (started && hfsm.Duration > 0.1f && hfsm.CurrentState != Latch) {
-            switch (deathCounter) {
-                case 2:
-                    AudioManager.Instance.PlaySFX(die);
-                    rb.linearVelocity = Vector3.zero;
-                    PlayerRespawn.Respawn();
-                    return;
+            if (deathCounter >= deathBounceTally)
+            {
+                AudioManager.Instance.PlaySFX(die);
+                rb.linearVelocity = Vector3.zero;
+                PlayerRespawn.Respawn();
+                return;
+            }
 
-                default:
-                    if (Physics.SphereCast(rb.transform.position, groundCheckRadius, Vector3.down, out RaycastHit _, groundCheckDistance, groundLayer)) {
-                        deathCounter += 1;
-                        rb.linearVelocity = new Vector3(rb.linearVelocity.x, deathBounce, rb.linearVelocity.z);
-                        TimeManager.Instance.SetScale(bounceTimeSlow);
-                        AudioManager.Instance.PlaySFX(hitGround);
-                    }
-                    break;
+            if (Physics.SphereCast(rb.transform.position, groundCheckRadius, Vector3.down, out RaycastHit _, groundCheckDistance, groundLayer))
+            {
+                deathCounter += 1;
+                rb.linearVelocity = new Vector3(rb.linearVelocity.x, deathBounceForce, rb.linearVelocity.z);
+                TimeManager.Instance.SetScale(bounceTimeSlow);
+                AudioManager.Instance.PlaySFX(hitGround);
             }
         }
 

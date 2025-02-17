@@ -85,7 +85,7 @@ public class PlayerCamera : MonoBehaviour
         MouseLock = true;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (resettingRotation)
         {

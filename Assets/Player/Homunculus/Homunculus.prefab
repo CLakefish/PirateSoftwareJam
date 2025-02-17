@@ -269,6 +269,7 @@ MonoBehaviour:
   jumpPulseFOV: 7.5
   bounceTimeSlow: 0
   pulseFOV: 15
+  recoil: {x: 0, y: 0, z: 0}
   latch: {fileID: 0}
   lunge: {fileID: 0}
   hitGround: {fileID: 0}

@@ -8,6 +8,7 @@ public class EnemyController : Latchable
     [SerializeField] private Area connected;
     [SerializeField] private GameObject fire;
     [SerializeField] private UnityEvent onTrigger;
+    [SerializeField] private GameObject renderer;
 
     public bool HasTriggered { get; private set; }
     public bool HasCompleted { get; private set; }
@@ -15,13 +16,24 @@ public class EnemyController : Latchable
     private void Awake()
     {
         HasTriggered = false;
+        connected.gameObject.SetActive(false);
+    }
+
+    public void SetRendering(bool enabled)
+    {
+        renderer.SetActive(enabled);
+    }
+
+    public void BrainTrigger()
+    {
+        HasCompleted = true;
+        GameObject particle = Instantiate(fire, renderer.transform);
+        particle.transform.localPosition = Vector3.up * 0.5f;
     }
 
     public void OnExit()
     {
-        HasCompleted = true;
-        GameObject particle = Instantiate(fire, transform);
-        particle.transform.localPosition = Vector3.up * 1.1f;
+        connected.gameObject.SetActive(false);
     }
 
     private void OnDrawGizmos()
@@ -37,6 +49,8 @@ public class EnemyController : Latchable
             PlayerManager.Instance.Transitions.Grab();
             return;
         }
+
+        connected.gameObject.SetActive(true);
 
         onTrigger?.Invoke();
         HasTriggered = true;

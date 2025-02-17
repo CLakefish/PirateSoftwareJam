@@ -29,7 +29,7 @@ public class MindEnterPortal : MonoBehaviour
         renderer.enabled = false;
 
         targetCamera.fieldOfView = camToFollow.fieldOfView;
-        targetCamera.transform.forward = camToFollow.transform.forward;
+        targetCamera.transform.forward  = camToFollow.transform.forward;
         targetCamera.transform.position = camToFollow.transform.position;
 
         targetCamera.Render();

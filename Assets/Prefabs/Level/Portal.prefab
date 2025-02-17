@@ -47,10 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efc0bc68132389c4e822023938a8193c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  homunculus: {fileID: 0}
   targetCamera: {fileID: 3838730580087294564}
-  platformerCamera: {fileID: 0}
-  scaling: 0.05
+  portalViewScaling: 0.01
+  portalOpenPause: 0.5
+  portalOpenInterpolation: 0.25
 --- !u!1 &1823734762363810533
 GameObject:
   m_ObjectHideFlags: 0

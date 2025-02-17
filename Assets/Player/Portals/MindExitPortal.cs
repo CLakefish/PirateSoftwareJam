@@ -1,14 +1,20 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MindExitPortal : MonoBehaviour
 {
-    [SerializeField] private Transform homunculus;
     [SerializeField] private Camera targetCamera;
-    [SerializeField] private Camera platformerCamera;
-    [SerializeField] private float scaling = 0.25f;
-    private List<MeshRenderer> renderers = new();
+    [SerializeField] private float  portalViewScaling = 0.25f;
+    [SerializeField] private float  portalOpenPause = 0.75f;
+    [SerializeField] private float  portalOpenInterpolation = 1;
+
+    private readonly List<MeshRenderer> renderers = new();
+
     private RenderTexture texture;
+    private PlayerManager playerManager;
+    private Transform     homunculus;
+    private Camera        platformerCamera;
 
     public Vector3 StartPosition  { get; set; }
     public Vector3 Forward
@@ -36,6 +42,10 @@ public class MindExitPortal : MonoBehaviour
     private void OnEnable()
     {
         renderers.AddRange(GetComponentsInChildren<MeshRenderer>());
+        foreach (var renderer in renderers)
+        {
+            renderer.transform.localScale = Vector3.zero;
+        }
 
         if (texture != null) Destroy(texture);
 
@@ -49,59 +59,81 @@ public class MindExitPortal : MonoBehaviour
         }
 
         targetCamera.depthTextureMode = DepthTextureMode.Depth;
-
         targetCamera.gameObject.SetActive(false);
-    }
-
-    private void Start()
-    {
-        homunculus = PlayerManager.Instance.HomunculusController.Rigidbody.transform;
-        platformerCamera = PlayerManager.Instance.PlatformerController.Camera.CamComponent;
     }
 
     private void LateUpdate()
     {
         if (!IsActive) return;
 
-        StartPosition = PlayerManager.Instance.HomunculusController.Rigidbody.transform.position;
-
-        bool rendered = false;
+        StartPosition = playerManager.HomunculusController.Rigidbody.transform.position;
 
         foreach (var rend in renderers)
         {
             if (!Visible(rend, platformerCamera))
             {
-                targetCamera.gameObject.SetActive(false);
                 continue;
             }
 
-            if (rendered) break;
-            rendered = true;
-
-            targetCamera.gameObject.SetActive(true);
-
-            rend.enabled = false;
-
-            targetCamera.projectionMatrix = platformerCamera.projectionMatrix;
-            targetCamera.fieldOfView = platformerCamera.fieldOfView;
-
-            Matrix4x4 mat = homunculus.localToWorldMatrix * transform.worldToLocalMatrix * platformerCamera.transform.localToWorldMatrix;
-
-            Vector3 pos = (Vector3)mat.GetColumn(3);
-            Vector3 dir = (StartPosition - pos) * scaling;
-            Vector3 newPos = StartPosition - new Vector3(0, dir.y, 0);
-
-            targetCamera.transform.position = newPos;
-            targetCamera.transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0)) * mat.rotation;
-
-            targetCamera.Render();
-            rend.enabled = true;
+            RenderCam(rend);
+            break;
         }
     }
 
-    public static bool Visible(Renderer renderer, Camera camera)
+    private void RenderCam(Renderer rend)
+    {
+        rend.enabled = false;
+
+        targetCamera.projectionMatrix = platformerCamera.projectionMatrix;
+        targetCamera.fieldOfView = platformerCamera.fieldOfView;
+
+        Matrix4x4 mat = homunculus.localToWorldMatrix * transform.worldToLocalMatrix * platformerCamera.transform.localToWorldMatrix;
+
+        Vector3 pos = (Vector3)mat.GetColumn(3);
+        Vector3 dir = (StartPosition - pos) * portalViewScaling;
+        Vector3 newPos = StartPosition - new Vector3(0, dir.y, 0);
+
+        targetCamera.transform.SetPositionAndRotation(newPos, Quaternion.Euler(new Vector3(0, 180, 0)) * mat.rotation);
+
+        targetCamera.Render();
+        rend.enabled = true;
+    }
+
+    private bool Visible(Renderer renderer, Camera camera)
     {
         Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(camera);
         return GeometryUtility.TestPlanesAABB(frustumPlanes, renderer.bounds);
+    }
+
+    public void Set(PlayerManager manager)
+    {
+        playerManager = manager;
+        homunculus       = playerManager.HomunculusController.Rigidbody.transform;
+        platformerCamera = playerManager.PlatformerController.Camera.CamComponent;
+    }
+
+    public void OpenAnim()
+    {
+        StartCoroutine(OpenAnimCoroutine());
+    }
+
+    private IEnumerator OpenAnimCoroutine()
+    {
+        Vector3 scale = Vector3.zero;
+        Vector3 vel   = Vector3.zero;
+
+        yield return new WaitForSecondsRealtime(portalOpenPause);
+
+        while (scale != Vector3.one)
+        {
+            scale = Vector3.SmoothDamp(scale, Vector3.one, ref vel, portalOpenInterpolation, Mathf.Infinity, Time.unscaledDeltaTime);
+
+            foreach (var renderer in renderers)
+            {
+                renderer.transform.localScale = scale;
+            }
+
+            yield return null;
+        }
     }
 }

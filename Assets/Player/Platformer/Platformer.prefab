@@ -280,9 +280,13 @@ MonoBehaviour:
   crouchSize: 1
   standardSize: 2
   crouchTime: 2
-  launchForce: 0
-  launchMinDist: 0.75
+  latchVelocitySpeed: 0
+  latchCurveSpeedIncrease: 0
+  latchDownwardLaunchThreshold: 0
+  launchEndForce: 0
+  launchMinDist: 0.6
   pulseFOV: 0
+  recoil: {x: 0, y: 0, z: 2}
   land: {fileID: 0}
   jump: {fileID: 0}
   slide: {fileID: 0}

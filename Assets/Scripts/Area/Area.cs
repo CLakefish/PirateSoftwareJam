@@ -32,31 +32,35 @@ public class Area : MonoBehaviour
         TurnOff();
     }
 
-    private void Start()
-    {
-        playerManager = PlayerManager.Instance;
-    }
-
     public void Trigger(EnemyController controller)
     {
+        playerManager = PlayerManager.Instance;
+        gameObject.SetActive(true);
+
         foreach (var r in rotated)
         {
             r.gameObject.SetActive(true);
         }
 
+        EnemyController = controller;
+        EndPosition.FollowPos = playerManager.PlatformerController.Camera.CamComponent.transform;
+
         var mindPortal = GetComponentInChildren<MindExitPortal>();
 
         if (mindPortal) {
             mindPortal.IsActive = true;
+            mindPortal.Set(playerManager);
+            mindPortal.OpenAnim();
 
             var triggers = mindPortal.GetComponentsInChildren<MindPortalTrigger>();
             foreach (var t in triggers)
             {
-                t.OnTrigger += () => { PlayerManager.Instance.Transitions.ToHomunculus(this); };
+                t.OnTrigger += () => { 
+                    PlayerManager.Instance.Transitions.ToHomunculus(this); 
+                    EnemyController.OnExit(); 
+                };
             }
         }
-
-        EnemyController = controller;
 
         hasTriggered = false;
         DialogueManager.Instance.DisplayDialogue(dialogue);
@@ -66,15 +70,15 @@ public class Area : MonoBehaviour
 
     public void SetEnemyRenderer(bool enabled)
     {
-        EnemyController.GetComponent<Renderer>().enabled = enabled;
+        EnemyController.SetRendering(enabled);
     }
 
-    public void EndTrigger()
+    public void BrainTrigger()
     {
         if (hasTriggered) return;
         hasTriggered = true;
 
-        if (EnemyController.HasTriggered) EnemyController.OnExit();
+        if (EnemyController.HasTriggered) EnemyController.BrainTrigger();
 
         foreach (var clip in triggerSFX)
         {
@@ -83,7 +87,7 @@ public class Area : MonoBehaviour
 
         DialogueManager.Instance.ResetText();
         MonologueManager.Instance.ClearText();
-        playerManager.Transitions.Snap(this);
+        playerManager.Transitions.Snap();
     }
 
     public void SetPosition()
@@ -92,7 +96,7 @@ public class Area : MonoBehaviour
         foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;
         playerManager.PlatformerController.Camera.ResetRotation();
         playerManager.PlatformerController.ResetVelocity();
-        playerManager.Transitions.SetPlayerPosition(SpawnPosition);
+        playerManager.SetPlayerPosition(SpawnPosition);
     }
 
     public void TurnOff()

@@ -19,6 +19,7 @@ public class PlayerReticle : MonoBehaviour
 
     [Header("Canvas/VFX")]
     [SerializeField] private CanvasScaler canvas;
+    [SerializeField] private Transform reticleHolder;
     [SerializeField] public RectTransform reticle;
     [SerializeField] private float        reticleRotateSpeed;
     [SerializeField] private float        reticleInRangeSize;
@@ -50,8 +51,9 @@ public class PlayerReticle : MonoBehaviour
         foreach (var latch in activeLatchables)
         {
             Renderer      rend = latch.GetComponent<Renderer>();
-            RectTransform rect = Instantiate(reticle, canvas.transform);
+            RectTransform rect = Instantiate(reticle, reticleHolder);
             rect.transform.localPosition = Vector3.zero;
+            rect.gameObject.SetActive(false);
             reticles.Add(rend, rect);
             latchables.Add(rect, latch);
         }
@@ -69,11 +71,11 @@ public class PlayerReticle : MonoBehaviour
         reticleTimeScale += Time.deltaTime * reticleScaleTimeMult;
     }
 
-    public void Set(GameObject obj)
+    public void PulseReticle(GameObject obj)
     {
         LatchObject = obj;
         if (reticlePulse != null) StopCoroutine(reticlePulse);
-        reticlePulse = StartCoroutine(ReticlePulseCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
+        reticlePulse = StartCoroutine(PulseReticleCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
     }
 
     public void ResetPulse()
@@ -165,13 +167,15 @@ public class PlayerReticle : MonoBehaviour
 
     public void TurnOffAll()
     {
+        ResetPulse();
+
         foreach (var r in reticles)
         {
             r.Value.gameObject.SetActive(false);
         }
     }
 
-    private IEnumerator ReticlePulseCoroutine(RectTransform rect)
+    private IEnumerator PulseReticleCoroutine(RectTransform rect)
     {
         Vector3 scaleVel = Vector3.zero;
         float angle    = reticlePulseAngle;

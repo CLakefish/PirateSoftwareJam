@@ -14,7 +14,6 @@ public class PlayerLatching : MonoBehaviour
     [SerializeField] public float latchLaunchGraceTime;
     [SerializeField] public float launchBufferTime;
     [SerializeField] public float latchLaunchTimeSlow;
-    [SerializeField] public Vector3 recoil;
 
     [Header("Interpolation")]
     [SerializeField] private float lineInterpolation;
