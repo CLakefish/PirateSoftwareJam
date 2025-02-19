@@ -17,4 +17,10 @@ public class DialogueCollisionTrigger : DialogueTrigger
         hasTriggered = true;
         TriggerDialogue();
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1, 0.92f, 0.016f, 0.5f);
+        Gizmos.DrawCube(transform.position, GetComponent<MeshRenderer>().bounds.size);
+    }
 }

@@ -2590,7 +2590,6 @@ MonoBehaviour:
   worldSpaceCanvas: {fileID: 5022461832743266734}
   homunculusView: {fileID: 1394154637630916385}
   platformerView: {fileID: 8341748344964902419}
-  transportPause: 0.1
   fireVignette: {fileID: 2100000, guid: 157588935cb4c8545b163672692f14d7, type: 2}
   fireVigentteStandard: 1.6
   fireVignetteInterpolate: 0.25
@@ -3531,8 +3530,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   latchDistance: 15
-  maxDeviation: 0.1
-  deviationIgnoreDist: 4
+  maxDeviation: 0.15
+  deviationIgnoreDist: 1
   canvas: {fileID: 5286554263428342044}
   reticleHolder: {fileID: 5630961173882677129}
   reticle: {fileID: 7620941303526037963, guid: 3d76f285540d9db47a5e6287b80ea7b7, type: 3}

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_TextureArraySupport
+  m_Name: Custom_TextureArraySupport 6
   m_Shader: {fileID: 4800000, guid: bb8e83983c53ba24ea66294b1236846e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -29,10 +29,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Glossiness: 0.319
-    - _Index: 0
-    - _Metallic: 0.444
+    - _Glossiness: 0
+    - _Index: 2.13
+    - _Metallic: 0
     m_Colors:
-    - _Color: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
+    - _Color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

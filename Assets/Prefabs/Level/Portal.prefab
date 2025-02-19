@@ -49,8 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 3838730580087294564}
   portalViewScaling: 0.01
-  portalOpenPause: 0.5
-  portalOpenInterpolation: 0.25
+  portalOpenPause: 0.8
+  portalOpenInterpolation: 0.05
 --- !u!1 &1823734762363810533
 GameObject:
   m_ObjectHideFlags: 0

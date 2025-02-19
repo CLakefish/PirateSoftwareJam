@@ -263,9 +263,11 @@ MonoBehaviour:
   groundCheckRadius: 0.45
   groundCheckDistance: 0.075
   gravity: 40
-  launchForce: 18
-  beginLaunchForce: 25
-  deathBounce: 10
+  launchForce: 19
+  beginLaunchForce: 24
+  deathBounceForce: 0
+  exitLaunchForce: 14
+  deathBounceTally: 2
   jumpPulseFOV: 7.5
   bounceTimeSlow: 0
   pulseFOV: 15

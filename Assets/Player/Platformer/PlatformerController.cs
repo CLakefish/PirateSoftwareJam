@@ -99,7 +99,7 @@ public class PlatformerController : PlayerManager.PlayerController
                 if (context.collisions.SlopeCollision)
                 {
                     Vector3 dir = (context.MoveDir * context.slideForce) + (context.gravity * Time.fixedDeltaTime * Vector3.down);
-                    momentum = Quaternion.FromToRotation(context.rb.transform.up, context.collisions.GroundNormal) * dir;
+                    momentum = dir;
                 }
                 else
                 {
@@ -127,23 +127,24 @@ public class PlatformerController : PlayerManager.PlayerController
             Vector3 desiredVelocity;
 
             // Gaining momentum
-            if (context.collisions.SlopeCollision)
+            if (context.collisions.GroundCollision)
             {
                 // Get the gravity, angle, and current momentumDirection
-                Vector3 slopeGravity = Vector3.ProjectOnPlane(Vector3.down * context.gravity, context.collisions.GroundNormal);
-                float normalizedAngle = Vector3.Angle(context.rb.transform.up, context.collisions.GroundNormal) / 90.0f;
+                Vector3 slopeGravity  = Vector3.down * context.gravity;
+                float normalizedAngle = Vector3.Angle(Vector3.up, context.collisions.GroundNormal) / 90.0f;
                 Vector3 adjusted = slopeGravity * (1.0f + normalizedAngle);
                 desiredVelocity = momentum + adjusted;
             }
             else
             {
                 desiredVelocity = context.MoveDir;
+                momentum.y = Mathf.Max(momentum.y, 0);
             }
 
             // Move towards gathered velocity (y is seperated so I can tinker with it more, it can be simplified ofc)
             Vector3 slideInterpolated = new(
                 Mathf.MoveTowards(momentum.x, desiredVelocity.x, Time.fixedDeltaTime * context.slideAcceleration),
-                Mathf.MoveTowards(momentum.y, desiredVelocity.y, Time.fixedDeltaTime * context.slideSlopeMomentumGain),
+                Mathf.MoveTowards(momentum.y, desiredVelocity.y, Time.fixedDeltaTime * context.slideAcceleration),
                 Mathf.MoveTowards(momentum.z, desiredVelocity.z, Time.fixedDeltaTime * context.slideAcceleration));
 
             momentum = slideInterpolated;
@@ -268,7 +269,8 @@ public class PlatformerController : PlayerManager.PlayerController
             context.PlayerLatching.SetActive(false);
 
             Vector3 dir = context.cam.CamComponent.transform.forward * Mathf.Max(context.launchEndForce, startVel.magnitude);
-            context.rb.linearVelocity = dir + new Vector3(0, context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + context.latchDownwardLaunchThreshold), 0);
+            float yVel = context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + context.latchDownwardLaunchThreshold);
+            context.rb.linearVelocity = dir + new Vector3(0, yVel, 0);
             context.DesiredHorizontalVelocity = new Vector3(context.rb.linearVelocity.x, 0, context.rb.linearVelocity.z);
         }
     }
@@ -290,6 +292,7 @@ public class PlatformerController : PlayerManager.PlayerController
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float acceleration;
+    [SerializeField] private float airAcceleration;
     [SerializeField] private float gravity;
 
     [Header("Jumping")]
@@ -301,7 +304,6 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float slideForce;
     [SerializeField] private float slideRotationSpeed;
     [SerializeField] private float slideAcceleration;
-    [SerializeField] private float slideSlopeMomentumGain;
     [SerializeField] private float slidePulse;
 
     [Header("Slide Jump Parameters")]
@@ -446,6 +448,11 @@ public class PlatformerController : PlayerManager.PlayerController
     private void OnGUI()
     {
         hfsm.OnGUI();
+                GUILayout.BeginArea(new Rect(10, 150, 800, 200));
+
+        string current = $"Current Velocity: { rb.linearVelocity }\nCurrent Magnitude: { rb.linearVelocity.magnitude }";
+        GUILayout.Label($"<size=15>{current}</size>");
+        GUILayout.EndArea();
     }
 
     private void Gravity()
@@ -456,7 +463,7 @@ public class PlatformerController : PlayerManager.PlayerController
     private void Move(bool keepMomentum)
     {
         float speed = keepMomentum ? Mathf.Max(moveSpeed, new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude) : moveSpeed;
-        float accel = acceleration;
+        float accel = collisions.GroundCollision ? acceleration : airAcceleration;
 
         DesiredHorizontalVelocity = Vector3.MoveTowards(DesiredHorizontalVelocity, MoveDir * speed, Time.deltaTime * accel);
 
@@ -491,5 +498,14 @@ public class PlatformerController : PlayerManager.PlayerController
 
         DesiredHorizontalVelocity = MoveDir.normalized * moveSpeed;
         rb.linearVelocity = DesiredHorizontalVelocity;
+    }
+
+    public void SetActive(bool on)
+    {
+        collisions.enabled = on;
+        reticle.enabled = on;
+
+        PlatformerController.Camera.LockCamera = !on;
+        PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = on;
     }
 }

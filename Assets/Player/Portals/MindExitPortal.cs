@@ -42,10 +42,6 @@ public class MindExitPortal : MonoBehaviour
     private void OnEnable()
     {
         renderers.AddRange(GetComponentsInChildren<MeshRenderer>());
-        foreach (var renderer in renderers)
-        {
-            renderer.transform.localScale = Vector3.zero;
-        }
 
         if (texture != null) Destroy(texture);
 
@@ -121,6 +117,11 @@ public class MindExitPortal : MonoBehaviour
     {
         Vector3 scale = Vector3.zero;
         Vector3 vel   = Vector3.zero;
+
+        foreach (var renderer in renderers)
+        {
+            renderer.transform.localScale = scale;
+        }
 
         yield return new WaitForSecondsRealtime(portalOpenPause);
 

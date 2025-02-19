@@ -34,7 +34,7 @@ public class HomunculusController : PlayerManager.PlayerController
         public LaunchState(HomunculusController context) : base(context) { }
 
         public override void Enter() {
-            hasLaunched = context.hfsm.PreviousState == context.Begin;
+            hasLaunched = false;
         }
 
         public override void Update() {
@@ -160,6 +160,7 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float launchForce;
     [SerializeField] private float beginLaunchForce;
     [SerializeField] private float deathBounceForce;
+    [SerializeField] public float  exitLaunchForce;
     [SerializeField] private int   deathBounceTally = 3;
 
     [Header("VFX")]

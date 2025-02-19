@@ -62,15 +62,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     private IEnumerator ToPlayerTransition(Area area)
     {
-        PlatformerController.Camera.LockCamera = true;
-        PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = false;
         PlatformerController.Camera.SetForward(Vector3.forward);
-
-        PlatformerController.Camera.CamComponent.enabled = false;
-        PlatformerController.Reticle.enabled = false;
-
-        PlatformerController.Reticle.TurnOffAll();
-        PlatformerController.gameObject.SetActive(true);
+        PlatformerController.SetActive(false);
 
         StartCoroutine(HandGrab());
 
@@ -102,17 +95,17 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         teleporter.SetActive(false);
         PlayerLatching.ResetLine();
+        PlayerLatching.ClearParticles();
 
-        PlatformerController.Camera.CamComponent.fieldOfView = HomunculusController.Camera.CamComponent.fieldOfView;
-        PlatformerController.Camera.CamComponent.enabled     = true;
         HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
 
         platformerView.transform.localPosition = Vector3.zero;
         platformerView.transform.localScale    = Vector3.one;
         platformerView.SetAsLastSibling();
 
-        PlatformerController.Camera.LockCamera = false;
-        PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = true;
+        PlatformerController.SetActive(true);
+        PlatformerController.Camera.CamComponent.fieldOfView = HomunculusController.Camera.CamComponent.fieldOfView;
+        PlatformerController.gameObject.SetActive(true);
     }
     private IEnumerator ToHomunculusTransition(Area area)
     {
@@ -128,7 +121,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         Homunculus = true;
         HomunculusController.Camera.CamComponent.fieldOfView = PlatformerController.Camera.CamComponent.fieldOfView;
         HomunculusController.Camera.SetForward(fwd);
-        HomunculusController.Exit(fwd * 10);
+        HomunculusController.Exit(fwd * HomunculusController.exitLaunchForce);
 
         yield return new WaitForSecondsRealtime(0.1f);
 

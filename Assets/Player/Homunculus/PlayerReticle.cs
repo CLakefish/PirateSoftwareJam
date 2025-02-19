@@ -46,17 +46,7 @@ public class PlayerReticle : MonoBehaviour
 
     private void Awake()
     {
-        var activeLatchables = FindObjectsByType<Latchable>(FindObjectsSortMode.None);
-
-        foreach (var latch in activeLatchables)
-        {
-            Renderer      rend = latch.GetComponent<Renderer>();
-            RectTransform rect = Instantiate(reticle, reticleHolder);
-            rect.transform.localPosition = Vector3.zero;
-            rect.gameObject.SetActive(false);
-            reticles.Add(rend, rect);
-            latchables.Add(rect, latch);
-        }
+        GetAllLatchables();
     }
 
     private void OnEnable()
@@ -64,6 +54,8 @@ public class PlayerReticle : MonoBehaviour
         if (reticles.Count <= 0) return;
 
         reticleTimeScale = 0;
+
+        GetAllLatchables();
     }
 
     private void Update()
@@ -76,6 +68,29 @@ public class PlayerReticle : MonoBehaviour
         LatchObject = obj;
         if (reticlePulse != null) StopCoroutine(reticlePulse);
         reticlePulse = StartCoroutine(PulseReticleCoroutine(reticles[obj.GetComponent<Renderer>()].transform as RectTransform));
+    }
+
+    public void GetAllLatchables()
+    {
+        foreach (var reticle in reticles)
+        {
+            Destroy(reticle.Value.gameObject);
+        }
+
+        reticles.Clear();
+        latchables.Clear();
+
+        var activeLatchables = FindObjectsByType<Latchable>(FindObjectsSortMode.None);
+
+        foreach (var latch in activeLatchables)
+        {
+            Renderer rend = latch.GetComponent<Renderer>();
+            RectTransform rect = Instantiate(reticle, reticleHolder);
+            rect.transform.localPosition = Vector3.zero;
+            rect.gameObject.SetActive(false);
+            reticles.Add(rend, rect);
+            latchables.Add(rect, latch);
+        }
     }
 
     public void ResetPulse()

@@ -65,11 +65,6 @@ public class PlayerLatching : MonoBehaviour
         line.SetPosition(1, Vector3.zero);
     }
 
-    public bool LineFinished()
-    {
-        return Vector3.Distance(line.GetPosition(1), reticle.LatchObject.transform.position) <= 0.1f;
-    }
-
     public void ClearParticles()
     {
         fireParticles.Stop();
