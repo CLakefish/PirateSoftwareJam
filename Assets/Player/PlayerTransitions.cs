@@ -62,8 +62,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     private IEnumerator ToPlayerTransition(Area area)
     {
-        PlatformerController.Camera.SetForward(Vector3.forward);
         PlatformerController.SetActive(false);
+        PlatformerController.Camera.SetForward(Vector3.forward);
 
         StartCoroutine(HandGrab());
 
@@ -78,9 +78,6 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.1f)
         {
-            PlatformerController.Camera.CamComponent.fieldOfView = HomunculusController.Camera.CamComponent.fieldOfView;
-            PlatformerController.Camera.CamComponent.Render();
-
             if (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) <= 1.5f)
             {
                 area.SetEnemyRenderer(false);
