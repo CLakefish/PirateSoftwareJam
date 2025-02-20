@@ -77,14 +77,25 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
+            if (context.PlayerInputs.Slide && (context.hfsm.PreviousState == context.Sliding || context.hfsm.PreviousState == context.SlideJump))
+            {
+                context.SetTilt();
+            }
+
             context.Gravity();
+        }
+
+        public override void Exit()
+        {
+            context.cam.AddTilt(0);
         }
     }
 
     private class SlidingState : State<PlatformerController>
     {
-        private Vector3 momentum;
         public SlidingState(PlatformerController context) : base(context) { }
+
+        private Vector3 momentum;
 
         public override void Enter()
         {
@@ -92,19 +103,12 @@ public class PlatformerController : PlayerManager.PlayerController
 
             momentum = context.rb.linearVelocity;
 
-            if (context.slideBoost && context.HorizontalVelocity.magnitude <= context.slideForce)
+            if (context.slideBoost)
             {
                 if (context.PlayerInputs.IsInputting) context.cam.FOVPulse(context.slidePulse);
 
-                if (context.collisions.SlopeCollision)
-                {
-                    Vector3 dir = (context.MoveDir * context.slideForce) + (context.gravity * Time.fixedDeltaTime * Vector3.down);
-                    momentum = dir;
-                }
-                else
-                {
-                    momentum = context.MoveDir * context.slideForce;
-                }
+                Vector3 dir = Vector3.ProjectOnPlane(context.MoveDir * context.slideForce, context.collisions.GroundNormal);
+                momentum += dir;
             }
 
             context.rb.linearVelocity = momentum;
@@ -122,15 +126,16 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
+            context.SetTilt();
             context.Gravity();
 
             Vector3 desiredVelocity;
 
             // Gaining momentum
-            if (context.collisions.GroundCollision)
+            if (context.collisions.SlopeCollision)
             {
                 // Get the gravity, angle, and current momentumDirection
-                Vector3 slopeGravity  = Vector3.down * context.gravity;
+                Vector3 slopeGravity = Vector3.down * context.gravity;
                 float normalizedAngle = Vector3.Angle(Vector3.up, context.collisions.GroundNormal) / 90.0f;
                 Vector3 adjusted = slopeGravity * (1.0f + normalizedAngle);
                 desiredVelocity = momentum + adjusted;
@@ -138,7 +143,6 @@ public class PlatformerController : PlayerManager.PlayerController
             else
             {
                 desiredVelocity = context.MoveDir;
-                momentum.y = Mathf.Max(momentum.y, 0);
             }
 
             // Move towards gathered velocity (y is seperated so I can tinker with it more, it can be simplified ofc)
@@ -152,7 +156,7 @@ public class PlatformerController : PlayerManager.PlayerController
             if (context.MoveDir != Vector3.zero)
             {
                 Vector3 desiredDirection = Vector3.ProjectOnPlane(context.MoveDir, context.collisions.GroundNormal).normalized;
-                Vector3 slopeDirection = Vector3.ProjectOnPlane(Vector3.down, context.collisions.GroundNormal).normalized;
+                Vector3 slopeDirection   = Vector3.ProjectOnPlane(Vector3.down,    context.collisions.GroundNormal).normalized;
 
                 if (Vector3.Dot(desiredDirection, slopeDirection) >= context.slideDotMin)
                 {
@@ -160,7 +164,7 @@ public class PlatformerController : PlayerManager.PlayerController
                         ? Vector3.ProjectOnPlane(momentum, context.collisions.GroundNormal).normalized
                         : momentum;
 
-                    Quaternion rotation = Quaternion.FromToRotation(currentMomentum, desiredDirection);
+                    Quaternion rotation     = Quaternion.FromToRotation(currentMomentum, desiredDirection);
                     Quaternion interpolated = Quaternion.Slerp(Quaternion.identity, rotation, Time.fixedDeltaTime * context.slideRotationSpeed);
 
                     momentum = interpolated * momentum;
@@ -181,6 +185,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Exit()
         {
+            context.cam.AddTilt(0);
+
             context.rb.linearVelocity = momentum;
             context.DesiredHorizontalVelocity = new Vector3(momentum.x, 0, momentum.z);
         }
@@ -214,8 +220,17 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
+            context.SetTilt();
+
             context.Move(true);
             context.Gravity();
+        }
+
+        public override void Exit()
+        {
+            context.cam.AddTilt(0);
+
+            context.DesiredHorizontalVelocity = new Vector3(context.rb.linearVelocity.x, 0, context.rb.linearVelocity.z);
         }
     }
 
@@ -231,7 +246,6 @@ public class PlatformerController : PlayerManager.PlayerController
             context.latchFinished = false;
 
             startVel = context.rb.linearVelocity;
-            //movePos  = context.rb.position;
             context.rb.linearVelocity = Vector3.zero;
 
             var latchable = context.reticle.Closest.obj.GetComponent<Latchable>();
@@ -254,9 +268,9 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
-            Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
-            //movePos = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration));
+            context.PlayerTransitions.PulseFire(context.latchFirePulse);
 
+            Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < context.launchMinDist;
         }
 
@@ -269,8 +283,9 @@ public class PlatformerController : PlayerManager.PlayerController
             context.PlayerLatching.SetActive(false);
 
             Vector3 dir = context.cam.CamComponent.transform.forward * Mathf.Max(context.launchEndForce, startVel.magnitude);
-            float yVel = context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + context.latchDownwardLaunchThreshold);
-            context.rb.linearVelocity = dir + new Vector3(0, yVel, 0);
+            float yVel  = context.PlayerLatching.exitLaunch * Mathf.Sign(context.cam.CamComponent.transform.forward.y + context.latchDownwardLaunchThreshold);
+
+            context.rb.linearVelocity         = dir + new Vector3(0, yVel, 0);
             context.DesiredHorizontalVelocity = new Vector3(context.rb.linearVelocity.x, 0, context.rb.linearVelocity.z);
         }
     }
@@ -305,6 +320,7 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float slideRotationSpeed;
     [SerializeField] private float slideAcceleration;
     [SerializeField] private float slidePulse;
+    [SerializeField] private float slideTilt;
 
     [Header("Slide Jump Parameters")]
     [SerializeField] private float slideJumpForce;
@@ -321,6 +337,7 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float latchDownwardLaunchThreshold = 0.8f;
     [SerializeField] private float launchEndForce;
     [SerializeField] private float launchMinDist = 0.6f;
+    [SerializeField] private float latchFirePulse;
 
     [Header("Latch VFX")]
     [SerializeField] private float pulseFOV;
@@ -334,7 +351,7 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private AudioClip die;
     [SerializeField] private float     stepTime;
 
-    private readonly float slideDotMin = -0.25f;
+    private readonly float slideDotMin   = -0.25f;
     private readonly float jumpGraceTime = 0.1f;
 
     public PlayerCamera  Camera    => cam;
@@ -507,5 +524,10 @@ public class PlatformerController : PlayerManager.PlayerController
 
         PlatformerController.Camera.LockCamera = !on;
         PlatformerController.Camera.CamComponent.GetComponent<AudioListener>().enabled = on;
+    }
+
+    private void SetTilt()
+    {
+        cam.AddTilt(Mathf.Sign(-PlayerInputs.Input.x) * slideTilt);
     }
 }

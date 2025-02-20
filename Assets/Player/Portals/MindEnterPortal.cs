@@ -30,7 +30,7 @@ public class MindEnterPortal : MonoBehaviour
         renderer.enabled = false;
 
         targetCamera.fieldOfView = camVFX.fieldOfView;
-        targetCamera.transform.forward  = camVFX.transform.forward;
+        targetCamera.transform.rotation = camToOrient.transform.rotation;
         targetCamera.transform.position = camToOrient.transform.position;
 
         targetCamera.Render();

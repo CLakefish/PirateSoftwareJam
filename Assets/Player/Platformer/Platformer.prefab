@@ -266,15 +266,16 @@ MonoBehaviour:
   rb: {fileID: 2516541481633871672}
   moveSpeed: 14
   acceleration: 100
+  airAcceleration: 45
   gravity: 46
   jumpHeight: 15
   coyoteTime: 0.15
   jumpBufferTime: 0.1
   slideForce: 20
   slideRotationSpeed: 0.75
-  slideAcceleration: 14
-  slideSlopeMomentumGain: 12
+  slideAcceleration: 75
   slidePulse: 10
+  slideTilt: 8
   slideJumpForce: 13
   slideJumpPulse: 5
   crouchSize: 1
@@ -285,8 +286,9 @@ MonoBehaviour:
   latchDownwardLaunchThreshold: 0
   launchEndForce: 0
   launchMinDist: 0.6
+  latchFirePulse: 1.85
   pulseFOV: 0
-  recoil: {x: 0, y: 0, z: 2}
+  recoil: {x: 0, y: 0, z: 0.25}
   land: {fileID: 0}
   jump: {fileID: 0}
   slide: {fileID: 0}
@@ -310,7 +312,7 @@ MonoBehaviour:
   fov: 75
   pulseStartInterpolate: 0.05
   pulseEndInterpolate: 0.4
-  viewTiltAngle: 2.5
+  viewTiltAngle: 3
   viewRotationSmoothing: 0.2
   recoilReturnSpeed: 0.2
   resetRotation: 1

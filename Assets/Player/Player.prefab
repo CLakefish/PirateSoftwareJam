@@ -2593,9 +2593,9 @@ MonoBehaviour:
   fireVignette: {fileID: 2100000, guid: 157588935cb4c8545b163672692f14d7, type: 2}
   fireVigentteStandard: 1.6
   fireVignetteInterpolate: 0.25
-  firePulseEnter: 1.8
-  firePulseExit: 2
-  firePulseSnap: 2
+  firePulseEnter: 2.5
+  firePulseExit: 2.5
+  firePulseSnap: 2.5
   teleporter: {fileID: 8460061471996906902}
   teleportDist: -0.1
   heightOffset: 0.25
@@ -3641,7 +3641,15 @@ PrefabInstance:
       value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 2633924078239662255, guid: 365d86fa8505a0b4f883a4e6dc141e73, type: 3}
+      propertyPath: camVFX
+      value: 
+      objectReference: {fileID: 2111038090950252458}
+    - target: {fileID: 2633924078239662255, guid: 365d86fa8505a0b4f883a4e6dc141e73, type: 3}
       propertyPath: camToFollow
+      value: 
+      objectReference: {fileID: 1587627715764941247}
+    - target: {fileID: 2633924078239662255, guid: 365d86fa8505a0b4f883a4e6dc141e73, type: 3}
+      propertyPath: camToOrient
       value: 
       objectReference: {fileID: 1587627715764941247}
     - target: {fileID: 4202913078777277473, guid: 365d86fa8505a0b4f883a4e6dc141e73, type: 3}

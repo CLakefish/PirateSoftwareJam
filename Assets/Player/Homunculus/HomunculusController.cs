@@ -51,7 +51,7 @@ public class HomunculusController : PlayerManager.PlayerController
                     AudioManager.Instance.PlaySFX(context.lunge);
 
                     Vector3 dir = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
-                    dir.y = Mathf.Max(dir.y, context.rb.linearVelocity.y + dir.y);
+                    dir.y       = Mathf.Max(dir.y, context.rb.linearVelocity.y + dir.y);
                     context.rb.linearVelocity = dir;
                 }
 
@@ -105,6 +105,7 @@ public class HomunculusController : PlayerManager.PlayerController
             context.cam.Recoil(context.recoil);
             context.cam.FOVPulse(context.pulseFOV);
 
+            context.PlayerTransitions.PulseFire(context.latchFirePulse);
             context.reticle.PulseReticle(context.reticle.Closest.obj.gameObject);
             context.PlayerLatching.InitLine(context.cam);
         }
@@ -166,6 +167,7 @@ public class HomunculusController : PlayerManager.PlayerController
     [Header("VFX")]
     [SerializeField] private float jumpPulseFOV;
     [SerializeField] private float bounceTimeSlow;
+    [SerializeField] private float latchFirePulse;
 
     [Header("Latch VFX")]
     [SerializeField] private float pulseFOV;

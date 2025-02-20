@@ -62,8 +62,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     private IEnumerator ToPlayerTransition(Area area)
     {
+        PlatformerController.Camera.SetForward(area.SpawnPosition.forward);
         PlatformerController.SetActive(false);
-        PlatformerController.Camera.SetForward(Vector3.forward);
 
         StartCoroutine(HandGrab());
 

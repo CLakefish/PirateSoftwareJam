@@ -33,6 +33,7 @@ public class PlayerCamera : MonoBehaviour
 
     private Vector2 viewTilt;
     private float cameraVel;
+    private float camTilt;
     private bool resettingRotation;
 
     public bool MouseLock {
@@ -93,7 +94,7 @@ public class PlayerCamera : MonoBehaviour
             return;
         }
 
-        float currentZ = Mathf.SmoothDampAngle(cam.transform.localEulerAngles.z, viewTilt.x, ref cameraVel, viewRotationSmoothing);
+        float currentZ = Mathf.SmoothDampAngle(cam.transform.localEulerAngles.z, viewTilt.x + camTilt, ref cameraVel, viewRotationSmoothing);
         currentZ += recoil.z;
 
         recoil   = Vector3.SmoothDamp(recoil, Vector3.zero, ref recoilVel, recoilReturnSpeed);
@@ -115,7 +116,9 @@ public class PlayerCamera : MonoBehaviour
             currentZ));
     }
 
-    public void ViewTilt() => viewTilt.x = -input.Input.x * viewTiltAngle;
+    public void ViewTilt(float increased = 1) => viewTilt.x = -input.Input.x * viewTiltAngle * increased;
+    public void AddTilt(float value) => camTilt = value;
+
 
     public void Recoil(Vector3 recoilAmount)
     {

@@ -55,6 +55,8 @@ public class PlayerLatching : MonoBehaviour
 
     public void InterpolateLine()
     {
+        
+
         line.SetPosition(1, Vector3.SmoothDamp(line.GetPosition(1), reticle.LatchObject.transform.position, ref posVel, lineInterpolation));
         fireParticles.transform.position = line.GetPosition(1);
     }

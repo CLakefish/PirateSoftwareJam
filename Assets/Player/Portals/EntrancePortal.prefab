@@ -39,7 +39,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170663417593803516}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -550,7 +550,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96df4d5d726d31c4aa552ff2a76a10e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camToFollow: {fileID: 0}
+  camToOrient: {fileID: 0}
+  camVFX: {fileID: 0}
   targetCamera: {fileID: 6100812624291494521}
 --- !u!1001 &2497914057917638279
 PrefabInstance:

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1755612eac07fb44db9150b0527d3c12, type: 3}
+  m_Name: Main 1
+  m_EditorClassIdentifier: 
+  colors:
+  - {r: 0, g: 0, b: 0, a: 1}
+  - {r: 0.1787166, g: 0.019607848, b: 0.22352941, a: 1}
+  - {r: 0.36055186, g: 0.14117645, b: 0.5019608, a: 1}
+  - {r: 0.24998477, g: 0.3773585, b: 0.076539695, a: 1}
+  - {r: 1, g: 0, b: 0.12227917, a: 1}
+  - {r: 1, g: 0.8795767, b: 0, a: 1}
+  - {r: 0.49588394, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0.8650923, b: 1, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.3584906, g: 0.097618096, b: 0.06933072, a: 1}
+  - {r: 0.07058823, g: 0.2527196, b: 0.35686275, a: 1}
+  - {r: 0.3293579, g: 0.37614623, b: 0.38364768, a: 1}
+  ditherValue: 0.19
