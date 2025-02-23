@@ -111,7 +111,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         PulseFire(firePulseExit);
 
-        Vector3 fwd = area.GetComponentInChildren<MindExitPortal>().Forward;
+        Vector3 fwd = area.Exit.Forward;
         Vector3 vel = PlatformerController.Rigidbody.linearVelocity;
         vel.y = 0;
 
@@ -168,7 +168,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
             yield return null;
         }
     }
-
+    
     #endregion
 
     public void PulseFire(float val)

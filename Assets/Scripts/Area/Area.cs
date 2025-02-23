@@ -6,16 +6,19 @@ public class Area : MonoBehaviour
 {
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private AreaEnd   endPosition;
+    [SerializeField] private MindExitPortal exit;
     [SerializeField] private List<Transform> rotated;
     [SerializeField] private List<AudioClip> triggerSFX;
 
     [Header("Displays")]
     [SerializeField] private DialogueScriptableObject dialogue;
     [SerializeField] private MonologueScriptableObject monologue;
+    [SerializeField] private DialogueScriptableObject onComplete;
 
     public EnemyController EnemyController { get; private set; }
     public Transform SpawnPosition => spawnPosition;
     public AreaEnd   EndPosition => endPosition;
+    public MindExitPortal Exit => exit;
 
     private bool hasTriggered = false;
     private PlayerManager playerManager;
@@ -30,6 +33,9 @@ public class Area : MonoBehaviour
         rotations.AddRange(GetComponentsInChildren<RotationSpace>());
 
         TurnOff();
+
+        var e = GetComponentInChildren<MindExitPortal>();
+        if (e != null) exit = e;
     }
 
     public void Trigger(EnemyController controller)
@@ -44,23 +50,6 @@ public class Area : MonoBehaviour
 
         EnemyController = controller;
         EndPosition.FollowPos = playerManager.PlatformerController.Camera.CamComponent.transform;
-
-        var mindPortal = GetComponentInChildren<MindExitPortal>();
-
-        if (mindPortal) {
-            mindPortal.IsActive = true;
-            mindPortal.Set(playerManager);
-            mindPortal.OpenAnim();
-
-            var triggers = mindPortal.GetComponentsInChildren<MindPortalTrigger>();
-            foreach (var t in triggers)
-            {
-                t.OnTrigger += () => { 
-                    PlayerManager.Instance.Transitions.ToHomunculus(this); 
-                    EnemyController.OnExit(); 
-                };
-            }
-        }
 
         hasTriggered = false;
         DialogueManager.Instance.DisplayDialogue(dialogue);
@@ -80,13 +69,30 @@ public class Area : MonoBehaviour
 
         if (EnemyController.HasTriggered) EnemyController.BrainTrigger();
 
+        var mindPortal = GetComponentInChildren<MindExitPortal>();
+
+        if (mindPortal)
+        {
+            mindPortal.IsActive = true;
+            mindPortal.Set(playerManager);
+            mindPortal.OpenAnim();
+
+            var triggers = mindPortal.GetComponentsInChildren<MindPortalTrigger>();
+            foreach (var t in triggers)
+            {
+                t.OnTrigger += () => {
+                    PlayerManager.Instance.Transitions.ToHomunculus(this);
+                    EnemyController.OnExit();
+                };
+            }
+        }
+
         foreach (var clip in triggerSFX)
         {
             AudioManager.Instance.PlaySFX(clip);
         }
 
-        DialogueManager.Instance.ResetText();
-        MonologueManager.Instance.ClearText();
+        DialogueManager.Instance.DisplayDialogue(onComplete);
         playerManager.Transitions.Snap();
     }
 
@@ -101,6 +107,9 @@ public class Area : MonoBehaviour
 
     public void TurnOff()
     {
+        DialogueManager.Instance.ResetText();
+        MonologueManager.Instance.ClearText();
+
         foreach (var r in rotated)
         {
             r.gameObject.SetActive(false);

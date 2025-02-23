@@ -49,7 +49,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 3838730580087294564}
   portalViewScaling: 0.01
-  portalOpenPause: 0.8
   portalOpenInterpolation: 0.05
 --- !u!1 &1823734762363810533
 GameObject:
@@ -479,7 +478,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 75
   orthographic: 0
   orthographic size: 5

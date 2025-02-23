@@ -273,9 +273,10 @@ MonoBehaviour:
   jumpBufferTime: 0.1
   slideForce: 20
   slideRotationSpeed: 0.75
-  slideAcceleration: 75
+  slideAcceleration: 25
+  slideAirAcceleration: 60
   slidePulse: 10
-  slideTilt: 8
+  slideTilt: 6
   slideJumpForce: 13
   slideJumpPulse: 5
   crouchSize: 1
@@ -288,7 +289,19 @@ MonoBehaviour:
   launchMinDist: 0.6
   latchFirePulse: 1.85
   pulseFOV: 0
-  recoil: {x: 0, y: 0, z: 0.25}
+  recoil: {x: 0, y: 0, z: 0.75}
+  lungeForce: 20
+  wallRunThreshold: 45
+  wallRunSpeed: 16
+  wallRunEnterReduct: 0.8
+  wallRunGravity: 5
+  wallRunStickForce: 0.05
+  wallRunTilt: 12
+  wallJumpTime: 0.15
+  wallJumpForce: 20
+  wallJumpHeight: 22
+  wallJumpFOVPulse: 5
+  launchFOVPulse: 5
   land: {fileID: 0}
   jump: {fileID: 0}
   slide: {fileID: 0}
@@ -337,6 +350,8 @@ MonoBehaviour:
     m_Bits: 1
   groundCastDist: 0.85
   groundCastRadius: 0.3
+  wallCastIncrements: 6
+  wallCastDistance: 1
 --- !u!114 &1872581765119239319
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,25 +3,37 @@ using UnityEngine;
 
 public class PlatformerCollisions : MonoBehaviour
 {
-    [Header("Ground Collisions")]
+    [Header("Refs")]
     [SerializeField] private Rigidbody rb;
     [SerializeField] private CapsuleCollider CapsuleCollider;
+
+    [Header("Ground")]
     [SerializeField] private LayerMask groundLayers;
     [SerializeField] private float groundCastDist;
     [SerializeField] private float groundCastRadius;
 
+    [Header("Wall")]
+    [SerializeField] private int wallCastIncrements;
+    [SerializeField] private float wallCastDistance;
+
     private bool groundCollision = false;
-    private bool slopeCollision = false;
+    private bool slopeCollision  = false;
+    private bool wallCollision   = false;
     private Coroutine sizeChange;
 
     private Vector3 groundNormal;
     private Vector3 groundPoint;
+    private Vector3 wallNormal;
+    private Vector3 wallPos;
 
     public bool GroundCollision => groundCollision;
     public bool SlopeCollision  => slopeCollision;
+    public bool WallCollision   => wallCollision;
 
     public Vector3 GroundNormal => groundNormal;
     public Vector3 GroundPoint  => groundPoint;
+    public Vector3 WallNormal   => wallNormal;
+    public Vector3 WallPos      => wallPos;
 
     public float Size
     {
@@ -87,9 +99,37 @@ public class PlatformerCollisions : MonoBehaviour
         ResetCollisions();
     }
 
+    public void CheckWallCollisions()
+    {
+        float P2 = Mathf.PI * 2 / wallCastIncrements;
+
+        Vector3 combined = Vector3.zero;
+
+        for (int i = 0; i < wallCastIncrements; ++i)
+        {
+            Vector3 dir = new Vector3(Mathf.Cos(P2 * i), 0, Mathf.Sin(P2 * i)).normalized;
+
+            if (Physics.Raycast(rb.position, dir, out RaycastHit hit, wallCastDistance, groundLayers))
+            {
+                combined += hit.normal;
+                wallPos = hit.point;
+            }
+        }
+
+        if (combined == Vector3.zero)
+        {
+            wallCollision = false;
+            return;
+        }
+
+        wallCollision = true;
+        wallNormal = combined.normalized;
+    }
+
     public void ResetCollisions()
     {
         groundCollision = false;
-        slopeCollision = false;
+        slopeCollision  = false;
+        wallCollision   = false;
     }
 }

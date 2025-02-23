@@ -6,7 +6,7 @@ public class MindExitPortal : MonoBehaviour
 {
     [SerializeField] private Camera targetCamera;
     [SerializeField] private float  portalViewScaling = 0.25f;
-    [SerializeField] private float  portalOpenPause = 0.75f;
+/*    [SerializeField] private float  portalOpenPause = 0.75f;*/
     [SerializeField] private float  portalOpenInterpolation = 1;
 
     private readonly List<MeshRenderer> renderers = new();
@@ -25,7 +25,7 @@ public class MindExitPortal : MonoBehaviour
         }
     }
 
-    private bool isActive = true;
+    private bool isActive = false;
     public bool IsActive
     {
         get
@@ -56,6 +56,11 @@ public class MindExitPortal : MonoBehaviour
 
         targetCamera.depthTextureMode = DepthTextureMode.Depth;
         targetCamera.gameObject.SetActive(false);
+
+        foreach (var renderer in renderers)
+        {
+            renderer.transform.localScale = Vector3.zero;
+        }
     }
 
     private void LateUpdate()
@@ -66,11 +71,6 @@ public class MindExitPortal : MonoBehaviour
 
         foreach (var rend in renderers)
         {
-            if (!Visible(rend, platformerCamera))
-            {
-                continue;
-            }
-
             RenderCam(rend);
             break;
         }
@@ -81,7 +81,7 @@ public class MindExitPortal : MonoBehaviour
         rend.enabled = false;
 
         targetCamera.projectionMatrix = platformerCamera.projectionMatrix;
-        targetCamera.fieldOfView = platformerCamera.fieldOfView;
+        targetCamera.fieldOfView      = platformerCamera.fieldOfView;
 
         Matrix4x4 mat = homunculus.localToWorldMatrix * transform.worldToLocalMatrix * platformerCamera.transform.localToWorldMatrix;
 
@@ -89,7 +89,8 @@ public class MindExitPortal : MonoBehaviour
         Vector3 dir = (StartPosition - pos) * portalViewScaling;
         Vector3 newPos = StartPosition - new Vector3(0, dir.y, 0);
 
-        targetCamera.transform.SetPositionAndRotation(newPos, Quaternion.Euler(new Vector3(0, 180, 0)) * mat.rotation);
+        targetCamera.transform.position = newPos;
+        targetCamera.transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0)) * mat.rotation;
 
         targetCamera.Render();
         rend.enabled = true;
@@ -118,12 +119,7 @@ public class MindExitPortal : MonoBehaviour
         Vector3 scale = Vector3.zero;
         Vector3 vel   = Vector3.zero;
 
-        foreach (var renderer in renderers)
-        {
-            renderer.transform.localScale = scale;
-        }
-
-        yield return new WaitForSecondsRealtime(portalOpenPause);
+        isActive = true;
 
         while (scale != Vector3.one)
         {

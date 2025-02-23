@@ -17,11 +17,16 @@ public class PlayerLatching : MonoBehaviour
 
     [Header("Interpolation")]
     [SerializeField] private float lineInterpolation;
+    [SerializeField] private float loops;
+    [SerializeField] private float intensity;
 
     [Header("SFX")]
     [SerializeField] private AudioClip lunge;
 
+    private Transform camera;
     private Vector3 posVel;
+    private Vector3 startPosition;
+    private float totalDist;
 
     public void SetReticle(PlayerReticle reticle)
     {
@@ -37,7 +42,8 @@ public class PlayerLatching : MonoBehaviour
 
     public void InitLine(PlayerCamera cam)
     {
-        Vector3 startPosition = cam.CamComponent.transform.position - Vector3.up + cam.CamComponent.transform.right;
+        camera = cam.CamComponent.transform;
+        startPosition = cam.CamComponent.transform.position - Vector3.up + cam.CamComponent.transform.right;
 
         line.enabled       = true;
         line.positionCount = 2;
@@ -50,14 +56,18 @@ public class PlayerLatching : MonoBehaviour
         fireParticles.transform.position = startPosition;
         fireParticles.Play();
 
-        posVel = Vector3.zero;
+        posVel    = Vector3.zero;
+        //totalDist = GetDist();
     }
 
     public void InterpolateLine()
     {
-        
+/*        float dist = 1.0f - (GetDist() / totalDist);
+        float sin  = Mathf.Sin(dist * loops) * intensity;
+        float cos  = Mathf.Cos(dist * loops) * intensity;
 
-        line.SetPosition(1, Vector3.SmoothDamp(line.GetPosition(1), reticle.LatchObject.transform.position, ref posVel, lineInterpolation));
+        Vector3 offset = camera.right * cos + camera.forward * sin;*/
+        line.SetPosition(1, Vector3.SmoothDamp(line.GetPosition(1), reticle.LatchObject.transform.position /*+ offset*/, ref posVel, lineInterpolation));
         fireParticles.transform.position = line.GetPosition(1);
     }
 
@@ -71,5 +81,10 @@ public class PlayerLatching : MonoBehaviour
     {
         fireParticles.Stop();
         fireParticles.Clear();
+    }
+
+    private float GetDist()
+    {
+        return Vector2.Distance(new Vector2(startPosition.x, startPosition.z), new Vector2(reticle.LatchObject.transform.position.x, reticle.LatchObject.transform.position.z));
     }
 }
