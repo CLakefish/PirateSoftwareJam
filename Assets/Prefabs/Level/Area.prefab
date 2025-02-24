@@ -82,6 +82,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 2231090706666960552}
   endPosition: {fileID: 2667340071021746135}
+  exit: {fileID: 0}
   rotated:
   - {fileID: 2660911552306390905}
   triggerSFX:
@@ -89,6 +90,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
   dialogue: {fileID: 0}
   monologue: {fileID: 0}
+  onComplete: {fileID: 0}
 --- !u!1 &7528239213247856781
 GameObject:
   m_ObjectHideFlags: 0
