@@ -111,7 +111,6 @@ public class HomunculusController : PlayerManager.PlayerController
         }
 
         public override void Update() {
-            context.PlayerLatching.InterpolateLine();
             context.rb.MovePosition(movePos);
         }
 

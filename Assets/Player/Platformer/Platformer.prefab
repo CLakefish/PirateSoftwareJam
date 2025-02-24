@@ -294,7 +294,7 @@ MonoBehaviour:
   wallRunThreshold: 45
   wallRunSpeed: 16
   wallRunEnterReduct: 0.8
-  wallRunGravity: 5
+  wallRunGravity: 18
   wallRunStickForce: 0.05
   wallRunTilt: 12
   wallJumpTime: 0.15

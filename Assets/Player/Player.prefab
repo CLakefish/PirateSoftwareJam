@@ -274,6 +274,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5526944155177449257}
+  - component: {fileID: 1057984714449719941}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -299,6 +300,23 @@ Transform:
   - {fileID: 2149716147779278095}
   m_Father: {fileID: 8005319407950240468}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1057984714449719941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229804372027804320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a91d1fdfc3e10ae4eade183dc03abe6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hand: {fileID: 4439868112839663932}
+  rect: {fileID: 4816372415721584848}
+  xIntensity: 25
+  yIntensity: 25
+  interpolateSpeed: 0.1
 --- !u!1 &1593674034135525921
 GameObject:
   m_ObjectHideFlags: 0
@@ -628,6 +646,7 @@ MonoBehaviour:
   playerRespawn: {fileID: 240161534972777433}
   playerComplete: {fileID: 8998592634058411084}
   playerTransitions: {fileID: 7605913463351863710}
+  hand: {fileID: 1057984714449719941}
   PauseMenu: {fileID: 7708306753221592540}
 --- !u!114 &47999144545915020
 MonoBehaviour:
@@ -1785,7 +1804,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.13721065
+      time: 0.12388169
       value: 0
       inSlope: 0
       outSlope: 0
@@ -1794,7 +1813,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1.0001242
+      time: 0.9712447
       value: 1
       inSlope: 3.0838423
       outSlope: 3.0838423
@@ -1809,7 +1828,10 @@ MonoBehaviour:
   latchLaunchGraceTime: 1
   launchBufferTime: 0.3
   latchLaunchTimeSlow: 0.5
-  lineInterpolation: 0.1
+  lineInterpolation: 0.005
+  totalTicks: 6
+  loops: 1
+  intensity: 1.5
   lunge: {fileID: 8300000, guid: 48491291d429e1346a25130579b3e265, type: 3}
 --- !u!1 &5641030239818887511
 GameObject:
@@ -2220,7 +2242,6 @@ GameObject:
   - component: {fileID: 4572384361967072732}
   - component: {fileID: 7607757726085452098}
   - component: {fileID: 4439868112839663932}
-  - component: {fileID: 4306126134008015964}
   m_Layer: 2
   m_Name: Hand
   m_TagString: Untagged
@@ -2245,7 +2266,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -25}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1346446057731633240
@@ -2321,19 +2342,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4306126134008015964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6871818302578230144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a91d1fdfc3e10ae4eade183dc03abe6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: {fileID: 4439868112839663932}
 --- !u!1 &7033457436285858778
 GameObject:
   m_ObjectHideFlags: 0
@@ -2599,7 +2607,6 @@ MonoBehaviour:
   teleporter: {fileID: 8460061471996906902}
   teleportDist: -0.1
   heightOffset: 0.25
-  hand: {fileID: 4306126134008015964}
   snapRecoil: {x: 0, y: 0, z: -0.25}
   snapPause: 0.55
   snapFOVPulse: 15

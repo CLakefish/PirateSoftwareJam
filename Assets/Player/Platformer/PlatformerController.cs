@@ -42,7 +42,7 @@ public class PlatformerController : PlayerManager.PlayerController
             AudioManager.Instance.PlaySFX(context.jump);
 
             context.jumpBuffer = 0;
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.jumpHeight, context.rb.linearVelocity.z);
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.jumpHeight, context.rb.linearVelocity.y + context.jumpHeight), context.rb.linearVelocity.z);
         }
 
         public override void Update()
@@ -210,7 +210,7 @@ public class PlatformerController : PlayerManager.PlayerController
             context.jumpBuffer = 0;
             context.slideBoost = false;
 
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.slideJumpForce, context.rb.linearVelocity.z);
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.slideJumpForce, context.rb.linearVelocity.y + context.slideJumpForce), context.rb.linearVelocity.z);
         }
 
         public override void Update()
@@ -264,7 +264,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Update()
         {
-            context.PlayerLatching.InterpolateLine();
             Vector3 dir = (context.reticle.Closest.obj.transform.position - context.rb.position).normalized;
             context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * context.latchCurveSpeedIncrease) * dir;
         }
@@ -304,7 +303,7 @@ public class PlatformerController : PlayerManager.PlayerController
             AudioManager.Instance.PlaySFX(context.jump);
 
             context.jumpBuffer = 0;
-            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, context.lungeForce, context.rb.linearVelocity.z);
+            context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.lungeForce, context.rb.linearVelocity.y + context.lungeForce), context.rb.linearVelocity.z);
         }
 
         public override void Update()

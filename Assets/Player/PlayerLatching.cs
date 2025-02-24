@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerLatching : MonoBehaviour
@@ -17,6 +18,7 @@ public class PlayerLatching : MonoBehaviour
 
     [Header("Interpolation")]
     [SerializeField] private float lineInterpolation;
+    [SerializeField] private int totalTicks = 8;
     [SerializeField] private float loops;
     [SerializeField] private float intensity;
 
@@ -24,9 +26,8 @@ public class PlayerLatching : MonoBehaviour
     [SerializeField] private AudioClip lunge;
 
     private Transform camera;
-    private Vector3 posVel;
     private Vector3 startPosition;
-    private float totalDist;
+    private Coroutine routine;
 
     public void SetReticle(PlayerReticle reticle)
     {
@@ -36,43 +37,33 @@ public class PlayerLatching : MonoBehaviour
 
     public void SetActive(bool active)
     {
-        line.gameObject.SetActive(active);
         line.enabled = active;
+
+        if (!active) {
+            if (routine != null) StopCoroutine(routine);
+        }
     }
 
     public void InitLine(PlayerCamera cam)
     {
-        camera = cam.CamComponent.transform;
+        camera        = cam.CamComponent.transform;
         startPosition = cam.CamComponent.transform.position - Vector3.up + cam.CamComponent.transform.right;
 
-        line.enabled       = true;
-        line.positionCount = 2;
-        line.SetPosition(0, startPosition);
-        line.SetPosition(1, startPosition);
+        if (routine != null) StopCoroutine(routine);
+        routine = StartCoroutine(LatchAnim());
 
         ClearParticles();
         SetActive(true);
 
         fireParticles.transform.position = startPosition;
         fireParticles.Play();
-
-        posVel    = Vector3.zero;
-        //totalDist = GetDist();
-    }
-
-    public void InterpolateLine()
-    {
-/*        float dist = 1.0f - (GetDist() / totalDist);
-        float sin  = Mathf.Sin(dist * loops) * intensity;
-        float cos  = Mathf.Cos(dist * loops) * intensity;
-
-        Vector3 offset = camera.right * cos + camera.forward * sin;*/
-        line.SetPosition(1, Vector3.SmoothDamp(line.GetPosition(1), reticle.LatchObject.transform.position /*+ offset*/, ref posVel, lineInterpolation));
-        fireParticles.transform.position = line.GetPosition(1);
     }
 
     public void ResetLine()
     {
+        if (routine != null) StopCoroutine(routine);
+
+        line.positionCount = 2;
         line.SetPosition(0, Vector3.zero);
         line.SetPosition(1, Vector3.zero);
     }
@@ -83,8 +74,35 @@ public class PlayerLatching : MonoBehaviour
         fireParticles.Clear();
     }
 
-    private float GetDist()
+    private IEnumerator LatchAnim()
     {
-        return Vector2.Distance(new Vector2(startPosition.x, startPosition.z), new Vector2(reticle.LatchObject.transform.position.x, reticle.LatchObject.transform.position.z));
+        line.enabled = true;
+
+        line.positionCount = 1;
+        line.SetPosition(0, startPosition);
+
+        for (int i = 1; i < totalTicks; i++)
+        {
+            float d   = (float)(i - 1.0f) / totalTicks;
+            float sin = Mathf.Sin(d * Mathf.PI) * intensity;
+            Vector3 offset = camera.right * sin;
+            Vector3 end    = Vector3.Lerp(startPosition, reticle.LatchObject.transform.position, d) + offset;
+            Vector3 vel    = Vector3.zero;
+            Vector3 pos    = line.GetPosition(i - 1);
+
+            line.positionCount = i + 1;
+            line.SetPosition(i, pos);
+
+            while (Vector3.Distance(line.GetPosition(i), end) > 0.1f)
+            {
+                pos = Vector3.SmoothDamp(pos, end, ref vel, lineInterpolation, Mathf.Infinity, Time.unscaledDeltaTime);
+                line.SetPosition(i, pos);
+                fireParticles.transform.position = pos;
+                yield return null;
+            }
+        }
+
+        line.SetPosition(totalTicks - 1, reticle.LatchObject.transform.position);
+        fireParticles.transform.position = reticle.LatchObject.transform.position;
     }
 }

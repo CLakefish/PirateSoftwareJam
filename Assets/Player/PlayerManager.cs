@@ -10,15 +10,16 @@ public class PlayerManager : MonoBehaviour
 
         public void SetPlayer(PlayerManager player) => this.player = player;
 
-        public HomunculusController HomunculusController => player.homunculus;
-        public PlatformerController PlatformerController => player.platformer;
-        public PlayerLatching       PlayerLatching       => player.playerLatching;
-        public PlayerInputManager   PlayerInputs         => player.playerInputs;
+        protected HomunculusController HomunculusController => player.homunculus;
+        protected PlatformerController PlatformerController => player.platformer;
+        protected PlayerLatching       PlayerLatching       => player.playerLatching;
+        protected PlayerInputManager   PlayerInputs         => player.playerInputs;
 
 
-        public PlayerRespawnMenu     PlayerRespawn     => player.playerRespawn;
-        public PlayerCompleteMenu    PlayerComplete    => player.playerComplete;
-        public PlayerTransitions     PlayerTransitions => player.playerTransitions;
+        protected PlayerRespawnMenu     PlayerRespawn     => player.playerRespawn;
+        protected PlayerCompleteMenu    PlayerComplete    => player.playerComplete;
+        protected PlayerTransitions     PlayerTransitions => player.playerTransitions;
+        protected PlatformerAnimator    PlatformerHand    => player.hand;
     }
 
     public static PlayerManager Instance { get; private set; }
@@ -27,7 +28,6 @@ public class PlayerManager : MonoBehaviour
     public HomunculusController HomunculusController => homunculus;
     public PlatformerController PlatformerController => platformer;
     public PlayerInputManager   PlayerInputs         => playerInputs;
-    public PlayerLatching       PlayerLatching       => playerLatching;
 
 
     [SerializeField] private HomunculusController homunculus;
@@ -39,6 +39,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private PlayerRespawnMenu  playerRespawn;
     [SerializeField] private PlayerCompleteMenu playerComplete;
     [SerializeField] private PlayerTransitions  playerTransitions;
+    [SerializeField] private PlatformerAnimator hand;
 
     [Header("Menu")]
     [SerializeField] private GameObject PauseMenu;
@@ -50,6 +51,7 @@ public class PlayerManager : MonoBehaviour
         playerRespawn.SetPlayer(this);
         playerComplete.SetPlayer(this);
         playerTransitions.SetPlayer(this);
+        hand.SetPlayer(this);
 
         Instance = this;
     }

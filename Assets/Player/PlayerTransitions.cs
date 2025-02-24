@@ -24,7 +24,6 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private float heightOffset = 0.25f;
 
     [Header("Hand")]
-    [SerializeField] private PlatformerAnimator hand;
     [SerializeField] private Vector3 snapRecoil;
     [SerializeField] private float snapPause;
     [SerializeField] private float snapFOVPulse;
@@ -81,7 +80,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
             if (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) <= 1.5f)
             {
                 area.SetEnemyRenderer(false);
-                PlatformerController.PlatformerController.enabled = true;
+                PlatformerController.enabled = true;
                 PlatformerController.Reticle.enabled              = true;
             }
 
@@ -146,7 +145,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     public void Snap()
     {
-        hand.HandAnim("Snap");
+        PlatformerHand.HandAnim("Snap");
         PlatformerController.Camera.FOVPulse(snapFOVPulse);
         PlatformerController.Camera.Recoil(new Vector3(snapRecoil.x, snapRecoil.y, snapRecoil.z * Mathf.Sign(Random.Range(-1, 1))));
         PulseFire(firePulseSnap);
@@ -160,8 +159,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
     private IEnumerator HandGrab()
     {
-        hand.gameObject.SetActive(true);
-        hand.HandAnim("Grab");
+        PlatformerHand.gameObject.SetActive(true);
+        PlatformerHand.HandAnim("Grab");
 
         while (Vector3.Distance(HomunculusController.Rigidbody.position, HomunculusController.LatchPos) > 0.1f)
         {
