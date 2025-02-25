@@ -46,7 +46,7 @@ public class MindExitPortal : MonoBehaviour
         if (texture != null) Destroy(texture);
 
         texture = new(Screen.width, Screen.height, 0);
-        texture.depth = 16;
+        texture.depth = 24;
         targetCamera.targetTexture = texture;
 
         foreach (var r in renderers)

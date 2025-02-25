@@ -50,7 +50,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
                     AudioManager.Instance.PlaySFX(context.lunge);
 
-                    Vector3 dir = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * context.launchForce;
+                    Vector3 dir = (Vector3.up + context.cam.CamComponent.transform.forward).normalized * Mathf.Max(context.launchForce, context.rb.linearVelocity.magnitude * 0.5f);
                     dir.y       = Mathf.Max(dir.y, context.rb.linearVelocity.y + dir.y);
                     context.rb.linearVelocity = dir;
                 }
@@ -139,7 +139,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
             context.reticle.ResetPulse();
 
-            Vector3 dir = context.cam.ForwardNoY * Mathf.Max(context.launchForce, new Vector2(startVel.x, startVel.z).magnitude);
+            Vector3 dir = context.cam.ForwardNoY * Mathf.Max(context.launchForce, startVel.magnitude);
 
             context.Exit(dir, slowTime);
         }

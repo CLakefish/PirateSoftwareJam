@@ -30,8 +30,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _ColorMask: 15
-    - _Density: 0.15
-    - _Size: 25
+    - _Density: 0.6
+    - _Size: 5.18
     - _Speed: 1
     - _Stencil: 0
     - _StencilComp: 8

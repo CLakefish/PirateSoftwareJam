@@ -3245,10 +3245,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2177074514802961099}
     - target: {fileID: 805011886898368880, guid: 0899d2115aa098444974072d2106fad2, type: 3}
-      propertyPath: recoil.z
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 805011886898368880, guid: 0899d2115aa098444974072d2106fad2, type: 3}
       propertyPath: hitGround
       value: 
       objectReference: {fileID: 8300000, guid: 02d1743bbe8287f448e6c9ae10e2e256, type: 3}

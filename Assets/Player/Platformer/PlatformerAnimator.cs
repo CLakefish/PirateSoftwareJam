@@ -22,7 +22,7 @@ public class PlatformerAnimator : PlayerManager.PlayerController
     {
         moveTime = PlayerInputs.IsInputting ? moveTime + Time.unscaledDeltaTime : 0;
 
-        float x = (xIntensity * PlayerInputs.Input.x) + start.x;
+        float x = (xIntensity * PlayerInputs.Input.x) + start.x + (Mathf.Sin(moveTime) * xIntensity);
         float y = (Mathf.Clamp(PlayerInputs.Input.y, -1.0f, 1.0f) * yIntensity) + start.y;
         Vector3 pos = new(x, y, 0);
         rect.localPosition = Vector3.SmoothDamp(rect.localPosition, pos, ref vel, interpolateSpeed);
