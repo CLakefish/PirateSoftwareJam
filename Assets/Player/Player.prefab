@@ -315,6 +315,7 @@ MonoBehaviour:
   hand: {fileID: 4439868112839663932}
   rect: {fileID: 4816372415721584848}
   xIntensity: 25
+  xSpeed: 6
   yIntensity: 25
   interpolateSpeed: 0.1
 --- !u!1 &1593674034135525921

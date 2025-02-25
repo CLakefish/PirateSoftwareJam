@@ -105,7 +105,10 @@ public class PlayerCamera : MonoBehaviour
 
         if (LockCamera)
         {
-            cam.transform.localRotation = Quaternion.Euler(x + recoil.x, cam.transform.localEulerAngles.y + recoil.y, currentZ);
+            Quaternion rot = Quaternion.Euler(x + recoil.x, cam.transform.localEulerAngles.y + recoil.y, currentZ);
+            if (rot.eulerAngles.x == float.NaN) return;
+
+            cam.transform.localRotation = rot;
             return;
         }
 

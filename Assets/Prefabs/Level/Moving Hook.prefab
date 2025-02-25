@@ -1964,6 +1964,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b3114a38df8c247a7a02da46f9d7f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offset: {x: 0, y: -0.25, z: 0}
   slowTime: 0
   startPosition: {fileID: 4535588054217563210}
   endPosition: {fileID: 671801695548978105}

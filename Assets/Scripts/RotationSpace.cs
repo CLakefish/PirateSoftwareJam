@@ -7,6 +7,7 @@ public class RotationSpace : MonoBehaviour
     [SerializeField] private Transform parent;
     [SerializeField] private float zAngle;
     [SerializeField] private float xAngle;
+    [SerializeField] private float yAngle;
     [SerializeField] private float rotationSpeed;
     [SerializeField] private AnimationCurve rotationCurve;
     private Quaternion startRotation;
@@ -45,7 +46,7 @@ public class RotationSpace : MonoBehaviour
     private IEnumerator Rotate(Collider other)
     {
         Quaternion start = parent.transform.localRotation;
-        Quaternion end   = Quaternion.Euler(new Vector3(xAngle, startRotation.eulerAngles.y, zAngle));
+        Quaternion end   = Quaternion.Euler(new Vector3(xAngle, yAngle == 0 ? startRotation.y : yAngle, zAngle));
 
         float elapsed = 0f;
         while (elapsed < 1f)

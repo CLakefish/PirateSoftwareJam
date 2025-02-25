@@ -4,7 +4,7 @@ public class PlatformerAnimator : PlayerManager.PlayerController
 {
     [SerializeField] private Animator hand;
     [SerializeField] private RectTransform rect;
-    [SerializeField] private float xIntensity;
+    [SerializeField] private float xIntensity, xSpeed = 3;
     [SerializeField] private float yIntensity;
     [SerializeField] private float interpolateSpeed;
     private Vector3 start;
@@ -22,7 +22,7 @@ public class PlatformerAnimator : PlayerManager.PlayerController
     {
         moveTime = PlayerInputs.IsInputting ? moveTime + Time.unscaledDeltaTime : 0;
 
-        float x = (xIntensity * PlayerInputs.Input.x) + start.x + (Mathf.Sin(moveTime) * xIntensity);
+        float x = (xIntensity * PlayerInputs.Input.x) + start.x + (Mathf.Sin(moveTime * xSpeed) * xIntensity);
         float y = (Mathf.Clamp(PlayerInputs.Input.y, -1.0f, 1.0f) * yIntensity) + start.y;
         Vector3 pos = new(x, y, 0);
         rect.localPosition = Vector3.SmoothDamp(rect.localPosition, pos, ref vel, interpolateSpeed);

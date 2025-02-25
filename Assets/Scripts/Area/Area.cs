@@ -20,22 +20,20 @@ public class Area : MonoBehaviour
     public AreaEnd   EndPosition => endPosition;
     public MindExitPortal Exit => exit;
 
+    private readonly List<RotationSpace> rotations = new();
     private bool hasTriggered = false;
     private PlayerManager playerManager;
 
-
-    private readonly List<RotationSpace> rotations = new();
-
-    private void Awake()
+    private void Start()
     {
         endPosition.SetParent(this);
 
-        rotations.AddRange(GetComponentsInChildren<RotationSpace>());
-
-        TurnOff();
+        rotations.AddRange(GetComponentsInChildren<RotationSpace>(true));
 
         var e = GetComponentInChildren<MindExitPortal>();
         if (e != null) exit = e;
+
+        TurnOff();
     }
 
     public void Trigger(EnemyController controller)
@@ -52,9 +50,10 @@ public class Area : MonoBehaviour
         EndPosition.FollowPos = playerManager.PlatformerController.Camera.CamComponent.transform;
 
         hasTriggered = false;
+        playerManager.Transitions.ToPlayer(this);
+
         DialogueManager.Instance.DisplayDialogue(dialogue);
         MonologueManager.Instance.SetText(monologue);
-        playerManager.Transitions.ToPlayer(this);
     }
 
     public void SetEnemyRenderer(bool enabled)
@@ -109,11 +108,6 @@ public class Area : MonoBehaviour
     {
         DialogueManager.Instance.ResetText();
         MonologueManager.Instance.ClearText();
-
-        foreach (var r in rotated)
-        {
-            r.gameObject.SetActive(false);
-        }
 
         var mindPortal = GetComponentInChildren<MindExitPortal>();
         if (mindPortal)

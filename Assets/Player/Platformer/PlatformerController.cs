@@ -265,7 +265,7 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Update()
         {
             Vector3 dir = (context.reticle.Closest.obj.transform.position - context.rb.position).normalized;
-            context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * context.latchCurveSpeedIncrease) * dir;
+            context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * Mathf.Max(context.latchCurveSpeedIncrease, context.HorizontalVelocity.magnitude * 0.5f)) * dir;
         }
 
         public override void FixedUpdate()
@@ -520,7 +520,7 @@ public class PlatformerController : PlayerManager.PlayerController
         get
         {
             float angle        = Vector3.SignedAngle(collisions.WallNormal, MoveDir, Vector3.up);
-            bool excludeStates = hfsm.CurrentState != WallJump && hfsm.CurrentState != Jumping && hfsm.CurrentState != Walking;
+            bool excludeStates = hfsm.CurrentState != WallJump && hfsm.CurrentState != Jumping && hfsm.CurrentState != Walking && hfsm.CurrentState != Latching;
 
             return Mathf.Abs(angle) > wallRunThreshold && excludeStates;
         }
