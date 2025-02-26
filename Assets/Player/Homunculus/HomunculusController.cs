@@ -118,7 +118,7 @@ public class HomunculusController : PlayerManager.PlayerController
             Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
             movePos     = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration) * context.latchSpeed);
 
-            context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
+            context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.1f;
 
             if (slowTime && context.hfsm.Duration > 1f)
             {

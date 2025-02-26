@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
 public class EnemyController : Latchable
 {
@@ -29,13 +28,14 @@ public class EnemyController : Latchable
     public void BrainTrigger()
     {
         HasCompleted = true;
+        if (particle != null) Destroy(particle.gameObject);
         particle = Instantiate(fire, renderer.transform);
         particle.transform.localPosition = Vector3.up * 0.5f;
     }
 
     public void ClearTrigger()
     {
-        Destroy(particle);
+        if (particle != null) Destroy(particle.gameObject);
         HasCompleted = false;
     }
 

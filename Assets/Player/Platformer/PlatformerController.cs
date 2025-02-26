@@ -246,10 +246,10 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
+            context.slideBoost = true;
             context.latchFinished = false;
 
             startVel = context.rb.linearVelocity;
-            context.rb.linearVelocity = Vector3.zero;
 
             var latchable = context.reticle.Closest.obj.GetComponent<Latchable>();
             latchable.Latch();
@@ -264,9 +264,11 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Update()
         {
+            float increasedVal = context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * Mathf.Max(context.latchCurveSpeedIncrease, context.HorizontalVelocity.magnitude * 0.5f) * Mathf.Max(context.hfsm.Duration, 1));
+
             Vector3 dir = (context.reticle.Closest.obj.transform.position - context.rb.position).normalized;
 
-            context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * Mathf.Max(context.latchCurveSpeedIncrease, context.HorizontalVelocity.magnitude * 0.5f) * Mathf.Max(context.hfsm.Duration, 1)) * dir;
+            context.rb.linearVelocity = context.latchVelocitySpeed * increasedVal * dir;
         }
 
         public override void FixedUpdate()
