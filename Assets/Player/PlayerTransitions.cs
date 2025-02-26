@@ -81,7 +81,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
             {
                 area.SetEnemyRenderer(false);
                 PlatformerController.enabled = true;
-                PlatformerController.Reticle.enabled              = true;
+                PlatformerController.Reticle.enabled = true;
             }
 
             yield return new WaitForEndOfFrame();
@@ -117,7 +117,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         Homunculus = true;
         HomunculusController.Camera.CamComponent.fieldOfView = PlatformerController.Camera.CamComponent.fieldOfView;
         HomunculusController.Camera.SetForward(fwd);
-        HomunculusController.Exit(fwd * HomunculusController.exitLaunchForce);
+        HomunculusController.Exit(fwd * Mathf.Max(HomunculusController.exitLaunchForce, vel.magnitude * 0.5f));
 
         yield return new WaitForSecondsRealtime(0.1f);
 

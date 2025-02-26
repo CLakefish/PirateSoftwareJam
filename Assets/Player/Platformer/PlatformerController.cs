@@ -265,7 +265,8 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Update()
         {
             Vector3 dir = (context.reticle.Closest.obj.transform.position - context.rb.position).normalized;
-            context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * Mathf.Max(context.latchCurveSpeedIncrease, context.HorizontalVelocity.magnitude * 0.5f)) * dir;
+
+            context.rb.linearVelocity = context.latchVelocitySpeed * context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * Mathf.Max(context.latchCurveSpeedIncrease, context.HorizontalVelocity.magnitude * 0.5f) * Mathf.Max(context.hfsm.Duration, 1)) * dir;
         }
 
         public override void FixedUpdate()

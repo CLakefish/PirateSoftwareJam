@@ -271,6 +271,7 @@ MonoBehaviour:
   jumpPulseFOV: 7.5
   bounceTimeSlow: 0
   latchFirePulse: 1.85
+  latchSpeed: 2
   pulseFOV: 15
   recoil: {x: 0, y: 0, z: 16}
   latch: {fileID: 0}

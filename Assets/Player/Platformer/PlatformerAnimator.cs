@@ -15,7 +15,7 @@ public class PlatformerAnimator : PlayerManager.PlayerController
 
     private void Awake()
     {
-        start = rect.localPosition;
+        start = rect.localPosition - new Vector3(0, yIntensity * 0.5f + yBobIntensity * 0.5f);
     }
 
     private void Update()

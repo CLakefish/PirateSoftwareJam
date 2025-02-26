@@ -13,6 +13,8 @@ public class EnemyController : Latchable
     public bool HasTriggered { get; private set; }
     public bool HasCompleted { get; private set; }
 
+    private GameObject particle;
+
     private void Awake()
     {
         HasTriggered = false;
@@ -27,8 +29,14 @@ public class EnemyController : Latchable
     public void BrainTrigger()
     {
         HasCompleted = true;
-        GameObject particle = Instantiate(fire, renderer.transform);
+        particle = Instantiate(fire, renderer.transform);
         particle.transform.localPosition = Vector3.up * 0.5f;
+    }
+
+    public void ClearTrigger()
+    {
+        Destroy(particle);
+        HasCompleted = false;
     }
 
     public void OnExit()

@@ -26,4 +26,10 @@ public class MovingHook : Latchable
         desiredPos = desiredPos == startPosition ? endPosition : startPosition;
         PlayerManager.Instance.Transitions.Grab();
     }
+
+    public void ResetLatch()
+    {
+        desiredPos.position = startPosition.position;
+        attached.position = desiredPos.position;
+    }
 }

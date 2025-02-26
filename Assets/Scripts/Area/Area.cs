@@ -101,10 +101,22 @@ public class Area : MonoBehaviour
         playerManager.Transitions.Snap();
     }
 
-    public void SetPosition()
+    public void Reset()
     {
+        hasTriggered = false;
+        TurnOff();
+
+        var latches = GetComponentsInChildren<MovingHook>(true);
+
+        foreach (var latch in latches) {
+            latch.ResetLatch();
+        }
+
+        if (EnemyController.HasTriggered) EnemyController.ClearTrigger();
+
         foreach (var r in rotations) r.ClearAll();
         foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;
+
         playerManager.PlatformerController.Camera.ResetRotation();
         playerManager.PlatformerController.ResetVelocity();
         playerManager.SetPlayerPosition(SpawnPosition);

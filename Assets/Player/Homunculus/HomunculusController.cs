@@ -116,7 +116,7 @@ public class HomunculusController : PlayerManager.PlayerController
 
         public override void FixedUpdate() {
             Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
-            movePos     = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration));
+            movePos     = Vector3.Lerp(context.rb.position, pos, context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration) * context.latchSpeed);
 
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < 0.01f;
 
@@ -168,7 +168,8 @@ public class HomunculusController : PlayerManager.PlayerController
     [SerializeField] private float bounceTimeSlow;
     [SerializeField] private float latchFirePulse;
 
-    [Header("Latch VFX")]
+    [Header("Latching")]
+    [SerializeField] private float latchSpeed;
     [SerializeField] private float pulseFOV;
     [SerializeField] private Vector3 recoil;
 
