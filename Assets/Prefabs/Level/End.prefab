@@ -72,8 +72,8 @@ MonoBehaviour:
   spawned: {fileID: 1560194737527007739, guid: 2814163dbf78ca64f8746efe1bd99a3f, type: 3}
   view: {fileID: 1141717905305816170}
   bobSpeed: 0.6
-  bobIntensity: 1
-  idleRotateSpeed: 0
+  bobIntensity: 2
+  idleRotateSpeed: 25
 --- !u!108 &7066372578865247844
 Light:
   m_ObjectHideFlags: 0
@@ -2380,7 +2380,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dba5d2ceebfc7894b890caceed805eca, type: 2}
+  - {fileID: -3033667219593020291, guid: 1da036f93ad8db94fa754bc7eb638bd8, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

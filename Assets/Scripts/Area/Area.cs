@@ -36,6 +36,12 @@ public class Area : MonoBehaviour
         TurnOff();
     }
 
+    private void OnDisable()
+    {
+        DialogueManager.Instance.ResetText();
+        MonologueManager.Instance.ClearText();
+    }
+
     public void Trigger(EnemyController controller)
     {
         playerManager = PlayerManager.Instance;
@@ -106,9 +112,6 @@ public class Area : MonoBehaviour
 
     public void TurnOff()
     {
-        DialogueManager.Instance.ResetText();
-        MonologueManager.Instance.ClearText();
-
         var mindPortal = GetComponentInChildren<MindExitPortal>();
         if (mindPortal)
         {

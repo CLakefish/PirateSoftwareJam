@@ -315,8 +315,11 @@ MonoBehaviour:
   hand: {fileID: 4439868112839663932}
   rect: {fileID: 4816372415721584848}
   xIntensity: 25
+  xBobIntensity: 15
   xSpeed: 6
   yIntensity: 25
+  yBobIntensity: 15
+  ySpeed: 2
   interpolateSpeed: 0.1
 --- !u!1 &1593674034135525921
 GameObject:
@@ -3168,16 +3171,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2741915581578930349, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -2.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 2741915581578930349, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
       propertyPath: m_LocalPosition.y
       value: 43.120003
-      objectReference: {fileID: 0}
-    - target: {fileID: 2741915581578930349, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 8.669998
       objectReference: {fileID: 0}
     - target: {fileID: 2741915581578930349, guid: 7e11012c5f1c17d438d6e6cc33ef9057, type: 3}
       propertyPath: m_LocalRotation.w

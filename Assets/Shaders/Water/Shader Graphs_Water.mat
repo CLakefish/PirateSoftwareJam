@@ -32,9 +32,13 @@ Material:
     - _Alpha: 0.45
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: -30
+    - _Distance: 4
+    - _Foam: 0
+    - _FoamCutoff: 1.5
     - _Speed: 1
     m_Colors:
     - _Direction: {r: 1, g: 0, b: 0, a: 0}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
     - _Tiling: {r: 0.1, g: 0.1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

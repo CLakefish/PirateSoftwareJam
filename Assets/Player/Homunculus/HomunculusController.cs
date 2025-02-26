@@ -218,6 +218,8 @@ public class HomunculusController : PlayerManager.PlayerController
         });
 
         hfsm.SetStartState(Begin);
+
+        cam.LockCamera = false;
     }
 
     private void Update()
