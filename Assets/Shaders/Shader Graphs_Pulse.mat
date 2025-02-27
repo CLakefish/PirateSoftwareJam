@@ -32,7 +32,7 @@ Material:
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     - _NoiseDensity: 0.05
-    - _NoiseSpeed: 5
+    - _NoiseSpeed: 13.18
     - _Speed: 0.01
     m_Colors:
     - _Dir: {r: 1, g: 0, b: 0, a: 0}

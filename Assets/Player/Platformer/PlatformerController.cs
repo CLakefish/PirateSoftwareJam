@@ -347,8 +347,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
-            Vector3 projected = GetProjected() * Mathf.Max(context.wallRunSpeed, context.HorizontalVelocity.magnitude);
-
             if (context.rb.linearVelocity.y > 0)
             {
                 context.Gravity();
@@ -358,8 +356,13 @@ public class PlatformerController : PlayerManager.PlayerController
                 context.rb.linearVelocity -= Time.deltaTime * context.wallRunGravity * Vector3.up;
             }
 
-            context.DesiredHorizontalVelocity = new Vector3(projected.x, 0, projected.z);
-            context.rb.linearVelocity         = new Vector3(context.DesiredHorizontalVelocity.x, context.rb.linearVelocity.y, context.DesiredHorizontalVelocity.z);
+            if (context.HorizontalVelocity.magnitude <= context.wallRunSpeed)
+            {
+                Vector3 projected = GetProjected() * Mathf.Max(context.wallRunSpeed, context.HorizontalVelocity.magnitude);
+
+                context.DesiredHorizontalVelocity = new Vector3(projected.x, 0, projected.z);
+                context.rb.linearVelocity = new Vector3(context.DesiredHorizontalVelocity.x, context.rb.linearVelocity.y, context.DesiredHorizontalVelocity.z);
+            }
         }
 
         public override void Exit()
@@ -637,6 +640,8 @@ public class PlatformerController : PlayerManager.PlayerController
     {
         float speed = keepMomentum ? Mathf.Max(moveSpeed, new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude) : moveSpeed;
         float accel = collisions.GroundCollision ? acceleration : airAcceleration;
+
+        if (HorizontalVelocity.magnitude > moveSpeed) accel = airAcceleration;
 
         DesiredHorizontalVelocity = Vector3.MoveTowards(DesiredHorizontalVelocity, MoveDir * speed, Time.deltaTime * accel);
 

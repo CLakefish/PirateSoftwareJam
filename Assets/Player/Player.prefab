@@ -3529,7 +3529,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   latchDistance: 15
-  maxDeviation: 0.15
+  maxDeviation: 2
   deviationIgnoreDist: 1
   canvas: {fileID: 5286554263428342044}
   reticleHolder: {fileID: 5630961173882677129}
@@ -4503,7 +4503,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   latchDistance: 15
-  maxDeviation: 0.15
+  maxDeviation: 2
   deviationIgnoreDist: 4
   canvas: {fileID: 5286554263428342044}
   reticleHolder: {fileID: 2034678749040196331}
