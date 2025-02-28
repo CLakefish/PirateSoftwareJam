@@ -9,10 +9,14 @@ public class AreaEnd : MonoBehaviour
     [SerializeField] private float idleRotateSpeed;
     private Area parent;
     private Vector3 startPos;
+    private GameObject spawn;
 
     public Transform FollowPos { get; set; }
 
     public void SetParent(Area parent) => this.parent = parent;
+    public void ClearTrigger() {
+        if (spawn != null) Destroy(spawn);
+    }
 
     private void Awake()
     {
@@ -33,7 +37,7 @@ public class AreaEnd : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        GameObject spawn = Instantiate(spawned, transform);
+        spawn = Instantiate(spawned, transform);
         spawn.transform.localPosition = Vector3.zero;
         
         parent.BrainTrigger();

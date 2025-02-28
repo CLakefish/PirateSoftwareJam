@@ -55,12 +55,8 @@ public class MindExitPortal : MonoBehaviour
         }
 
         targetCamera.depthTextureMode = DepthTextureMode.Depth;
-        targetCamera.gameObject.SetActive(false);
 
-        foreach (var renderer in renderers)
-        {
-            renderer.transform.localScale = Vector3.zero;
-        }
+        ClearTrigger();
     }
 
     private void LateUpdate()
@@ -114,6 +110,17 @@ public class MindExitPortal : MonoBehaviour
         StartCoroutine(OpenAnimCoroutine());
     }
 
+    public void ClearTrigger()
+    {
+        targetCamera.gameObject.SetActive(false);
+        isActive = false;
+
+        foreach (var renderer in renderers)
+        {
+            renderer.transform.localScale = Vector3.zero;
+        }
+    }
+    
     private IEnumerator OpenAnimCoroutine()
     {
         Vector3 scale = Vector3.zero;

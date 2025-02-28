@@ -113,6 +113,8 @@ public class Area : MonoBehaviour
         }
 
         EnemyController.ClearTrigger();
+        EndPosition.ClearTrigger();
+        exit.ClearTrigger();
 
         foreach (var r in rotations) r.ClearAll();
         foreach (var t in rotated)   t.localEulerAngles = Vector3.zero;

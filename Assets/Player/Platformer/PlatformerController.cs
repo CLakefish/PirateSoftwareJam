@@ -79,7 +79,7 @@ public class PlatformerController : PlayerManager.PlayerController
                 context.jumpBuffer = context.jumpBufferTime;
             }
 
-            if (!context.slideBoost) context.slideBoost = context.hfsm.Duration >= context.slideReplenishTime;
+            context.slideBoost = true;
         }
 
         public override void FixedUpdate()
@@ -103,11 +103,18 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             AudioManager.Instance.PlaySFX(context.slide);
 
-            momentum = context.rb.linearVelocity;
+            if (context.HorizontalVelocity.magnitude <= context.moveSpeed)
+            {
+                momentum = context.cam.ForwardNoY * context.moveSpeed;
+            }
+            else
+            {
+                momentum = context.rb.linearVelocity;
+            }
 
             if (context.slideBoost && context.HorizontalVelocity.magnitude <= context.slideBoostSpeedCap)
             {
-                if (context.PlayerInputs.IsInputting) context.cam.FOVPulse(context.slidePulse);
+                context.cam.FOVPulse(context.slidePulse);
 
                 Vector3 mov = context.MoveDir == Vector3.zero ? context.cam.ForwardNoY : context.MoveDir;
                 Vector3 dir = Vector3.ProjectOnPlane(mov * context.slideForce, context.collisions.GroundNormal);
@@ -143,7 +150,7 @@ public class PlatformerController : PlayerManager.PlayerController
                 Vector3 adjusted      = slopeGravity * (1.0f + normalizedAngle);
                 desiredVelocity       = momentum + adjusted;
             }
-            else if (context.collisions.GroundCollision && !context.collisions.SlopeCollision)
+            else if (context.collisions.GroundCollision && !context.collisions.SlopeCollision && context.MoveDir == Vector3.zero)
             {
                 desiredVelocity = context.MoveDir;
             }
@@ -193,7 +200,7 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             context.ResetTilt();
 
-            context.rb.linearVelocity = new Vector3(momentum.x, Mathf.Max(momentum.y, 0), momentum.z);
+            context.rb.linearVelocity = new Vector3(momentum.x, Mathf.Max(momentum.y, momentum.y * 0.5f), momentum.z);
             context.DesiredHorizontalVelocity = context.HorizontalVelocity;
         }
     }
@@ -266,11 +273,11 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Update()
         {
-            float increasedVal = context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * Mathf.Max(context.latchCurveSpeedIncrease, context.HorizontalVelocity.magnitude * 0.5f) * Mathf.Max(context.hfsm.Duration, 1));
+            float increasedVal = context.PlayerLatching.latchLerp.Evaluate(context.hfsm.Duration * context.latchCurveSpeedIncrease);
 
             Vector3 dir = (context.reticle.Closest.obj.transform.position - context.rb.position).normalized;
 
-            context.rb.linearVelocity = context.latchVelocitySpeed * increasedVal * dir;
+            context.rb.linearVelocity = Mathf.Max(context.latchVelocitySpeed, startVel.magnitude) * increasedVal * dir;
         }
 
         public override void FixedUpdate()
@@ -443,7 +450,6 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float slideRotationSpeed;
     [SerializeField] private float slideAcceleration;
     [SerializeField] private float slideAirAcceleration;
-    [SerializeField] private float slideReplenishTime;
     [SerializeField] private float slideBoostSpeedCap = 50;
     [SerializeField] private float slidePulse;
     [SerializeField] private float slideTilt;
@@ -600,11 +606,10 @@ public class PlatformerController : PlayerManager.PlayerController
             new(WallJump, Falling,  () => hfsm.Duration >= wallJumpTime),
         });
 
-        hfsm.SetStartState(Walking);
+        hfsm.SetStartState(Falling);
 
         cam.Reload();
         capsuleCollider.enabled = true;
-        slideBoost = true;
 
         Launch(cam.ForwardNoY * moveSpeed);
     }
