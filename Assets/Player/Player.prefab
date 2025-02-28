@@ -4502,7 +4502,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  latchDistance: 15
+  latchDistance: 20
   maxDeviation: 2
   deviationIgnoreDist: 4
   canvas: {fileID: 5286554263428342044}

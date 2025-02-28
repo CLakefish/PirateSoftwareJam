@@ -59,6 +59,11 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             context.Gravity();
         }
+
+        public override void Exit()
+        {
+            context.DesiredHorizontalVelocity = context.HorizontalVelocity;
+        }
     }
 
     private class FallingState : State<PlatformerController>
@@ -73,15 +78,12 @@ public class PlatformerController : PlayerManager.PlayerController
             {
                 context.jumpBuffer = context.jumpBufferTime;
             }
+
+            if (!context.slideBoost) context.slideBoost = context.hfsm.Duration >= context.slideReplenishTime;
         }
 
         public override void FixedUpdate()
         {
-            if (context.PlayerInputs.Slide && (context.hfsm.PreviousState == context.Sliding || context.hfsm.PreviousState == context.SlideJump))
-            {
-                context.SetSlideTilt();
-            }
-
             context.Gravity();
         }
 
@@ -103,11 +105,12 @@ public class PlatformerController : PlayerManager.PlayerController
 
             momentum = context.rb.linearVelocity;
 
-            if (context.slideBoost)
+            if (context.slideBoost && context.HorizontalVelocity.magnitude <= context.slideBoostSpeedCap)
             {
                 if (context.PlayerInputs.IsInputting) context.cam.FOVPulse(context.slidePulse);
 
-                Vector3 dir = Vector3.ProjectOnPlane(context.MoveDir * context.slideForce, context.collisions.GroundNormal);
+                Vector3 mov = context.MoveDir == Vector3.zero ? context.cam.ForwardNoY : context.MoveDir;
+                Vector3 dir = Vector3.ProjectOnPlane(mov * context.slideForce, context.collisions.GroundNormal);
                 momentum += dir;
             }
 
@@ -208,7 +211,6 @@ public class PlatformerController : PlayerManager.PlayerController
             context.cam.FOVPulse(context.slideJumpPulse);
 
             context.jumpBuffer = 0;
-            context.slideBoost = false;
 
             context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.slideJumpForce, context.rb.linearVelocity.y + context.slideJumpForce), context.rb.linearVelocity.z);
         }
@@ -282,7 +284,6 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Exit()
         {
             context.cam.FOVPulse(context.pulseFOV);
-            context.slideBoost = true;
 
             context.reticle.ResetPulse();
             context.PlayerLatching.SetActive(false);
@@ -304,6 +305,8 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Enter()
         {
             AudioManager.Instance.PlaySFX(context.jump);
+
+            context.slideBoost = true;
 
             context.jumpBuffer = 0;
             context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.lungeForce, context.rb.linearVelocity.y + context.lungeForce), context.rb.linearVelocity.z);
@@ -391,6 +394,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
+            context.slideBoost = true;
+
             context.Camera.FOVPulse(context.wallJumpFOVPulse);
 
             Vector3 dir = context.collisions.WallNormal * context.wallJumpForce + (Vector3.up * context.wallJumpHeight);
@@ -438,6 +443,8 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private float slideRotationSpeed;
     [SerializeField] private float slideAcceleration;
     [SerializeField] private float slideAirAcceleration;
+    [SerializeField] private float slideReplenishTime;
+    [SerializeField] private float slideBoostSpeedCap = 50;
     [SerializeField] private float slidePulse;
     [SerializeField] private float slideTilt;
 
@@ -534,7 +541,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private Vector3 DesiredHorizontalVelocity;
     private float jumpBuffer;
-    private bool  slideBoost = true;
+    private bool  slideBoost;
     private bool  latchFinished;
 
     private void OnEnable()
@@ -593,10 +600,13 @@ public class PlatformerController : PlayerManager.PlayerController
             new(WallJump, Falling,  () => hfsm.Duration >= wallJumpTime),
         });
 
-        hfsm.SetStartState(Falling);
+        hfsm.SetStartState(Walking);
 
         cam.Reload();
         capsuleCollider.enabled = true;
+        slideBoost = true;
+
+        Launch(cam.ForwardNoY * moveSpeed);
     }
 
     private void OnDisable()
@@ -683,6 +693,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
         DesiredHorizontalVelocity = MoveDir.normalized * moveSpeed;
         rb.linearVelocity         = DesiredHorizontalVelocity;
+
+        slideBoost = true;
     }
 
     public void SetActive(bool on)

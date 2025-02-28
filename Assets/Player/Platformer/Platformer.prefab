@@ -271,10 +271,12 @@ MonoBehaviour:
   jumpHeight: 15
   coyoteTime: 0.15
   jumpBufferTime: 0.1
-  slideForce: 20
+  slideForce: 16
   slideRotationSpeed: 0.75
   slideAcceleration: 25
   slideAirAcceleration: 60
+  slideReplenishTime: 0.05
+  slideBoostSpeedCap: 65
   slidePulse: 10
   slideTilt: 6
   slideJumpForce: 13
@@ -365,6 +367,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand: {fileID: 5546324982613956859}
+  rect: {fileID: 0}
+  xIntensity: 0
+  xBobIntensity: 15
+  xSpeed: 3
+  yIntensity: 0
+  yBobIntensity: 15
+  ySpeed: 1.5
+  interpolateSpeed: 0
 --- !u!1 &4903148831225748308
 GameObject:
   m_ObjectHideFlags: 0
