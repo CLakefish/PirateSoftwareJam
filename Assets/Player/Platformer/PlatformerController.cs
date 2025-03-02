@@ -26,8 +26,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void FixedUpdate()
         {
-            context.slideBoost = context.hfsm.Duration > 0.1f;
-
             context.rb.linearVelocity = context.HorizontalVelocity;
             context.Move(context.hfsm.Duration > 0.1f);
         }
@@ -78,8 +76,6 @@ public class PlatformerController : PlayerManager.PlayerController
             {
                 context.jumpBuffer = context.jumpBufferTime;
             }
-
-            context.slideBoost = true;
         }
 
         public override void FixedUpdate()
@@ -103,7 +99,7 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             AudioManager.Instance.PlaySFX(context.slide);
 
-            if (context.HorizontalVelocity.magnitude <= context.moveSpeed)
+            if (context.rb.linearVelocity.magnitude <= context.moveSpeed)
             {
                 momentum = context.cam.ForwardNoY * context.moveSpeed;
             }
@@ -112,7 +108,7 @@ public class PlatformerController : PlayerManager.PlayerController
                 momentum = context.rb.linearVelocity;
             }
 
-            if (context.slideBoost && context.HorizontalVelocity.magnitude <= context.slideBoostSpeedCap)
+            if (context.HorizontalVelocity.magnitude <= context.slideBoostSpeedCap)
             {
                 context.cam.FOVPulse(context.slidePulse);
 
@@ -122,8 +118,7 @@ public class PlatformerController : PlayerManager.PlayerController
             }
 
             context.rb.linearVelocity = momentum;
-            context.DesiredHorizontalVelocity = new Vector2(momentum.x, momentum.z);
-            context.slideBoost = false;
+            context.DesiredHorizontalVelocity = new Vector3(momentum.x, 0, momentum.z);
         }
 
         public override void Update()
@@ -139,7 +134,7 @@ public class PlatformerController : PlayerManager.PlayerController
             context.SetSlideTilt();
             context.Gravity();
 
-            Vector3 desiredVelocity;
+            Vector3 desiredVelocity = momentum;
 
             // Gaining momentum
             if (context.collisions.SlopeCollision)
@@ -149,14 +144,6 @@ public class PlatformerController : PlayerManager.PlayerController
                 float normalizedAngle = Vector3.Angle(Vector3.up, context.collisions.GroundNormal) / 90.0f;
                 Vector3 adjusted      = slopeGravity * (1.0f + normalizedAngle);
                 desiredVelocity       = momentum + adjusted;
-            }
-            else if (context.collisions.GroundCollision && !context.collisions.SlopeCollision && context.MoveDir == Vector3.zero)
-            {
-                desiredVelocity = context.MoveDir;
-            }
-            else
-            {
-                desiredVelocity = momentum;
             }
 
             // Move towards gathered velocity (y is seperated so I can tinker with it more, it can be simplified ofc)
@@ -255,7 +242,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
-            context.slideBoost = true;
             context.latchFinished = false;
 
             startVel = context.rb.linearVelocity;
@@ -312,8 +298,6 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Enter()
         {
             AudioManager.Instance.PlaySFX(context.jump);
-
-            context.slideBoost = true;
 
             context.jumpBuffer = 0;
             context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.lungeForce, context.rb.linearVelocity.y + context.lungeForce), context.rb.linearVelocity.z);
@@ -401,8 +385,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
-            context.slideBoost = true;
-
             context.Camera.FOVPulse(context.wallJumpFOVPulse);
 
             Vector3 dir = context.collisions.WallNormal * context.wallJumpForce + (Vector3.up * context.wallJumpHeight);
@@ -547,12 +529,11 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private Vector3 DesiredHorizontalVelocity;
     private float jumpBuffer;
-    private bool  slideBoost;
     private bool  latchFinished;
 
     private void OnEnable()
     {
-        hfsm = new(this);
+        hfsm      = new(this);
         Walking   = new(this);
         Jumping   = new(this);
         Falling   = new(this);
@@ -696,10 +677,7 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.ChangeState(Falling);
         collisions.ResetCollisions();
 
-        DesiredHorizontalVelocity = MoveDir.normalized * moveSpeed;
-        rb.linearVelocity         = DesiredHorizontalVelocity;
-
-        slideBoost = true;
+        rb.linearVelocity = Vector3.zero;
     }
 
     public void SetActive(bool on)

@@ -272,10 +272,9 @@ MonoBehaviour:
   coyoteTime: 0.15
   jumpBufferTime: 0.1
   slideForce: 16
-  slideRotationSpeed: 0.75
+  slideRotationSpeed: 2
   slideAcceleration: 25
   slideAirAcceleration: 60
-  slideReplenishTime: 0.05
   slideBoostSpeedCap: 65
   slidePulse: 10
   slideTilt: 6
@@ -285,7 +284,7 @@ MonoBehaviour:
   standardSize: 2
   crouchTime: 2
   latchVelocitySpeed: 0
-  latchCurveSpeedIncrease: 0
+  latchCurveSpeedIncrease: 8
   latchDownwardLaunchThreshold: 0
   launchEndForce: 0
   launchMinDist: 0.6

@@ -17,6 +17,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private float firePulseEnter;
     [SerializeField] private float firePulseExit;
     [SerializeField] private float firePulseSnap;
+    [SerializeField] private float firePulseWin;
 
     [Header("Portal")]
     [SerializeField] private GameObject teleporter;
@@ -32,6 +33,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
     private Coroutine grab;
 
     private const string fireVignetteName = "_Intensity";
+    private const float enemyVisiblePause = 0.1f;
     private float fireVignetteVelocity;
 
     #region Transitions
@@ -119,22 +121,26 @@ public class PlayerTransitions : PlayerManager.PlayerController
         HomunculusController.Camera.SetForward(fwd);
         HomunculusController.Exit(fwd * Mathf.Max(HomunculusController.exitLaunchForce, vel.magnitude * 0.5f));
 
-        yield return new WaitForSecondsRealtime(0.1f);
-
-        area.SetEnemyRenderer(true);
-
         if (LevelManager.Instance.CheckWin())
         {
-/*            if (LevelManager.Instance.LastLevel)
+            PulseFire(firePulseWin);
+
+            if (LevelManager.Instance.LastLevel)
             {
-                //anim = StartCoroutine(CompletedCutscene());
+                anim = StartCoroutine(CompletedCutscene());
                 yield break;
-            }*/
+            }
 
             yield return new WaitForSecondsRealtime(snapPause);
 
+            HomunculusController.Camera.enabled = false;
             PlayerComplete.Activate();
+            yield break;
         }
+
+        yield return new WaitForSecondsRealtime(enemyVisiblePause);
+
+        area.SetEnemyRenderer(true);
     }
 
     #endregion
@@ -190,38 +196,38 @@ public class PlayerTransitions : PlayerManager.PlayerController
         worldSpaceCanvas.worldCamera = Camera.main;
     }
 
-    /*   [SerializeField] private AnimationCurve transitionCurve;
- [SerializeField] private AnimationCurve pullOutCurve;
- [SerializeField] private Transform endPos;
- [SerializeField] private DialogueScriptableObject endDialogue;
- [SerializeField] private GameObject fire;*/
-    /*    [SerializeField] private float transitionSpeed;
-        [SerializeField] private float returnSpeed;*/
-    /*    private IEnumerator CompletedCutscene()
+    [SerializeField] private AnimationCurve transitionCurve;
+    [SerializeField] private AnimationCurve pullOutCurve;
+    [SerializeField] private Transform endPos;
+    [SerializeField] private DialogueScriptableObject endDialogue;
+    [SerializeField] private GameObject fire;
+    [SerializeField] private float transitionSpeed;
+    [SerializeField] private float returnSpeed;
+    private IEnumerator CompletedCutscene()
+    {
+        Vector3 vel = Vector3.zero;
+        HomunculusController.enabled = false;
+        HomunculusController.Rigidbody.linearVelocity = Vector3.zero;
+
+        DialogueManager.Instance.DisplayDialogue(endDialogue);
+
+        var fires = GameObject.FindGameObjectsWithTag("Lightable");
+
+        foreach (var f in fires)
         {
-            Vector3 vel    = Vector3.zero;
-            HomunculusController.enabled = false;
-            HomunculusController.Rigidbody.linearVelocity = Vector3.zero;
+            GameObject obj = Instantiate(fire, f.transform);
+            obj.transform.localScale *= 2;
+            obj.transform.localPosition = Vector3.zero;
+        }
 
-            DialogueManager.Instance.DisplayDialogue(endDialogue);
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, endPos.position) > 1.0f)
+        {
+            if (PlayerInputs.Jump) yield break;
 
-            var fires = GameObject.FindGameObjectsWithTag("Lightable");
+            HomunculusController.Rigidbody.MovePosition(Vector3.SmoothDamp(HomunculusController.Rigidbody.position, endPos.position, ref vel, 3, Mathf.Infinity, Time.unscaledDeltaTime));
+            yield return null;
+        }
 
-            foreach (var f in fires)
-            {
-                GameObject obj = Instantiate(fire, f.transform);
-                obj.transform.localScale *= 2;
-                obj.transform.localPosition = Vector3.zero;
-            }
-
-            while (Vector3.Distance(HomunculusController.Rigidbody.position, endPos.position) > 1.0f)
-            {
-                if (PlayerInputs.Jump) yield break;
-
-                HomunculusController.Rigidbody.MovePosition(Vector3.SmoothDamp(HomunculusController.Rigidbody.position, endPos.position, ref vel, 3, Mathf.Infinity, Time.unscaledDeltaTime));
-                yield return null;
-            }
-
-            PlayerComplete.Activate();
-        }*/
+        PlayerComplete.Activate();
+    }
 }

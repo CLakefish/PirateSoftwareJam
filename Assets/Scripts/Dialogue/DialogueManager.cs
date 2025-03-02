@@ -12,6 +12,10 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private float dialogueStartPause;
     [SerializeField] private float dialogueEndingPause;
 
+    [Header("Dialogue Effect")]
+    [SerializeField] private Vector2 amplitude;
+    [SerializeField] private Vector2 speed;
+
     private DialogueScriptableObject currentDialogueObj;
     private DialogueScriptableObject.Dialogue currentDialogue;
     private Coroutine dialogueCoroutine;
@@ -34,23 +38,27 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (cutscenePlaying && currentDialogue != null && currentDialogue.skippable)
+        if (cutscenePlaying && currentDialogue != null)
         {
-            if (player.PlayerInputs.Jump || player.HomunculusController.Latching)
+            if (currentDialogue.skippable && (player.PlayerInputs.Jump || player.HomunculusController.Latching))
             {
                 if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
                 timeManager.SetScale(1);
                 timeManager.Interpolate = true;
                 ResetText();
+                return;
             }
         }
+    }
 
+    private void LateUpdate()
+    {
         canvas.worldCamera = Camera.main;
     }
 
     public void DisplayDialogue(DialogueScriptableObject text)
     {
-        if (text == null) return;
+        if (text == null || currentDialogueObj == text) return;
 
         cutscenePlaying = true;
 
@@ -97,13 +105,22 @@ public class DialogueManager : MonoBehaviour
                 yield return new WaitForSecondsRealtime(dialogueCharacterTime);
             }
 
-            yield return new WaitForSecondsRealtime(dialogueEndingPause);
+            float time = 0; 
+
+            while (time <= dialogueEndingPause)
+            {
+                time += Time.unscaledDeltaTime;
+                TextEffect.UpdateText(dialogue, speed, amplitude);
+                yield return null;
+            }
         }
 
         if (text.ForceInput)
         {
             while (!player.PlayerInputs.Jump)
             {
+                TextEffect.UpdateText(dialogue, speed, amplitude);
+
                 player.HomunculusController.Rigidbody.linearVelocity = Vector3.zero;
 
                 yield return null;

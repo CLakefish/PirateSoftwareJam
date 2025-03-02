@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tutorial 3
   m_EditorClassIdentifier: 
   dialogues:
-  - dialogue: LUNGE AGAIN AND TAKE ANOTHER
+  - dialogue: LUNGE AGAIN TOWARDS THE OTHER AND LATCH
     audio: {fileID: 8300000, guid: a2a870eeb448f0c47ac2218cbafced5b, type: 3}
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
     skippable: 1
