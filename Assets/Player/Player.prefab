@@ -1958,22 +1958,9 @@ MonoBehaviour:
   snapRecoil: {x: 0, y: 0, z: -0.25}
   snapPause: 0.55
   snapFOVPulse: 15
-  transitionCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  pullOutCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   endPos: {fileID: 0}
   endDialogue: {fileID: 0}
   fire: {fileID: 0}
-  transitionSpeed: 0
   returnSpeed: 0
 --- !u!1 &7599308242803030656
 GameObject:
@@ -3130,10 +3117,6 @@ PrefabInstance:
     - target: {fileID: 3019785449439890195, guid: 0899d2115aa098444974072d2106fad2, type: 3}
       propertyPath: m_Name
       value: Homunculus
-      objectReference: {fileID: 0}
-    - target: {fileID: 3019785449439890195, guid: 0899d2115aa098444974072d2106fad2, type: 3}
-      propertyPath: m_TagString
-      value: HomunculusPlatforming
       objectReference: {fileID: 0}
     - target: {fileID: 3228053818062221663, guid: 0899d2115aa098444974072d2106fad2, type: 3}
       propertyPath: m_Color.b

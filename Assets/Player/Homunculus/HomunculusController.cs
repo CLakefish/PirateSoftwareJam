@@ -129,6 +129,8 @@ public class HomunculusController : PlayerManager.PlayerController
                     Mathf.SmoothDampAngle(fwd.y, dir.y, ref camVel.y, context.PlayerLatching.latchCamInterpolate),
                     Mathf.SmoothDampAngle(fwd.z, dir.z, ref camVel.z, context.PlayerLatching.latchCamInterpolate));
             }
+
+            context.PlayerLatching.InterpolateEnd();
         }
 
         public override void Exit() {

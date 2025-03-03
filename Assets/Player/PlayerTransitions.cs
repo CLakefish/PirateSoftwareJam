@@ -33,6 +33,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
     private Coroutine grab;
 
     private const string fireVignetteName = "_Intensity";
+    private const string decorName = "HomunculusPlatforming";
     private const float enemyVisiblePause = 0.1f;
     private float fireVignetteVelocity;
 
@@ -96,6 +97,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         PlayerLatching.ClearParticles();
 
         HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
+        GameObject.FindGameObjectWithTag(decorName).SetActive(false);
 
         platformerView.transform.localPosition = Vector3.zero;
         platformerView.transform.localScale    = Vector3.one;
@@ -103,8 +105,10 @@ public class PlayerTransitions : PlayerManager.PlayerController
 
         PlatformerController.SetActive(true);
         PlatformerController.Camera.CamComponent.fieldOfView = HomunculusController.Camera.CamComponent.fieldOfView;
+        PlatformerController.Reticle.GetAllLatchables();
         PlatformerController.gameObject.SetActive(true);
     }
+
     private IEnumerator ToHomunculusTransition(Area area)
     {
         platformerView.localScale = Vector3.zero;
@@ -196,35 +200,40 @@ public class PlayerTransitions : PlayerManager.PlayerController
         worldSpaceCanvas.worldCamera = Camera.main;
     }
 
-    [SerializeField] private AnimationCurve transitionCurve;
-    [SerializeField] private AnimationCurve pullOutCurve;
+    [Header("Dw bout this")]
     [SerializeField] private Transform endPos;
     [SerializeField] private DialogueScriptableObject endDialogue;
     [SerializeField] private GameObject fire;
-    [SerializeField] private float transitionSpeed;
     [SerializeField] private float returnSpeed;
+
     private IEnumerator CompletedCutscene()
     {
         Vector3 vel = Vector3.zero;
         HomunculusController.enabled = false;
         HomunculusController.Rigidbody.linearVelocity = Vector3.zero;
 
-        DialogueManager.Instance.DisplayDialogue(endDialogue);
-
         var fires = GameObject.FindGameObjectsWithTag("Lightable");
 
         foreach (var f in fires)
         {
             GameObject obj = Instantiate(fire, f.transform);
-            obj.transform.localScale *= 2;
+            obj.transform.localScale *= 5;
             obj.transform.localPosition = Vector3.zero;
+            obj.transform.localRotation = Quaternion.identity;
         }
 
-        while (Vector3.Distance(HomunculusController.Rigidbody.position, endPos.position) > 1.0f)
-        {
-            if (PlayerInputs.Jump) yield break;
+        yield return new WaitForEndOfFrame();
+        DialogueManager.Instance.DisplayDialogue(endDialogue);
 
-            HomunculusController.Rigidbody.MovePosition(Vector3.SmoothDamp(HomunculusController.Rigidbody.position, endPos.position, ref vel, 3, Mathf.Infinity, Time.unscaledDeltaTime));
+        while (Vector3.Distance(HomunculusController.Rigidbody.position, endPos.position) > 10)
+        {
+            if (PlayerInputs.Jump)
+            {
+                PlayerComplete.Activate();
+                yield break;
+            }
+
+            HomunculusController.Rigidbody.MovePosition(Vector3.SmoothDamp(HomunculusController.Rigidbody.position, endPos.position, ref vel, returnSpeed, Mathf.Infinity, Time.unscaledDeltaTime));
             yield return null;
         }
 

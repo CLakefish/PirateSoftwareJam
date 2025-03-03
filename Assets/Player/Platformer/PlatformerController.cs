@@ -272,6 +272,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
             Vector3 pos = context.reticle.Closest.obj.transform.position + offset;
             context.latchFinished = Vector3.Distance(context.rb.position, pos) < context.launchMinDist;
+
+            context.PlayerLatching.InterpolateEnd();
         }
 
         public override void Exit()

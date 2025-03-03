@@ -23,6 +23,12 @@ public class Area : MonoBehaviour
     private readonly List<RotationSpace> rotations = new();
     private bool hasTriggered = false;
     private PlayerManager playerManager;
+    private GameObject homunculusPlatforming;
+
+    private void Awake()
+    {
+        homunculusPlatforming = GameObject.FindGameObjectWithTag("HomunculusPlatforming");
+    }
 
     private void Start()
     {
@@ -76,6 +82,8 @@ public class Area : MonoBehaviour
 
         var mindPortal = GetComponentInChildren<MindExitPortal>();
 
+        homunculusPlatforming.SetActive(true);
+
         if (mindPortal)
         {
             mindPortal.IsActive = true;
@@ -111,6 +119,8 @@ public class Area : MonoBehaviour
         foreach (var latch in latches) {
             latch.ResetLatch();
         }
+
+        homunculusPlatforming.SetActive(false);
 
         EnemyController.ClearTrigger();
         EndPosition.ClearTrigger();

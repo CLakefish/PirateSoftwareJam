@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 3254969349178913497}
   m_Layer: 2
   m_Name: Homunculus
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -105,4 +105,13 @@ public class PlayerLatching : MonoBehaviour
         line.SetPosition(totalTicks - 1, reticle.LatchObject.transform.position);
         fireParticles.transform.position = reticle.LatchObject.transform.position;
     }
+
+    public void InterpolateEnd()
+    {
+        if (line.positionCount < totalTicks - 1) return;
+
+        line.positionCount = totalTicks;
+        line.SetPosition(totalTicks - 1, reticle.LatchObject.transform.position);
+        //fireParticles.transform.position = reticle.LatchObject.transform.position;
+    }
 }
