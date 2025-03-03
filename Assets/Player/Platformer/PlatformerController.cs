@@ -687,6 +687,7 @@ public class PlatformerController : PlayerManager.PlayerController
         collisions.enabled = on;
         reticle.enabled = on;
 
+        Camera.enabled = on;
         Camera.LockCamera = !on;
         Camera.CamComponent.GetComponent<AudioListener>().enabled = on;
     }

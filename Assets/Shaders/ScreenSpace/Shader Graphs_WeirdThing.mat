@@ -44,6 +44,7 @@ Material:
     m_Floats:
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
+    - _MaxDist: 548.16
     - _Size: 9.08
     - _Speed: 1
     m_Colors:
