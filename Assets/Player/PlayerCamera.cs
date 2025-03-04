@@ -106,17 +106,22 @@ public class PlayerCamera : MonoBehaviour
         if (LockCamera)
         {
             Quaternion rot = Quaternion.Euler(x + recoil.x, cam.transform.localEulerAngles.y + recoil.y, currentZ);
-            if (rot.eulerAngles.x == float.NaN) return;
+            if (rot.eulerAngles.x == float.NegativeInfinity) return;
 
             cam.transform.localRotation = rot;
             return;
         }
 
-        cam.transform.localRotation = Quaternion.Euler(
-            new Vector3(
+        Vector3 dir = new(
             Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
-            cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y, 
-            currentZ));
+            cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y,
+            currentZ);
+
+        Quaternion moveRot = Quaternion.Euler(dir);
+
+        if (moveRot.eulerAngles.x == float.NegativeInfinity) return;
+
+        cam.transform.localRotation = moveRot;
     }
 
     public void ViewTilt(float increased = 1) => viewTilt.x = -input.Input.x * viewTiltAngle * increased;

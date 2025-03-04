@@ -532,6 +532,7 @@ public class PlatformerController : PlayerManager.PlayerController
     private Vector3 DesiredHorizontalVelocity;
     private float jumpBuffer;
     private bool  latchFinished;
+    private bool  canMove = true;
 
     private void OnEnable()
     {
@@ -636,6 +637,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private void Move(bool keepMomentum)
     {
+        if (!canMove) return;
+
         float speed = keepMomentum ? Mathf.Max(moveSpeed, new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude) : moveSpeed;
         float accel = collisions.GroundCollision ? acceleration : airAcceleration;
 
@@ -686,8 +689,10 @@ public class PlatformerController : PlayerManager.PlayerController
     {
         collisions.enabled = on;
         reticle.enabled = on;
+        canMove = on;
 
         Camera.enabled = on;
+        Camera.CamComponent.enabled = on;
         Camera.LockCamera = !on;
         Camera.CamComponent.GetComponent<AudioListener>().enabled = on;
     }
