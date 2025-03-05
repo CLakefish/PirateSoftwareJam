@@ -10,7 +10,7 @@ public class EnemyController : Latchable
     [SerializeField] private GameObject renderer;
 
     public bool HasTriggered { get; private set; }
-    public bool HasCompleted { get; private set; }
+    public bool HasCompleted;
 
     private GameObject particle;
 

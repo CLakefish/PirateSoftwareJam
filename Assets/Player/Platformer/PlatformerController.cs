@@ -99,7 +99,7 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             AudioManager.Instance.PlaySFX(context.slide);
 
-            if (context.rb.linearVelocity.magnitude <= context.moveSpeed)
+            if (context.HorizontalVelocity.magnitude <= context.moveSpeed)
             {
                 momentum = context.cam.ForwardNoY * context.moveSpeed;
             }
@@ -151,7 +151,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
             Vector3 slideInterpolated = Vector3.MoveTowards(momentum, desiredVelocity, Time.deltaTime * accel);
 
-            momentum = context.collisions.SlopeCollision ? slideInterpolated.normalized * Mathf.Max(slideInterpolated.magnitude, context.rb.linearVelocity.magnitude + (slideInterpolated.magnitude * Time.deltaTime)) : slideInterpolated;
+            momentum = slideInterpolated.normalized * Mathf.Max(slideInterpolated.magnitude, context.rb.linearVelocity.magnitude + (slideInterpolated.magnitude * Time.deltaTime));
 
             if (context.MoveDir != Vector3.zero)
             {
@@ -606,6 +606,8 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private void Update()
     {
+        if (!canMove) return;
+
         hfsm.CheckTransitions();
         hfsm.Update();
 
@@ -637,8 +639,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private void Move(bool keepMomentum)
     {
-        if (!canMove) return;
-
         float speed = keepMomentum ? Mathf.Max(moveSpeed, new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude) : moveSpeed;
         float accel = collisions.GroundCollision ? acceleration : airAcceleration;
 
@@ -683,6 +683,8 @@ public class PlatformerController : PlayerManager.PlayerController
         collisions.ResetCollisions();
 
         rb.linearVelocity = Vector3.zero;
+        DesiredHorizontalVelocity = Vector3.zero;
+        jumpBuffer = 0;
     }
 
     public void SetActive(bool on)

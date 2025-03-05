@@ -119,7 +119,10 @@ public class PlayerCamera : MonoBehaviour
 
         Quaternion moveRot = Quaternion.Euler(dir);
 
-        if (moveRot.eulerAngles.x == float.NegativeInfinity) return;
+        if (!float.IsFinite(moveRot.x) || !float.IsFinite(moveRot.y) || !float.IsFinite(moveRot.z) || !float.IsFinite(moveRot.w))
+        {
+            return;
+        }
 
         cam.transform.localRotation = moveRot;
     }

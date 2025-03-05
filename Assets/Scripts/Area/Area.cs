@@ -44,6 +44,10 @@ public class Area : MonoBehaviour
 
     private void OnDisable()
     {
+        if (DialogueManager.Instance == null) return;
+
+        homunculusPlatforming.SetActive(true);
+
         DialogueManager.Instance.ResetText();
         MonologueManager.Instance.ClearText();
     }
