@@ -32,12 +32,19 @@ public class PlayerTransitions : PlayerManager.PlayerController
     private Coroutine anim;
     private Coroutine grab;
 
+    private GameObject course;
+
     private const string fireVignetteName = "_Intensity";
     private const string decorName = "HomunculusPlatforming";
     private const float enemyVisiblePause = 0.1f;
     private float fireVignetteVelocity;
 
     #region Transitions
+
+    private void Awake()
+    {
+        course = GameObject.FindGameObjectWithTag(decorName);
+    }
 
     private bool Homunculus {
         set {
@@ -98,7 +105,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         PlayerLatching.ClearParticles();
 
         HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
-        GameObject.FindGameObjectWithTag(decorName).SetActive(false);
+        course.SetActive(false);
 
         platformerView.transform.localPosition = Vector3.zero;
         platformerView.transform.localScale    = Vector3.one;

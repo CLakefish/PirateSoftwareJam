@@ -8,6 +8,6 @@ public class AreaRespawn : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        parent.Reset();
+        parent.OnReset();
     }
 }

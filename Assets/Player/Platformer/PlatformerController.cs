@@ -99,14 +99,7 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             AudioManager.Instance.PlaySFX(context.slide);
 
-            if (context.HorizontalVelocity.magnitude <= context.moveSpeed)
-            {
-                momentum = context.cam.ForwardNoY * context.moveSpeed;
-            }
-            else
-            {
-                momentum = context.rb.linearVelocity;
-            }
+            momentum = context.rb.linearVelocity;
 
             if (context.HorizontalVelocity.magnitude <= context.slideBoostSpeedCap)
             {
@@ -187,7 +180,7 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             context.ResetTilt();
 
-            context.rb.linearVelocity = new Vector3(momentum.x, Mathf.Max(momentum.y, momentum.y * 0.5f), momentum.z);
+            context.rb.linearVelocity = new Vector3(momentum.x, Mathf.Max(momentum.y, 0), momentum.z);
             context.DesiredHorizontalVelocity = context.HorizontalVelocity;
         }
     }
@@ -619,6 +612,11 @@ public class PlatformerController : PlayerManager.PlayerController
 
     private void FixedUpdate()
     {
+        if (!canMove)
+        {
+            return;
+        }
+
         collisions.ChangeSize(PlayerInputs.Slide ? crouchSize : standardSize, crouchTime);
 
         collisions.CheckGroundCollisions();
@@ -679,11 +677,12 @@ public class PlatformerController : PlayerManager.PlayerController
     {
         AudioManager.Instance.PlaySFX(die);
 
+        rb.linearVelocity = Vector3.zero;
+        DesiredHorizontalVelocity = Vector3.zero;
+
         hfsm.ChangeState(Falling);
         collisions.ResetCollisions();
 
-        rb.linearVelocity = Vector3.zero;
-        DesiredHorizontalVelocity = Vector3.zero;
         jumpBuffer = 0;
     }
 

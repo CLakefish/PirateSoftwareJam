@@ -113,7 +113,7 @@ public class Area : MonoBehaviour
         playerManager.Transitions.Snap();
     }
 
-    public void Reset()
+    public void OnReset()
     {
         hasTriggered = false;
         TurnOff();
