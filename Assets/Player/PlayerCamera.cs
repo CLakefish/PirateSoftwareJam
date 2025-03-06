@@ -106,40 +106,31 @@ public class PlayerCamera : MonoBehaviour
         if (LockCamera)
         {
             float lockedYaw = cam.transform.localEulerAngles.y + recoil.y;
-            if (!float.IsFinite(lockedYaw))
-            {
-                return;
-            }
-
             Quaternion lockedRot = Quaternion.Euler(x + recoil.x, lockedYaw, currentZ);
-            if (!QuaternionIsValid(lockedRot))
-            {
-                return;
-            }
-
             cam.transform.localRotation = lockedRot;
             return;
         }
 
-        try
+        Vector3 dir = new(
+            Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
+            cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y,
+            currentZ);
+
+        if (!float.IsFinite(dir.x) || !float.IsFinite(dir.y) || !float.IsFinite(dir.z))
         {
-            Vector3 dir = new(
-                Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
-                cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y,
-                currentZ);
-
-            if (!float.IsFinite(dir.x) || !float.IsFinite(dir.y) || !float.IsFinite(dir.z)) return;
-
-            Quaternion moveRot = Quaternion.Euler(dir);
-
-            if (!QuaternionIsValid(moveRot))
-            {
-                return;
-            }
-
-            cam.transform.localRotation = moveRot;
+            recoil = Vector3.zero;
+            return;
         }
-        catch { return; }
+
+        Quaternion moveRot = Quaternion.Euler(dir);
+
+        if (!QuaternionIsValid(moveRot))
+        {
+            recoil = Vector3.zero;
+            return;
+        }
+
+        cam.transform.localRotation = moveRot;
     }
 
     public void ViewTilt(float increased = 1) => viewTilt.x = -input.Input.x * viewTiltAngle * increased;
