@@ -72,8 +72,8 @@ public class PlayerTransitions : PlayerManager.PlayerController
     private IEnumerator ToPlayerTransition(Area area)
     {
         PlatformerController.Camera.SetForward(area.SpawnPosition.forward);
-        PlatformerController.gameObject.SetActive(true);
         PlatformerController.SetActive(false);
+        PlatformerController.gameObject.SetActive(true);
 
         StartCoroutine(HandGrab());
 
@@ -105,6 +105,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         PlayerLatching.ClearParticles();
 
         HomunculusController.Rigidbody.position = HomunculusController.LatchPos;
+
         course.SetActive(false);
 
         platformerView.transform.localPosition = Vector3.zero;

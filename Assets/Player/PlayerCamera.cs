@@ -112,19 +112,23 @@ public class PlayerCamera : MonoBehaviour
             return;
         }
 
-        Vector3 dir = new(
-            Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
-            cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y,
-            currentZ);
-
-        Quaternion moveRot = Quaternion.Euler(dir);
-
-        if (!float.IsFinite(moveRot.x) || !float.IsFinite(moveRot.y) || !float.IsFinite(moveRot.z) || !float.IsFinite(moveRot.w))
+        try
         {
-            return;
-        }
+            Vector3 dir = new(
+                Mathf.Clamp(x - input.AlteredMouseDelta.y + recoil.x, -89.9f, 89.9f),
+                cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y,
+                currentZ);
 
-        cam.transform.localRotation = moveRot;
+            Quaternion moveRot = Quaternion.Euler(dir);
+
+            if (!float.IsFinite(moveRot.x) || !float.IsFinite(moveRot.y) || !float.IsFinite(moveRot.z) || !float.IsFinite(moveRot.w))
+            {
+                return;
+            }
+
+            cam.transform.localRotation = moveRot;
+        }
+        catch { return; }
     }
 
     public void ViewTilt(float increased = 1) => viewTilt.x = -input.Input.x * viewTiltAngle * increased;

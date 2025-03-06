@@ -587,8 +587,6 @@ public class PlatformerController : PlayerManager.PlayerController
 
         cam.Reload();
         capsuleCollider.enabled = true;
-
-        Launch(cam.ForwardNoY * moveSpeed);
     }
 
     private void OnDisable()

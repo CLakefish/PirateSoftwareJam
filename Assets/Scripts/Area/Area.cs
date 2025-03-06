@@ -124,8 +124,6 @@ public class Area : MonoBehaviour
             latch.ResetLatch();
         }
 
-        homunculusPlatforming.SetActive(false);
-
         EnemyController.ClearTrigger();
         EndPosition.ClearTrigger();
         exit.ClearTrigger();
