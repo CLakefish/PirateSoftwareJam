@@ -194,6 +194,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 187464059}
   m_CullTransparentMesh: 1
+--- !u!1 &227610821 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5671148196604052636, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
+  m_PrefabInstance: {fileID: 1311253932}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &227610823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227610821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5fd39bd32766f6438b2bc34e162cf35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 227610824}
+  speed: {x: 1, y: 2}
+  amplitude: {x: 8, y: 8}
+--- !u!114 &227610824 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
+  m_PrefabInstance: {fileID: 1311253932}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227610821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &403275424
 GameObject:
   m_ObjectHideFlags: 0
@@ -636,10 +667,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4501392495945184730, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
-      propertyPath: m_Color.a
-      value: 0.4392157
-      objectReference: {fileID: 0}
     - target: {fileID: 4578906888099181106, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -658,8 +685,12 @@ PrefabInstance:
       objectReference: {fileID: 1847563778}
     - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
       propertyPath: m_fontSize
-      value: 185.2
+      value: 156.53
       objectReference: {fileID: 0}
+    - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: ea9ae52784f052844935018850eda4df, type: 2}
     - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
       propertyPath: m_fontColor.b
       value: 0
@@ -674,8 +705,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
       propertyPath: m_fontSizeBase
-      value: 185.2
+      value: 156.53
       objectReference: {fileID: 0}
+    - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 8132964642698106226, guid: ea9ae52784f052844935018850eda4df, type: 2}
     - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
       propertyPath: m_characterSpacing
       value: 66.82
@@ -688,9 +723,9 @@ PrefabInstance:
       propertyPath: m_HorizontalAlignment
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 8489958594268882573, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
-      propertyPath: m_Color.a
-      value: 0.4392157
+    - target: {fileID: 5898162701977342648, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -701,7 +736,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2645887463863857372, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
       insertIndex: 5
       addedObject: {fileID: 1847563777}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5671148196604052636, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 227610823}
   m_SourcePrefab: {fileID: 100100000, guid: 7e4580df06206f24d9e43ce073d2f961, type: 3}
 --- !u!1 &1455334406
 GameObject:
@@ -824,7 +862,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.4392157}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.85882354}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -906,12 +944,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<b><color=yellow><size=90>SPECIAL THANKS</color></b></size> \nBrevillo\nZagawee
-    (Go play garbanzo quest, its awesome)\nGeriGrape9\nCurica\nM1das\nTravis\nAcerola's
-    shader tutorials\nPirateSoftware\nAnd you! :)\n"
+  m_text: "<b><color=red><size=60>SPECIAL THANKS</color></b></size> \n\nBrevillo\nZagawee
+    <size=25>(Go play garbanzo quest, its awesome)</size> \nGeriGrape9\nCurica\nM1das\nTravis\nJack
+    V.\nAcerola's shader tutorials\nPirateSoftware\nAnd you! :)\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: bb30d0b314f83df4db2c0fa0ef36c8f5, type: 2}
-  m_sharedMaterial: {fileID: 2477398738031772755, guid: bb30d0b314f83df4db2c0fa0ef36c8f5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ea9ae52784f052844935018850eda4df, type: 2}
+  m_sharedMaterial: {fileID: 8132964642698106226, guid: ea9ae52784f052844935018850eda4df, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -935,19 +973,19 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 41.5
+  m_fontSizeBase: 41.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 50
+  m_lineSpacing: 60
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -1043,13 +1081,14 @@ MonoBehaviour:
   settingsPanel: {fileID: 1533631364}
   text: {fileID: 1765496267}
   names:
-  - '<b><color=yellow><size=90>SPECIAL THANKS</color></b></size> '
+  - '<b><color=red><size=60>SPECIAL THANKS</color></b></size> '
   - Brevillo
   - GeriGrape9
   - Zagawee (Go play garbanzo quest, its awesome)
   - Curica
   - M1das
   - Travis
+  - Jack V.
   - Acerola's shader tutorials
   - PirateSoftware team and community
   - And you! :)
@@ -1067,6 +1106,7 @@ GameObject:
   - component: {fileID: 1950800161}
   - component: {fileID: 1950800163}
   - component: {fileID: 1950800162}
+  - component: {fileID: 1950800164}
   m_Layer: 5
   m_Name: Text (TMP) (1)
   m_TagString: Untagged
@@ -1115,8 +1155,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: MAKE THEM BURN
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: bb30d0b314f83df4db2c0fa0ef36c8f5, type: 2}
-  m_sharedMaterial: {fileID: 2477398738031772755, guid: bb30d0b314f83df4db2c0fa0ef36c8f5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ea9ae52784f052844935018850eda4df, type: 2}
+  m_sharedMaterial: {fileID: 8132964642698106226, guid: ea9ae52784f052844935018850eda4df, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1192,6 +1232,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1950800160}
   m_CullTransparentMesh: 1
+--- !u!114 &1950800164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950800160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5fd39bd32766f6438b2bc34e162cf35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 1950800162}
+  speed: {x: 1, y: 1}
+  amplitude: {x: 4, y: 4}
 --- !u!1001 &8745007569082892333
 PrefabInstance:
   m_ObjectHideFlags: 0

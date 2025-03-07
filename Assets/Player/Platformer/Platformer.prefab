@@ -272,6 +272,7 @@ MonoBehaviour:
   coyoteTime: 0.15
   jumpBufferTime: 0.1
   slideForce: 16
+  maxSpeedSlideForce: 12
   slideRotationSpeed: 2
   slideAcceleration: 25
   slideAirAcceleration: 60
@@ -294,10 +295,11 @@ MonoBehaviour:
   lungeForce: 20
   wallRunThreshold: 45
   wallRunSpeed: 16
-  wallRunEnterReduct: 0.8
+  wallRunEnterBoost: 14
+  wallRunEnterFOV: 8
   wallRunGravity: 18
-  wallRunStickForce: 0.05
-  wallRunTilt: 12
+  wallRunStickForce: 125
+  wallRunTilt: 14
   wallJumpTime: 0.15
   wallJumpForce: 20
   wallJumpHeight: 22
@@ -352,7 +354,7 @@ MonoBehaviour:
   groundCastDist: 0.85
   groundCastRadius: 0.3
   wallCastIncrements: 6
-  wallCastDistance: 1
+  wallCastDistance: 1.25
 --- !u!114 &1872581765119239319
 MonoBehaviour:
   m_ObjectHideFlags: 0

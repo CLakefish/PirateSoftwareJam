@@ -169,7 +169,7 @@ public class PlayerReticle : MonoBehaviour
             bool maxDistCheck = checkDist < distance && InRange(pair.Key) && IsVisible(pair.Key) && !Obstructed(pair.Key);
             bool minDistCheck = worldDist <= deviationIgnoreDist && !Obstructed(pair.Key);
 
-            if (maxDistCheck || minDistCheck)
+            if ((maxDistCheck && checkDist < distance) || minDistCheck)
             {
                 closest = new(pair.Value, pair.Key);
                 distance = checkDist;

@@ -27,7 +27,7 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void FixedUpdate()
         {
             context.rb.linearVelocity = context.HorizontalVelocity;
-            context.Move(context.hfsm.Duration > 0.1f);
+            context.Move(false);
         }
     }
 
@@ -99,19 +99,22 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             AudioManager.Instance.PlaySFX(context.slide);
 
-            momentum = context.rb.linearVelocity;
+            Vector3 max = context.rb.linearVelocity;
+            if (context.HorizontalVelocity.magnitude <= context.moveSpeed) max = context.MoveDir * context.moveSpeed;
+
+            momentum = max;
 
             if (context.HorizontalVelocity.magnitude <= context.slideBoostSpeedCap)
             {
                 context.cam.FOVPulse(context.slidePulse);
 
+                float force = context.HorizontalVelocity.magnitude <= context.slideForce ? context.slideForce : context.maxSpeedSlideForce;
                 Vector3 mov = context.MoveDir == Vector3.zero ? context.cam.ForwardNoY : context.MoveDir;
-                Vector3 dir = Vector3.ProjectOnPlane(mov * context.slideForce, context.collisions.GroundNormal);
+                Vector3 dir = Vector3.ProjectOnPlane(mov * force, context.collisions.GroundNormal);
                 momentum += dir;
             }
 
             context.rb.linearVelocity = momentum;
-            context.DesiredHorizontalVelocity = new Vector3(momentum.x, 0, momentum.z);
         }
 
         public override void Update()
@@ -180,7 +183,7 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             context.ResetTilt();
 
-            context.rb.linearVelocity = new Vector3(momentum.x, Mathf.Max(momentum.y, 0), momentum.z);
+            context.rb.linearVelocity = new Vector3(momentum.x, 0, momentum.z);
             context.DesiredHorizontalVelocity = context.HorizontalVelocity;
         }
     }
@@ -323,8 +326,10 @@ public class PlatformerController : PlayerManager.PlayerController
         public override void Enter()
         {
             Vector3 dir = GetProjected() * Mathf.Max(context.HorizontalVelocity.magnitude, context.wallRunSpeed);
-            dir.y = context.rb.linearVelocity.y > 0 ? context.rb.linearVelocity.y : context.rb.linearVelocity.y * context.wallRunEnterReduct;
+            dir.y = context.wallRunEnterBoost;
             context.rb.linearVelocity = dir;
+
+            context.cam.FOVPulse(context.wallRunEnterFOV);
 
             context.SetWallTilt();
         }
@@ -350,7 +355,13 @@ public class PlatformerController : PlayerManager.PlayerController
                 Vector3 projected = GetProjected() * Mathf.Max(context.wallRunSpeed, context.HorizontalVelocity.magnitude);
 
                 context.DesiredHorizontalVelocity = new Vector3(projected.x, 0, projected.z);
-                context.rb.linearVelocity = new Vector3(context.DesiredHorizontalVelocity.x, context.rb.linearVelocity.y, context.DesiredHorizontalVelocity.z);
+                context.rb.linearVelocity = new Vector3(context.DesiredHorizontalVelocity.x, context.rb.linearVelocity.y, context.DesiredHorizontalVelocity.z) - (context.collisions.WallNormal * Time.deltaTime);
+
+                float dist = Vector3.Distance(context.collisions.WallPos, context.rb.position);
+                if (dist > 0.1f)
+                {
+                    context.rb.linearVelocity -= context.wallRunStickForce * dist * Time.deltaTime * context.collisions.WallNormal;
+                }
             }
         }
 
@@ -424,6 +435,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
     [Header("Sliding Parameters")]
     [SerializeField] private float slideForce;
+    [SerializeField] private float maxSpeedSlideForce = 12;
     [SerializeField] private float slideRotationSpeed;
     [SerializeField] private float slideAcceleration;
     [SerializeField] private float slideAirAcceleration;
@@ -458,7 +470,8 @@ public class PlatformerController : PlayerManager.PlayerController
     [Header("Wallrun Parameters")]
     [SerializeField] private float wallRunThreshold;
     [SerializeField] private float wallRunSpeed;
-    [SerializeField] private float wallRunEnterReduct;
+    [SerializeField] private float wallRunEnterBoost;
+    [SerializeField] private float wallRunEnterFOV;
     [SerializeField] private float wallRunGravity;
     [SerializeField] private float wallRunStickForce;
     [SerializeField] private float wallRunTilt;
@@ -686,6 +699,11 @@ public class PlatformerController : PlayerManager.PlayerController
 
     public void SetActive(bool on)
     {
+        if (on) { 
+            ResetVelocity();
+            Camera.ResetFOV();
+        }
+
         collisions.enabled = on;
         reticle.enabled = on;
         canMove = on;
