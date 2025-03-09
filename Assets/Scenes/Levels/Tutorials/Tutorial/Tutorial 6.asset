@@ -18,3 +18,4 @@ MonoBehaviour:
     color: {r: 1, g: 1, b: 1, a: 0.78431374}
     skippable: 0
   forceInput: 0
+  hold: 1

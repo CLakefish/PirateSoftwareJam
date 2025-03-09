@@ -636,7 +636,7 @@ public class PlatformerController : PlayerManager.PlayerController
         hfsm.FixedUpdate();
     }
 
-    private void OnGUI()
+/*    private void OnGUI()
     {
         hfsm.OnGUI();
         GUILayout.BeginArea(new Rect(10, 150, 800, 200));
@@ -645,7 +645,7 @@ public class PlatformerController : PlayerManager.PlayerController
         GUILayout.Label($"<size=15>{current}</size>");
         GUILayout.EndArea();
     }
-
+*/
     private void Move(bool keepMomentum)
     {
         float speed = keepMomentum ? Mathf.Max(moveSpeed, new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude) : moveSpeed;

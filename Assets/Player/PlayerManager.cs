@@ -96,7 +96,8 @@ public class PlayerManager : MonoBehaviour
     public void CloseMenu()
     {
         PauseMenu.SetActive(false);
-        homunculus.Camera.MouseLock = homunculus.Camera.enabled = platformer.Camera.enabled = playerTransitions.enabled = true;
+        homunculus.Camera.MouseLock = false;
+        homunculus.Camera.enabled = platformer.Camera.enabled = playerTransitions.enabled = true;
 
         ReloadSaveData();
         TimeManager.Instance.ResumeTime();

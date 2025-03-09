@@ -254,11 +254,11 @@ public class HomunculusController : PlayerManager.PlayerController
         hfsm.FixedUpdate();
     }
 
-    private void OnGUI()
+/*    private void OnGUI()
     {
         hfsm.OnGUI();
     }
-
+*/
     private void ApplyGravity() => rb.linearVelocity -= gravity * Time.fixedDeltaTime * Vector3.up;
     public void Exit(Vector3 dir, bool timeSet = true)
     {

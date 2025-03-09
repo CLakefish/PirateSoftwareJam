@@ -9,6 +9,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
     [SerializeField] private Canvas worldSpaceCanvas;
     [SerializeField] private RectTransform homunculusView;
     [SerializeField] private RectTransform platformerView;
+    [SerializeField] private GameObject endVisual;
 
     [Header("Fire Pulse")]
     [SerializeField] private Material fireVignette;
@@ -137,6 +138,7 @@ public class PlayerTransitions : PlayerManager.PlayerController
         if (LevelManager.Instance.CheckWin())
         {
             PulseFire(firePulseWin);
+            endVisual.SetActive(true);
 
             if (LevelManager.Instance.LastLevel)
             {
@@ -247,5 +249,6 @@ public class PlayerTransitions : PlayerManager.PlayerController
         }
 
         PlayerComplete.Activate();
+        endVisual.SetActive(true);
     }
 }

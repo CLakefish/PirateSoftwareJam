@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69b564cf7dd54144be9fe7769f0e2c4, type: 3}
   m_Name: FOV
   m_EditorClassIdentifier: 
-  saveName: FOV
+  saveName: Field of view
   type: 1
   min: 60
   max: 100

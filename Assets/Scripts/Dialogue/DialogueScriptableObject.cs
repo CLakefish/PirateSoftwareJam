@@ -14,7 +14,9 @@ public class DialogueScriptableObject : ScriptableObject
 
     [SerializeField] private List<Dialogue> dialogues = new();
     [SerializeField] private bool forceInput;
+    [SerializeField] private bool hold;
 
-    public List<Dialogue> Dialogues => dialogues;
+    public List<Dialogue> Dialogues  => dialogues;
     public bool           ForceInput => forceInput;
+    public bool           Hold       => hold;
 }

@@ -17,11 +17,19 @@ public class PlayerSpeedrunClock : MonoBehaviour
             return;
         }
 
-        bestTime.text = "BEST TIME: " + levelManager.BestTime.ToString("00:00.00");
+        bestTime.text = "BEST TIME: " + GetFormattedText(levelManager.BestTime);
     }
 
     private void Update()
     {
-        displayTime.text = levelManager.CurrentTime.ToString("00:00.00");
+        displayTime.text = GetFormattedText(levelManager.CurrentTime);
+    }
+
+    private string GetFormattedText(float time)
+    {
+        float seconds = time % 60;
+        int minutes   = (int)time / 60;
+
+        return new string(minutes.ToString("00") + ":" + seconds.ToString("00.00"));
     }
 }

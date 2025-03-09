@@ -7,6 +7,7 @@ public class SettingsScriptableObject : ScriptableObject
         Toggle,
         Slider,
         SubMenu,
+        Break,
     };
 
     [SerializeField] private string saveName;

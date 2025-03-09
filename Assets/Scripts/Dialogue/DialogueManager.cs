@@ -129,6 +129,14 @@ public class DialogueManager : MonoBehaviour
             timeManager.Interpolate = true;
         }
 
+        if (text.Hold)
+        {
+            while (true)
+            {
+                yield return null;
+            }
+        }
+
         ResetText();
     }
 }

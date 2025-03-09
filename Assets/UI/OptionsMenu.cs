@@ -9,6 +9,7 @@ public class OptionsMenu : SubMenu
     [SerializeField] private Transform settingHolder;
     [SerializeField] private Toggle togglePrefab;
     [SerializeField] private Slider sliderPrefab;
+    [SerializeField] private GameObject breakPrefab;
 
     [Header("Levels")]
     [SerializeField] private List<SettingsScriptableObject> settings = new();
@@ -82,6 +83,12 @@ public class OptionsMenu : SubMenu
 
                     temp = s.gameObject;
 
+                    break;
+
+                case SettingsScriptableObject.SettingType.Break:
+                    GameObject b = Instantiate(breakPrefab, settingHolder);
+                    var breakSetting = setting as BreakSettingScriptableObject;
+                    b.GetComponent<TMPro.TMP_Text>().text = setting.SaveName;
                     break;
             }
 
