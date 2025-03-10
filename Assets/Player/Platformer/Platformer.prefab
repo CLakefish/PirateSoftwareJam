@@ -266,7 +266,7 @@ MonoBehaviour:
   rb: {fileID: 2516541481633871672}
   moveSpeed: 14
   acceleration: 100
-  airAcceleration: 45
+  airAcceleration: 35
   gravity: 46
   jumpHeight: 15
   coyoteTime: 0.15

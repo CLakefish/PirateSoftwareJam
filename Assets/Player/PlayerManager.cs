@@ -43,6 +43,10 @@ public class PlayerManager : MonoBehaviour
 
     [Header("Menu")]
     [SerializeField] private GameObject PauseMenu;
+    public bool ActiveMenu
+    {
+        get { return PauseMenu.activeSelf; }
+    }
 
     private void OnEnable()
     {
@@ -79,9 +83,11 @@ public class PlayerManager : MonoBehaviour
             PauseMenu.SetActive(!PauseMenu.activeSelf);
             bool active = !PauseMenu.activeSelf;
 
-            homunculus.Camera.MouseLock = active;
+            homunculus.Camera.MouseLock = platformer.Camera.MouseLock = active;
+            homunculus.Camera.LockCamera = !active;
+            homunculus.Camera.enabled    = platformer.Camera.enabled = playerTransitions.enabled = active;
 
-            homunculus.Camera.enabled = platformer.Camera.enabled = playerTransitions.enabled = active;
+            LevelManager.Instance.AllowTimeIncrement = active;
 
             if (PauseMenu.activeSelf) {
                 TimeManager.Instance.StopTime();

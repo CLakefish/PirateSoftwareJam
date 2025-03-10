@@ -225,14 +225,23 @@ public class HomunculusController : PlayerManager.PlayerController
         cam.LockCamera = false;
     }
 
+    private void Start()
+    {
+        cam.LockCamera = false;
+    }
+
     private void Update()
     {
+        if (player.ActiveMenu) return;
+
         hfsm.CheckTransitions();
         hfsm.Update();
     }
 
     private void FixedUpdate()
     {
+        if (player.ActiveMenu) return;
+
         if (started && hfsm.Duration > 0.1f && hfsm.CurrentState != Latch) {
             if (deathCounter >= deathBounceTally)
             {

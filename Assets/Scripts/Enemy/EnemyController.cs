@@ -30,6 +30,7 @@ public class EnemyController : Latchable
         HasCompleted = true;
         if (particle != null) Destroy(particle.gameObject);
         particle = Instantiate(fire, renderer.transform);
+        particle.transform.localScale    = Vector3.one * 2.0f;
         particle.transform.localPosition = Vector3.up * 0.5f;
     }
 
