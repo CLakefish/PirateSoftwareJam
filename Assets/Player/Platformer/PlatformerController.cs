@@ -240,6 +240,8 @@ public class PlatformerController : PlayerManager.PlayerController
         {
             context.latchFinished = false;
 
+            AudioManager.Instance.PlaySFX(context.latch);
+
             startVel = context.rb.linearVelocity;
 
             var latchable = context.reticle.Closest.obj.GetComponent<Latchable>();
@@ -295,7 +297,7 @@ public class PlatformerController : PlayerManager.PlayerController
 
         public override void Enter()
         {
-            AudioManager.Instance.PlaySFX(context.jump);
+            AudioManager.Instance.PlaySFX(context.lunge);
 
             context.jumpBuffer = 0;
             context.rb.linearVelocity = new Vector3(context.rb.linearVelocity.x, Mathf.Max(context.lungeForce, context.rb.linearVelocity.y + context.lungeForce), context.rb.linearVelocity.z);
@@ -491,6 +493,8 @@ public class PlatformerController : PlayerManager.PlayerController
     [SerializeField] private AudioClip slide;
     [SerializeField] private AudioClip step;
     [SerializeField] private AudioClip die;
+    [SerializeField] private AudioClip latch;
+    [SerializeField] private AudioClip lunge;
     [SerializeField] private float     stepTime;
 
     private readonly float slideDotMin   = -0.25f;

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogues:
   - dialogue: WALL RUN BY WALKING AGAINST A WALL WHILE FALLING
-    audio: {fileID: 0}
+    audio: {fileID: 8300000, guid: f7b84b4bfebc5ab4ca6753b2844b2cfb, type: 3}
     color: {r: 1, g: 0.98003054, b: 0, a: 0.78431374}
     skippable: 0
   forceInput: 0

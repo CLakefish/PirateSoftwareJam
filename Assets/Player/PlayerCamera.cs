@@ -30,6 +30,7 @@ public class PlayerCamera : MonoBehaviour
 
     private Vector3 recoil;
     private Vector3 recoilVel;
+    private Vector3 prevFwd;
 
     private Vector2 viewTilt;
     private float cameraVel;
@@ -72,8 +73,6 @@ public class PlayerCamera : MonoBehaviour
 
     private void OnEnable()
     {
-        if (resetRotation) cam.transform.localEulerAngles = Vector3.zero;
-
         Reload();
 
         recoilVel = Vector3.zero;
@@ -105,9 +104,7 @@ public class PlayerCamera : MonoBehaviour
 
         if (LockCamera)
         {
-            float lockedYaw = cam.transform.localEulerAngles.y + recoil.y;
-            Quaternion lockedRot = Quaternion.Euler(x + recoil.x, lockedYaw, currentZ);
-            cam.transform.localRotation = lockedRot;
+            prevFwd = cam.transform.forward;
             return;
         }
 
@@ -116,20 +113,16 @@ public class PlayerCamera : MonoBehaviour
             cam.transform.localEulerAngles.y + input.AlteredMouseDelta.x + recoil.y,
             currentZ);
 
-        if (!float.IsFinite(dir.x) || !float.IsFinite(dir.y) || !float.IsFinite(dir.z))
-        {
-            recoil = Vector3.zero;
-            return;
-        }
-
         Quaternion moveRot = Quaternion.Euler(dir);
 
         if (!QuaternionIsValid(moveRot))
         {
             recoil = Vector3.zero;
+            cam.transform.forward = prevFwd;
             return;
         }
 
+        prevFwd = cam.transform.forward;
         cam.transform.localRotation = moveRot;
     }
 

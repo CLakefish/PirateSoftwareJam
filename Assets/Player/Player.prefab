@@ -4147,10 +4147,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 34c742e41378474498330dd51efb4370, type: 3}
     - target: {fileID: 3234786097038035898, guid: a4933116771913146aa49cdbe808b4b9, type: 3}
-      propertyPath: slide
-      value: 
-      objectReference: {fileID: 8300000, guid: a6fb8f9f8b8df6249976ed390f153519, type: 3}
-    - target: {fileID: 3234786097038035898, guid: a4933116771913146aa49cdbe808b4b9, type: 3}
       propertyPath: reticle
       value: 
       objectReference: {fileID: 1662648981315700192}

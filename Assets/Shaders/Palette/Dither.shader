@@ -38,9 +38,9 @@ Shader "Hidden/Dither" {
             #pragma vertex vp
             #pragma fragment fp
 
-            #define MAX_LEVELS 7
+            #define MAX_LEVELS 10
 
-            uniform float4 _ColorPalette[16];
+            uniform float4 _ColorPalette[10];
             float _NumLevels;
             float _Spread;
 

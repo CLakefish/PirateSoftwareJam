@@ -266,7 +266,7 @@ MonoBehaviour:
   rb: {fileID: 2516541481633871672}
   moveSpeed: 14
   acceleration: 100
-  airAcceleration: 35
+  airAcceleration: 40
   gravity: 46
   jumpHeight: 15
   coyoteTime: 0.15
@@ -307,9 +307,11 @@ MonoBehaviour:
   launchFOVPulse: 5
   land: {fileID: 0}
   jump: {fileID: 0}
-  slide: {fileID: 0}
+  slide: {fileID: 8300000, guid: 89831c5c361a4f442a20060f5a569d88, type: 3}
   step: {fileID: 0}
   die: {fileID: 0}
+  latch: {fileID: 8300000, guid: 89831c5c361a4f442a20060f5a569d88, type: 3}
+  lunge: {fileID: 8300000, guid: 5ccdaf6b4777bd04ba132c01426a3d4a, type: 3}
   stepTime: 0
 --- !u!114 &5228717620892235620
 MonoBehaviour:
